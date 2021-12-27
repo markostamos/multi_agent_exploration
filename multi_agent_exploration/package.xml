@@ -1,0 +1,23 @@
+<package format="2">
+  <name>exploration</name>
+  <version>0.0.0</version>
+  <description>multi_agent_exploration</description>
+
+  <maintainer email="gimarkostamos@gmail.com">George Markostamos</maintainer>
+
+
+  <author>George Markostamos</author>
+  <license>TODO</license>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed after this package is compiled. -->
+  <exec_depend>simulator</exec_depend>
+  <exec_depend>velodyne_simulator</exec_depend>
+  <exec_depend>exp_control</exec_depend>
+  
+  <export>
+    <metapackage/>
+  </export>
+</package>
