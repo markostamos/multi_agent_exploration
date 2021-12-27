@@ -5,9 +5,9 @@ import rospy
 from geometry_msgs.msg import PoseStamped
 
 
-class goal_pose_node:
+class rviz_goal_publisher_node:
     def __init__(self):
-        rospy.init_node("goal_pose_node")
+        rospy.init_node("rviz_goal_publisher_node")
         rospy.loginfo("Starting waypoint_node as name_node.")
         self.namespace = rospy.get_param('~namespace', 'neo11')
         self.lee_publisher = rospy.Publisher(
@@ -20,5 +20,5 @@ class goal_pose_node:
 
 
 if __name__ == "__main__":
-    name_node = goal_pose_node()
+    name_node = rviz_goal_publisher_node()
     rospy.spin()

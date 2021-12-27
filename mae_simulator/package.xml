@@ -49,6 +49,7 @@
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
   <exec_depend>velodyne_simulator</exec_depend>
+  <exec_depend>mae_control</exec_depend>
   <buildtool_depend>catkin</buildtool_depend>
 
 

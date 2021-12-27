@@ -23,6 +23,6 @@ include_directories(
 )
 
 
-catkin_install_python(PROGRAMS src/rviz_goal_publisher.py
+catkin_install_python(PROGRAMS scripts/rviz_goal_publisher_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

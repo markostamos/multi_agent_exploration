@@ -1,6 +1,6 @@
 <launch>
   <arg name="mav_name" default="neo11"/>
-  <arg name="world_name" default="basic"/>
+  <arg name="world_name" default="maze1"/>
   <arg name="enable_logging" default="false" />
   <arg name="enable_ground_truth" default="true" />
   <arg name="log_file" default="$(arg mav_name)" />
@@ -18,7 +18,7 @@
   <env name="GAZEBO_MODEL_PATH" value="${GAZEBO_MODEL_PATH}:$(find rotors_gazebo)/models"/>
   <env name="GAZEBO_RESOURCE_PATH" value="${GAZEBO_RESOURCE_PATH}:$(find rotors_gazebo)/models"/>
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find simulator)/worlds/$(arg world_name).world" />
+    <arg name="world_name" value="$(find mae_simulator)/worlds/$(arg world_name).world" />
     <arg name="debug" value="$(arg debug)" />
     <arg name="paused" value="$(arg paused)" />
     <arg name="gui" value="$(arg gui)" />
@@ -28,9 +28,9 @@
   </include>
 
   <group ns="$(arg mav_name)">
-    <include file="$(find simulator)/launch/spawn_mav.launch">
+    <include file="$(find mae_simulator)/launch/spawn_mav.launch">
       <arg name="mav_name" value="$(arg mav_name)" />
-      <arg name="model" value="$(find simulator)/urdf/mav_generic_odometry_and_lidar.gazebo" />
+      <arg name="model" value="$(find mae_simulator)/urdf/mav_generic_odometry_and_lidar.gazebo" />
       <arg name="enable_logging" value="$(arg enable_logging)" />
       <arg name="enable_ground_truth" value="$(arg enable_ground_truth)" />
       <arg name="log_file" value="$(arg log_file)"/>
@@ -55,10 +55,10 @@
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
   
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
-    <param name="myrob" command="xacro $(find rotors_description)/urdf/$(arg mav_name).xacro namespace:=$(arg mav_name)" />
-    <node pkg="rviz" type="rviz" name="rviz" respawn="false" output="screen" args="-d $(find simulator)/rviz/lidar.rviz" />
+    
+    <node pkg="rviz" type="rviz" name="rviz" respawn="false" output="screen" args="-d $(find mae_simulator)/rviz/lidar.rviz" />
     
     
   </group>
-  <node name="rviz_goal_publisher" pkg="exp_control" type="rviz_goal_publisher" output="screen"/>
+  <node name="rviz_goal_publisher_node" pkg="mae_control" type="rviz_goal_publisher_node.py" output="screen"/>
 </launch>
