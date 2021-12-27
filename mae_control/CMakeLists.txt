@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(exp_control)
+project(mae_control)
 
 
 find_package(catkin REQUIRED COMPONENTS
