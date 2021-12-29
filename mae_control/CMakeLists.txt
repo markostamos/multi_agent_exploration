@@ -4,6 +4,7 @@ project(mae_control)
 
 find_package(catkin REQUIRED COMPONENTS
   rospy
+  geometry_msgs
 )
 
 
@@ -23,6 +24,7 @@ include_directories(
 )
 
 
-catkin_install_python(PROGRAMS scripts/rviz_goal_publisher_node.py
+catkin_install_python(PROGRAMS 
+  src/nodes/rviz_goal_publisher_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
