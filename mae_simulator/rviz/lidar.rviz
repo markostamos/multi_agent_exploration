@@ -6,7 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /TF1/Frames1
-        - /Odometry1
+        - /VLP-161
       Splitter Ratio: 0.5
     Tree Height: 349
   - Class: rviz/Selection
@@ -27,7 +27,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: ""
+    SyncSource: VLP-16
 Preferences:
   PromptSaveOnExit: false
 Toolbars:
@@ -78,6 +78,16 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base_link_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         neo11/base_link:
           Alpha: 1
           Show Axes: false
@@ -160,7 +170,7 @@ Visualization Manager:
       Queue Size: 10
       Selectable: true
       Size (Pixels): 3
-      Size (m): 0.009999999776482582
+      Size (m): 0.019999999552965164
       Style: Flat Squares
       Topic: /neo11/velodyne_points
       Unreliable: false
@@ -230,7 +240,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 5.338624000549316
+      Distance: 9.943521499633789
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -238,17 +248,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 2.2484941482543945
-        Y: 0.9555981159210205
+        X: -1.7851691246032715
+        Y: -1.2418248653411865
         Z: 0
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5003983378410339
+      Pitch: 0.7503983974456787
       Target Frame: <Fixed Frame>
-      Yaw: 4.728633403778076
+      Yaw: 1.3004485368728638
     Saved: ~
 Window Geometry:
   Displays:
@@ -267,4 +277,4 @@ Window Geometry:
     collapsed: true
   Width: 1513
   X: 126
-  Y: 165
+  Y: 141

@@ -61,4 +61,7 @@
     
   </group>
   <node name="rviz_goal_publisher_node" pkg="mae_control" type="rviz_goal_publisher_node.py" output="screen"/>
+  <node name="vel_controller_node" pkg="mae_control" type="vel_controller_node.py" output="screen"/>
+
+  
 </launch>

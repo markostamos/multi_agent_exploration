@@ -4,12 +4,11 @@
 import rospy
 from geometry_msgs.msg import PoseStamped
 
-
 class rviz_goal_publisher_node:
     def __init__(self):
         rospy.init_node("rviz_goal_publisher_node")
         rospy.loginfo("Starting waypoint_node as name_node.")
-        self.namespace = rospy.get_param('~namespace', 'neo11')
+        self.namespace = rospy.get_param('~ns', 'neo11')
         self.lee_publisher = rospy.Publisher(
             f'/{self.namespace}/command/pose', PoseStamped, queue_size=10)
         rospy.Subscriber('/move_base_simple/goal', PoseStamped, self.callback)
@@ -17,7 +16,6 @@ class rviz_goal_publisher_node:
     def callback(self, goal_pose):
         goal_pose.pose.position.z = rospy.get_param('~altitude', default=1)
         self.lee_publisher.publish(goal_pose)
-
 
 if __name__ == "__main__":
     name_node = rviz_goal_publisher_node()

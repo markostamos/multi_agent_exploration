@@ -26,5 +26,6 @@ include_directories(
 
 catkin_install_python(PROGRAMS 
   src/nodes/rviz_goal_publisher_node.py
+  src/nodes/vel_controller_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

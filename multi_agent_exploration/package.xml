@@ -13,6 +13,7 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <!-- Dependencies needed after this package is compiled. -->
+  <exec_depend>rotors_simulator</exec_depend>
   <exec_depend>mae_simulator</exec_depend>
   <exec_depend>velodyne_simulator</exec_depend>
   <exec_depend>mae_control</exec_depend>
