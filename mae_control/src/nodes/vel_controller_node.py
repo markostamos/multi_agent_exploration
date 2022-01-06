@@ -5,6 +5,15 @@ from geometry_msgs.msg import Twist
 from geometry_msgs.msg import PoseStamped
 from tf.transformations import quaternion_from_euler, euler_from_quaternion
 class vel_controller_node:
+    """
+    Simple forward integration velocity controller based on the lee position controller
+    Subscribes to /<drone_name>/cmd_vel topic
+    Publishes a desired pose to /<drone_name>/command/pose every tstep seconds via the lee_pub_callback function
+
+    new_pose = velocity * timestep + old_pose
+
+    When cmd_vel is 0 nothing is published to allow the use of the position controller when this one is not used.
+    """
 
     def __init__(self):
         
