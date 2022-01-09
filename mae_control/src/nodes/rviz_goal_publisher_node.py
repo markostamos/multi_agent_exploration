@@ -8,9 +8,8 @@ class rviz_goal_publisher_node:
     def __init__(self):
         rospy.init_node("rviz_goal_publisher_node")
         rospy.loginfo("Starting waypoint_node as name_node.")
-        self.namespace = rospy.get_param('~ns', 'neo11')
-        self.lee_publisher = rospy.Publisher(
-            f'/{self.namespace}/command/pose', PoseStamped, queue_size=10)
+        ns = rospy.get_namespace()
+        self.lee_publisher = rospy.Publisher(f'/{ns}/command/pose', PoseStamped, queue_size=10)
         rospy.Subscriber('/move_base_simple/goal', PoseStamped, self.callback)
 
     def callback(self, goal_pose):

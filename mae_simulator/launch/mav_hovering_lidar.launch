@@ -7,7 +7,7 @@
   <arg name="debug" default="false"/>
   <arg name="gui" default="false"/>
   <arg name="use_sim_time" default="true"/>
-  <arg name="paused" default="true"/>
+  <arg name="paused" default="false"/>
   <arg name="lidar_type" default="vlp-16"/>
   <arg name="lidar_gpu" default="true"/>
   
@@ -44,14 +44,8 @@
       <remap from="odometry" to="odometry_sensor1/odometry" />
     </node>
 
-    <!-- <node name="roll_pitch_yawrate_thrust_controller_node" pkg="rotors_control" type="roll_pitch_yawrate_thrust_controller_node"  output="screen">
-      <rosparam
-        command="load" file="$(find rotors_gazebo)/resource/roll_pitch_yawrate_thrust_controller_$(arg mav_name).yaml" />
-      <rosparam command="load" file="$(find rotors_gazebo)/resource/$(arg mav_name).yaml" />
-      <remap from="odometry" to="odometry_sensor1/odometry" />
-    </node> -->
-    
-   <node name="hovering_example" pkg="rotors_gazebo" type="hovering_example" output="screen"/>
+  
+    <!-- <node name="hovering_example" pkg="rotors_gazebo" type="hovering_example" output="screen"/> -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
   
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
@@ -59,9 +53,11 @@
     <node pkg="rviz" type="rviz" name="rviz" respawn="false" output="screen" args="-d $(find mae_simulator)/rviz/lidar.rviz" />
     
     
+    <node name="rviz_goal_publisher_node" pkg="mae_control" type="rviz_goal_publisher_node.py" output="screen"/>
+    <node name="vel_controller_node" pkg="mae_control" type="vel_controller_node.py" output="screen"/>
   </group>
-  <node name="rviz_goal_publisher_node" pkg="mae_control" type="rviz_goal_publisher_node.py" output="screen"/>
-  <node name="vel_controller_node" pkg="mae_control" type="vel_controller_node.py" output="screen"/>
+
+  
 
   
 </launch>

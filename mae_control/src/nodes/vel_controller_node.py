@@ -19,15 +19,14 @@ class vel_controller_node:
         
         rospy.init_node("vel_controller_node")
 
-        self.namespace = rospy.get_param('~ns','neo11')
         self.tstep = rospy.get_param('vel_controller_tstep',0.1)
         self.curr_pose = PoseStamped()
         self.curr_vel = Twist()
+        ns = rospy.get_namespace()
 
-        rospy.Subscriber(f'{self.namespace}/cmd_vel', Twist, self.update_vel)
-        rospy.Subscriber(f'/{self.namespace}/command/pose', PoseStamped, self.update_pose)
-        self.lee_publisher = rospy.Publisher(
-            f'/{self.namespace}/command/pose',
+        rospy.Subscriber(f'/{ns}/command/cmd_vel', Twist, self.update_vel)
+        rospy.Subscriber(f'/{ns}/command/pose', PoseStamped, self.update_pose)
+        self.lee_publisher = rospy.Publisher(f'/{ns}/command/pose',
              PoseStamped, queue_size=10)
 
         lee_pub_timer = rospy.Timer(rospy.Duration(self.tstep), self.lee_pub_callback)
@@ -74,7 +73,8 @@ class vel_controller_node:
         goal.pose.position.x = velx*self.tstep + posx
         goal.pose.position.y = vely*self.tstep + posy
         goal.pose.position.z = velz*self.tstep + posz
-
+        if goal.pose.position.z < 0:
+            goal.pose.position.z = 0
         ori = quaternion_from_euler(0,0, velyaw*self.tstep + yaw)
 
         goal.pose.orientation.x = ori[0]
