@@ -4,6 +4,7 @@ project(mae_utils)
 
 find_package(catkin REQUIRED COMPONENTS
   rospy
+  geometry_msgs
   
 )
 
