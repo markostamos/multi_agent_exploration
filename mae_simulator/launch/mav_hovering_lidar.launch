@@ -44,17 +44,42 @@
       <remap from="odometry" to="odometry_sensor1/odometry" />
     </node>
 
-  
-    <!-- <node name="hovering_example" pkg="rotors_gazebo" type="hovering_example" output="screen"/> -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
   
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
     
-    <node pkg="rviz" type="rviz" name="rviz" respawn="false" output="screen" args="-d $(find mae_simulator)/rviz/lidar.rviz" />
+    
     
     
     <node name="rviz_goal_publisher_node" pkg="mae_control" type="rviz_goal_publisher_node.py" output="screen"/>
     <node name="vel_controller_node" pkg="mae_control" type="vel_controller_node.py" output="screen"/>
+
+    <node name="base_footprint_publisher_node" pkg="mae_utils" type="base_footprint_publisher_node.py" output="screen"/>
+    
+
+    <node pkg="octomap_server" type="octomap_server_node" name="octomap_server">
+      <param name="resolution" value="0.05" />
+      
+      <!-- fixed map frame (set to 'map' if SLAM or localization running!) -->
+      <param name="frame_id" type="string" value="world" />
+      
+      <!-- maximum range to integrate (speedup!) -->
+      <param name="sensor_model/max_range" value="100" />
+      <param name="base_frame_id" value="$(arg mav_name)/base_footprint"/>
+      
+      <param name="filter_ground" value="true"/> 
+      <param name="occupancy_min_z" value="0.07"/>
+     
+      
+      
+      
+      <!-- data source to integrate (PointCloud2) -->
+      <remap from="cloud_in" to="/$(arg mav_name)/velodyne_points" />
+	
+	    </node>
+
+  <node pkg="rviz" type="rviz" name="rviz" respawn="false" output="screen" args="-d $(find mae_simulator)/rviz/lidar.rviz" />
+
   </group>
 
   

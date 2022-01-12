@@ -84,12 +84,12 @@
     <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
     <xacro:VLP-16 
       parent="${namespace}/base_link" 
-      name="base_link" 
+      name="velodyne" 
       topic="velodyne_points" 
-      hz="10" 
+      hz="20" 
       samples="1000" 
       gpu="${gpu}" 
-      lasers="50" 
+      lasers="16" 
       collision_range="0.3" 
       min_range="0.9" 
       max_range="100.0" 
@@ -99,7 +99,6 @@
       <origin xyz="0.0 0 -0.12" rpy="0.0 0.0 0.0" />
     </xacro:VLP-16>
   </xacro:if>
-
 
 
 

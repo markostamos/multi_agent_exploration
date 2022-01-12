@@ -3,13 +3,13 @@
   <xacro:property name="M_PI" value="3.1415926535897931" />
   <xacro:macro name="VLP-16" params="*origin parent:=base_link name:=velodyne topic:=/velodyne_points hz:=10 lasers:=16 samples:=1875 collision_range:=0.3 min_range:=0.9 max_range:=130.0 noise:=0.008 min_angle:=-${M_PI} max_angle:=${M_PI} gpu:=false">
 
-    <joint name="${name}_base_mount_joint" type="fixed">
+    <joint name="${namespace}/${name}_base_mount_joint" type="fixed">
       <xacro:insert_block name="origin" /> 
       <parent link="${parent}"/>
-      <child link="${name}_base_link"/>
+      <child link="${namespace}/${name}_base_link"/>
     </joint>
 
-    <link name="${name}_base_link">
+    <link name="${namespace}/${name}_base_link">
       <inertial>
        <!-- <mass value="0.83"/>   MASS VALUE OF THE REAL SENSOR-->
        <mass value="0.0001"/>
@@ -36,13 +36,13 @@
       </collision>
     </link>
 
-    <joint name="${name}_base_scan_joint" type="fixed" >
+    <joint name="${namespace}/${name}_base_scan_joint" type="fixed" >
       <origin xyz="0 0 0.0377" rpy="0 0 0" />
-      <parent link="${name}_base_link" />
-      <child link="${name}"/>
+      <parent link="${namespace}/${name}_base_link" />
+      <child link="${namespace}/${name}"/>
     </joint>
 
-    <link name="${name}">
+    <link name="${namespace}/${name}">
       <inertial>
         <mass value="0.01"/>
         <origin xyz="0 0 0"/>
@@ -57,7 +57,7 @@
     </link>
 
     <!-- Gazebo requires the velodyne_gazebo_plugins package -->
-    <gazebo reference="${name}">
+    <gazebo reference="${namespace}/${name}">
       <xacro:if value="${gpu}">
         <sensor type="gpu_ray" name="${name}-VLP16">
           <pose>0 0 0 0 0 0</pose>

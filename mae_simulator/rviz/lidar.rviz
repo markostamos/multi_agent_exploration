@@ -6,7 +6,6 @@ Panels:
       Expanded:
         - /Global Options1
         - /TF1/Frames1
-        - /VLP-161
       Splitter Ratio: 0.5
     Tree Height: 349
   - Class: rviz/Selection
@@ -78,16 +77,6 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        base_link_base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         neo11/base_link:
           Alpha: 1
           Show Axes: false
@@ -143,6 +132,16 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        neo11/velodyne:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        neo11/velodyne_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
       Name: RobotModel
       Robot Description: robot_description
       TF Prefix: ""
@@ -177,40 +176,23 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
-    - Angle Tolerance: 0.10000000149011612
-      Class: rviz/Odometry
-      Covariance:
-        Orientation:
-          Alpha: 0.5
-          Color: 255; 255; 127
-          Color Style: Unique
-          Frame: Local
-          Offset: 1
-          Scale: 1
-          Value: true
-        Position:
-          Alpha: 0.30000001192092896
-          Color: 204; 51; 204
-          Scale: 1
-          Value: true
-        Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /neo11/occupied_cells_vis_array
+      Name: octomap
+      Namespaces:
+        map: true
+      Queue Size: 100
+      Value: true
+    - Alpha: 0.699999988079071
+      Class: rviz/Map
+      Color Scheme: map
+      Draw Behind: false
       Enabled: false
-      Keep: 100
-      Name: Odometry
-      Position Tolerance: 0.10000000149011612
-      Queue Size: 10
-      Shape:
-        Alpha: 1
-        Axes Length: 1
-        Axes Radius: 0.10000000149011612
-        Color: 255; 25; 0
-        Head Length: 0.30000001192092896
-        Head Radius: 0.10000000149011612
-        Shaft Length: 1
-        Shaft Radius: 0.05000000074505806
-        Value: Arrow
-      Topic: /neo11/ground_truth/odometry
+      Name: 2D_map
+      Topic: /neo11/projected_map
       Unreliable: false
+      Use Timestamp: false
       Value: false
   Enabled: true
   Global Options:
@@ -240,7 +222,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 9.943521499633789
+      Distance: 10.986927032470703
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -248,17 +230,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -1.7851691246032715
-        Y: -1.2418248653411865
-        Z: 0
+        X: -21.61519432067871
+        Y: -2.2758371829986572
+        Z: -7.152557373046875e-07
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7503983974456787
+      Pitch: 0.6497968435287476
       Target Frame: <Fixed Frame>
-      Yaw: 1.3004485368728638
+      Yaw: 3.515454053878784
     Saved: ~
 Window Geometry:
   Displays:
@@ -277,4 +259,4 @@ Window Geometry:
     collapsed: true
   Width: 1513
   X: 126
-  Y: 141
+  Y: 93
