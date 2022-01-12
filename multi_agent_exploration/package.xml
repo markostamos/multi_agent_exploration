@@ -18,6 +18,7 @@
   <exec_depend>velodyne_simulator</exec_depend>
   <exec_depend>mae_control</exec_depend>
   <exec_depend>aloam_velodyne</exec_depend>
+  <exec_depend>lio_sam</exec_depend>
   
   <export>
     <metapackage/>
