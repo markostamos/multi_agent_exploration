@@ -21,7 +21,7 @@ class vel_controller_node:
 
         rospy.init_node("vel_controller_node")
 
-        self.tstep = rospy.get_param('vel_controller_tstep', 0.1)
+        self.tstep = rospy.get_param('vel_controller_tstep', 0.01)
         self.curr_pose = PoseStamped()
         self.curr_vel = Twist()
         ns = rospy.get_namespace()

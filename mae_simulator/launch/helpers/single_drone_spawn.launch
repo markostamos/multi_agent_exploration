@@ -45,7 +45,8 @@
         <param name="latch" value="false" />
         <param name="frame_id" type="string" value="world" />
         <param name="sensor_model/max_range" value="100" />
-        <param name="occupancy_min_z" value="0.18"/>
+        <param name="occupancy_min_z" value="0.15"/>
+        
         <remap from="cloud_in" to="/$(arg namespace)/velodyne_points" />
     
       </node>

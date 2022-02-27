@@ -1,0 +1,58 @@
+<launch>
+  <arg name="mav_name" default="neo11"/>
+  <arg name="world_name" default="cave"/>
+  <arg name="enable_logging" default="false" />
+  <arg name="enable_ground_truth" default="true" />
+  
+  <arg name="debug" default="false"/>
+  <arg name="gui" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="paused" default="false"/>
+  <arg name="lidar_gpu" default="true"/>
+  <arg name="many" default="false"/>
+
+  <arg name="verbose" default="true"/>
+
+  <env name="GAZEBO_MODEL_PATH" value="${GAZEBO_MODEL_PATH}:$(find rotors_gazebo)/models:$(find mae_simulator)/worlds/models"/>
+  <env name="GAZEBO_RESOURCE_PATH" value="${GAZEBO_RESOURCE_PATH}:$(find rotors_gazebo)/models"/>
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find mae_simulator)/worlds/$(arg world_name).world" />
+    <arg name="debug" value="$(arg debug)" />
+    <arg name="paused" value="$(arg paused)" />
+    <arg name="gui" value="$(arg gui)" />
+   
+    <arg name="verbose" value="$(arg verbose)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    
+  </include>
+
+  
+
+  <include file="$(find mae_simulator)/launch/helpers/single_drone_spawn.launch">
+    <arg name="namespace" value="drone1"/>
+    <arg name="enable_logging" value="$(arg enable_logging)"/>
+    
+    <arg name="lidar_type" value="vlp-16"/>
+    <arg name="lidar_gpu" default="$(arg lidar_gpu)"/>
+    <arg name="enable_ground_truth" default="$(arg enable_ground_truth)"/>
+    <arg name="x" default="-1.5"/>
+    <arg name="y" default="-21"/>
+    <arg name="z" default="0.5"/>
+  </include>
+
+  <include file="$(find mae_simulator)/launch/helpers/single_drone_spawn.launch" if="$(arg many)">
+    <arg name="namespace" value="drone2"/>
+    <arg name="enable_logging" value="$(arg enable_logging)"/>
+    <!-- <arg name="log_file" default="false"/> -->
+    <arg name="lidar_type" value="vlp-16"/>
+    <arg name="lidar_gpu" default="$(arg lidar_gpu)"/>
+    <arg name="enable_ground_truth" default="$(arg enable_ground_truth)"/>
+    <arg name="x" default="-1.0"/>
+    <arg name="y" default="0.5"/>
+    <arg name="z" default="0.1"/>
+  </include>
+
+
+
+  
+</launch>
