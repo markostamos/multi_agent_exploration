@@ -1,16 +1,15 @@
 <?xml version="1.0"?>
 
 <launch>
-  <arg name="mav_name" default="firefly"/>
-  <arg name="namespace" default="$(arg mav_name)"/>
-  <arg name="model" default="$(find rotors_description)/urdf/$(arg mav_name)_base.xacro"/>
+  <arg name="namespace" default="test"/>
+  <arg name="model" default="$(find mae_simulator)/urdf/mav_generic_odometry_and_lidar.xacro"/>
   <arg name="tf_prefix" default="$(optenv ROS_NAMESPACE)"/>
   <arg name="x" default="0.0"/>
   <arg name="y" default="0.0"/>
   <arg name="z" default="0.1"/>
   <arg name="enable_logging" default="false"/>
   <arg name="enable_ground_truth" default="true"/>
-  <arg name="log_file" default="$(arg mav_name)"/>
+  <arg name="log_file" default="$(arg namespace)"/>
   <arg name="wait_to_record_bag" default="false"/>
   <arg name="enable_mavlink_interface" default="false"/>
   <arg name="lidar_type" default="$(arg lidar_type)"/>
@@ -24,7 +23,7 @@
     enable_mavlink_interface:=$(arg enable_mavlink_interface)
     log_file:=$(arg log_file)
     wait_to_record_bag:=$(arg wait_to_record_bag)
-    mav_name:=$(arg mav_name)
+    mav_name:=$(arg namespace)
     namespace:=$(arg namespace)
     lidar_type:=$(arg lidar_type)
     gpu:=$(arg lidar_gpu)"
