@@ -1,18 +1,14 @@
 <package format="2">
   <name>multi_agent_exploration</name>
   <version>0.0.0</version>
-  <description>multi_agent_exploration</description>
+  <description>Multi agent exploration central metapackage</description>
 
   <maintainer email="gimarkostamos@gmail.com">George Markostamos</maintainer>
 
 
   <author>George Markostamos</author>
-  <license>TODO</license>
-
-  <!-- Dependencies which this package needs to build itself. -->
+  <license>MIT</license>
   <buildtool_depend>catkin</buildtool_depend>
-
-  <!-- Dependencies needed after this package is compiled. -->
   <exec_depend>rotors_simulator</exec_depend>
   <exec_depend>mae_simulator</exec_depend>
   <exec_depend>velodyne_simulator</exec_depend>
