@@ -1,0 +1,43 @@
+            ### rotors simulator ###
+@Inbook{Furrer2016,
+author="Furrer, Fadri
+and Burri, Michael
+and Achtelik, Markus
+and Siegwart, Roland",
+editor="Koubaa, Anis",
+chapter="RotorS---A Modular Gazebo MAV Simulator Framework",
+title="Robot Operating System (ROS): The Complete Reference (Volume 1)",
+year="2016",
+publisher="Springer International Publishing",
+address="Cham",
+pages="595--625",
+isbn="978-3-319-26054-9",
+doi="10.1007/978-3-319-26054-9_23",
+url="http://dx.doi.org/10.1007/978-3-319-26054-9_23"
+}
+
+            ### Cave Map ###
+
+@misc{akoval2020,
+ author = {Anton Koval and Christoforos Kanellakis and Emil Vidmark and
+ Jakub Haluska and George Nikolakopoulos},
+ title = {A Subterranean Virtual Cave World for Gazebobased on the DARPA SubT Challenge},
+ year = {2020},
+ publisher = {arXiv},
+ howpublished = {\url{http://arxiv.org/abs/2004.08452}}
+}
+
+
+            ### Octomap ###
+
+@ARTICLE{hornung13auro,
+  author = {Armin Hornung and Kai M. Wurm and Maren Bennewitz and Cyrill
+  Stachniss and Wolfram Burgard},
+  title = {{OctoMap}: An Efficient Probabilistic {3D} Mapping Framework Based
+  on Octrees},
+  journal = {Autonomous Robots},
+  year = 2013,
+  url = {http://octomap.github.com},
+  doi = {10.1007/s10514-012-9321-0},
+  note = {Software available at \url{http://octomap.github.com}}
+}
