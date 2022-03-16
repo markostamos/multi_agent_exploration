@@ -27,5 +27,6 @@ include_directories(
 
 catkin_install_python(PROGRAMS 
   src/base_footprint_publisher_node.py
+  src/point_cloud_reposter_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

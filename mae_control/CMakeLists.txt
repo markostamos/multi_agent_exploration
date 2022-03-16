@@ -6,7 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   geometry_msgs
   tf
-  
+  move_base
 )
 
 
@@ -20,14 +20,11 @@ catkin_package(
 )
 
 
-include_directories(
-# include
-  ${catkin_INCLUDE_DIRS}
-)
-
 
 catkin_install_python(PROGRAMS 
   src/nodes/rviz_goal_publisher_node.py
   src/nodes/vel_controller_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

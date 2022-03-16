@@ -1,0 +1,17 @@
+global_costmap:
+  global_frame: world
+  robot_base_frame: drone1/base_link
+  update_frequency: 1
+  static_map: false
+  cost_factor: 0.55
+  neutral_cost: 66
+  lethal_cost: 255
+
+  plugins:
+     - {name: static_layer,            type: "costmap_2d::StaticLayer"}
+     - {name: obstacle_layer,          type: "costmap_2d::VoxelLayer"}
+     - {name: inflation_layer,         type: "costmap_2d::InflationLayer"}
+
+  static_layer:
+    enabled: true
+    map_topic: "/drone1/projected_map"

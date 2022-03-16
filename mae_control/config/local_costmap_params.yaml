@@ -1,0 +1,33 @@
+local_costmap:
+  global_frame: world
+  robot_base_frame: drone1/base_link
+  update_frequency: 10
+  publish_frequency: 10
+  static_map: false
+  rolling_window: true
+  width: 10
+  height: 10
+  resolution: 0.08
+  track_unknown_space: false
+  
+  plugins:
+     - {name: static_layer,            type: "costmap_2d::StaticLayer"}
+     - {name: obstacle_layer,          type: "costmap_2d::ObstacleLayer"}
+     - {name: inflation_layer,         type: "costmap_2d::InflationLayer"}
+     
+  static_layer:
+    enabled: true
+    map_topic: "/drone1/projected_map"
+  
+
+
+obstacle_layer:
+  enabled: true
+  observation_sources: point_cloud_sensor
+  point_cloud_sensor: {
+    sensor_frame: drone1/velodyne_base_link,
+    data_type: PointCloud2,
+    topic: /drone1/velodyne_points,
+    marking: true,
+    clearing: true
+    }

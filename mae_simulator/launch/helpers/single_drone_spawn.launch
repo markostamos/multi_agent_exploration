@@ -9,8 +9,9 @@
   <arg name="x" default="0.0"/>
   <arg name="y" default="0.0"/>
   <arg name="z" default="0.1"/>
+  <arg name="globally_shared_map" default="false"/>
+  <arg name="enable_rviz" default="false"/>
   
-
   <group ns="$(arg namespace)">
       <include file="$(find mae_simulator)/launch/helpers/spawn_mav.launch">
         <arg name="namespace" value="$(arg namespace)" />
@@ -33,33 +34,50 @@
 
       <node name="$(arg namespace)_robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
       
-      <node name="$(arg namespace)_rviz_goal_publisher_node" pkg="mae_control" type="rviz_goal_publisher_node.py" output="screen"/>
       <node name="$(arg namespace)_vel_controller_node" pkg="mae_control" type="vel_controller_node.py" output="screen"/>
 
-      <node name="$(arg namespace)_base_footprint_publisher_node" pkg="mae_utils" type="base_footprint_publisher_node.py" output="screen"/>  
-
-      <node pkg="octomap_server" type="octomap_server_node" name="$(arg namespace)_octomap_server">
-        
+      <!-- If the map is globally shared don't create octomap servers for each drone -->
+      <node pkg="octomap_server" type="octomap_server_node" name="$(arg namespace)_octomap_server" unless="$(arg globally_shared_map)">
         
         <param name="resolution" value="0.15" />
         <param name="latch" value="false" />
         <param name="frame_id" type="string" value="world" />
-        <param name="sensor_model/max_range" value="100" />
+        <param name="sensor_model/max_range" value="80" />
         <param name="occupancy_min_z" value="0.15"/>
+        <param name="occupancy_max_z" value="1.5"/>
         
         <remap from="cloud_in" to="/$(arg namespace)/velodyne_points" />
     
       </node>
 
-    <node pkg="rviz" type="rviz" name="$(arg namespace)_rviz" respawn="false" output="screen" args="-d $(find mae_simulator)/rviz/lidar.rviz">
+    <!-- 2d Navigation -->
+    <node name="$(arg namespace)_move_base" pkg="move_base" type="move_base"  output="screen" respawn="false">
+      <rosparam file="$(find mae_control)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+      <rosparam file="$(find mae_control)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+      <rosparam file="$(find mae_control)/config/local_costmap_params.yaml" command="load" />
+      <rosparam file="$(find mae_control)/config/global_costmap_params.yaml" command="load" />
+      <rosparam file="$(find mae_control)/config/base_local_planner_params.yaml" command="load" />
+
+      <remap from="/$(arg namespace)/cmd_vel" to="/$(arg namespace)/command/cmd_vel"/>
+      <remap from="/$(arg namespace)/odom" to="/$(arg namespace)/ground_truth/odometry"/>       
+    </node>
+
+    <node pkg="rviz" type="rviz" name="$(arg namespace)_rviz" respawn="false" output="screen" args="-d $(find mae_simulator)/rviz/lidar.rviz" if="$(arg enable_rviz)" >
       <remap from="/move_base_simple/goal" to="/$(arg namespace)/move_base_simple/goal"/>
       <remap from="/lidar_points_topic" to="/$(arg namespace)/velodyne_points"/>
-      <remap from="/octomap_points_topic" to="/$(arg namespace)/occupied_cells_vis_array"/>
-      <remap from="/projected_map" to="/$(arg namespace)/projected_map"/>
+      <remap from="/occupied_cells_vis_array" to="/$(arg namespace)/occupied_cells_vis_array" unless="$(arg globally_shared_map)"/>
+      <remap from="/projected_map" to="/$(arg namespace)/projected_map" unless="$(arg globally_shared_map)"/> 
+
+      <remap from="/local_costmap" to="/$(arg namespace)/$(arg namespace)_move_base/local_costmap/costmap"/>
+      <remap from="/footprint" to="/$(arg namespace)/$(arg namespace)_move_base/global_costmap/footprint"/>
+      <remap from="/global_costmap" to="/$(arg namespace)/$(arg namespace)_move_base/global_costmap/costmap"/>
+      <remap from="/current_goal" to="/$(arg namespace)/$(arg namespace)_move_base/current_goal"/>
+      <remap from="/plan" to="/$(arg namespace)/$(arg namespace)_move_base/NavfnROS/plan"/>
+      <remap from="/local_plan" to="/$(arg namespace)/$(arg namespace)_move_base/EBandPlannerROS/global_plan"/>
+      
       
     </node>
    
-
   </group>
    
 </launch>

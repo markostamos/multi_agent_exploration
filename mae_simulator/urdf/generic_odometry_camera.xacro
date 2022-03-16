@@ -24,54 +24,19 @@
   <xacro:property name="lidar_type" value="'$(arg lidar_type)'" />
   <xacro:property name="gpu" value="$(arg gpu)" />
   <xacro:property name="M_PI" value="3.1415926535897931" />
+
   <xacro:include filename="$(find rotors_description)/urdf/neo11_base.xacro" />
 
-  
+  <xacro:vi_sensor_macro
+    namespace="${namespace}/vi_sensor"
+    parent_link="${namespace}/base_link"
+    enable_cameras="true"
+    enable_depth="true"
+    enable_ground_truth="true">
+    <origin xyz="0.15 0.0 -0.08" rpy="0.0 0.45 0.0" />
+  </xacro:vi_sensor_macro>
 
   
-  <!-- Mount the HDL-32E velodyne lidar-->
-  <xacro:if value="${lidar_type == 'hdl-32e'}">
-    <xacro:include filename="$(find velodyne_description)/urdf/HDL-32E.urdf.xacro"/>
-    <xacro:HDL-32E 
-      parent="${namespace}/base_link" 
-      name="base_link" 
-      topic="velodyne_points" 
-      hz="10" 
-      samples="2187" 
-      gpu="${gpu}"  
-      lasers="32"  
-      collision_range="0.3" 
-      min_range="0.9" 
-      max_range="130.0" 
-      noise="0.008" 
-      min_angle="-${M_PI}" 
-      max_angle="${M_PI}">
-      <origin xyz="0.0 0 -0.20" rpy="0.0 0.0 0.0" />
-    </xacro:HDL-32E>
-  </xacro:if>
 
-   <!-- Mount the VLP-16 velodyne lidar-->
-  <xacro:if value="${lidar_type == 'vlp-16'}">
-    <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
-    <xacro:VLP-16 
-      parent="${namespace}/base_link" 
-      name="velodyne" 
-      topic="velodyne_points" 
-      hz="20" 
-      samples="1000" 
-      gpu="${gpu}" 
-      lasers="16" 
-      collision_range="0.3" 
-      min_range="0.9" 
-      max_range="100.0" 
-      noise="0.008" 
-      min_angle="-${M_PI}" 
-      max_angle="${M_PI}">
-      <origin xyz="0.0 0 -0.12" rpy="0.0 0.0 0.0" />
-    </xacro:VLP-16>
-  </xacro:if>
-
-
- 
 </robot>
 

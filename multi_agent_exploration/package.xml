@@ -14,6 +14,8 @@
   <exec_depend>velodyne_simulator</exec_depend>
   <exec_depend>mae_control</exec_depend>
   <exec_depend>mae_utils</exec_depend>
+  <exec_depend>eband_local_planner</exec_depend>
+  
   
   
   <export>

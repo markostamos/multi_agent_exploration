@@ -91,6 +91,7 @@ class vel_controller_node:
 
     def update_vel(self, vel):
         self.curr_vel = vel
+        # self.lee_pub_callback(0)
 
 
 if __name__ == "__main__":
