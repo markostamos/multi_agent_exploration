@@ -39,12 +39,15 @@
       <!-- If the map is globally shared don't create octomap servers for each drone -->
       <node pkg="octomap_server" type="octomap_server_node" name="$(arg namespace)_octomap_server" unless="$(arg globally_shared_map)">
         
-        <param name="resolution" value="0.15" />
+        <param name="resolution" value="0.08" />
         <param name="latch" value="false" />
         <param name="frame_id" type="string" value="world" />
-        <param name="sensor_model/max_range" value="80" />
-        <param name="occupancy_min_z" value="0.15"/>
-        <param name="occupancy_max_z" value="1.5"/>
+        <param name="sensor_model/max_range" value="10" />
+        <!-- <param name="occupancy_min_z" value="0.15"/>
+        <param name="occupancy_max_z" value="1.5"/> -->
+
+        <param name="pointcloud_min_z" value="0.09"/>
+        <param name="pointcloud_max_z" value="1.2"/>
         
         <remap from="cloud_in" to="/$(arg namespace)/velodyne_points" />
     
@@ -54,8 +57,12 @@
     <node name="$(arg namespace)_move_base" pkg="move_base" type="move_base"  output="screen" respawn="false">
       <rosparam file="$(find mae_control)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
       <rosparam file="$(find mae_control)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
-      <rosparam file="$(find mae_control)/config/local_costmap_params.yaml" command="load" />
-      <rosparam file="$(find mae_control)/config/global_costmap_params.yaml" command="load" />
+      <rosparam file="$(find mae_control)/config/local_costmap_params.yaml" command="load" subst_value="true">
+        <arg name="namespace" value ="$(arg namespace)"/>
+      </rosparam>
+      <rosparam file="$(find mae_control)/config/global_costmap_params.yaml" command="load" subst_value="true">
+        <arg name="namespace" value ="$(arg namespace)"/>
+      </rosparam>
       <rosparam file="$(find mae_control)/config/base_local_planner_params.yaml" command="load" />
 
       <remap from="/$(arg namespace)/cmd_vel" to="/$(arg namespace)/command/cmd_vel"/>

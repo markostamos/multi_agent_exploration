@@ -1,6 +1,4 @@
 <launch>
-
-
   <!-- GAZEBO arguments -->
   <arg name="world_name" default="cave"/>
   <arg name="debug" default="false"/>
@@ -9,18 +7,12 @@
   <arg name="use_sim_time" default="true"/>
   <arg name="paused" default="false"/>
   
-
   <!-- UAV arguments -->
   <arg name="enable_logging" default="false" />
   <arg name="enable_ground_truth" default="true" />
   <arg name="lidar_gpu" default="true"/>
   <arg name="enable_rviz" default="true"/>
  
-
-
-
-
-
 
   <!-- GAZEBO  -->
   <env name="GAZEBO_MODEL_PATH" value="${GAZEBO_MODEL_PATH}:$(find rotors_gazebo)/models:$(find mae_simulator)/worlds/models"/>
@@ -43,12 +35,10 @@
     <arg name="namespace" value="drone1"/>
 
     <!-- Drone spawn position -->
-    <!-- <arg name="x" default="-1.5"/>
-    <arg name="y" default="-21"/>
-    <arg name="z" default="0.5"/> -->
     <arg name="x" default="-1.64"/>
     <arg name="y" default="2.234"/>
     <arg name="z" default="0.5"/>
+    
     <!-- RVIZ for this UAV -->
     <arg name="enable_rviz" value="$(arg enable_rviz)"/>
 

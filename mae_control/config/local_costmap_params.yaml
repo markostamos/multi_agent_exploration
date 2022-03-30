@@ -1,6 +1,6 @@
 local_costmap:
   global_frame: world
-  robot_base_frame: drone1/base_link
+  robot_base_frame: $(arg namespace)/base_link
   update_frequency: 10
   publish_frequency: 10
   static_map: false
@@ -17,7 +17,7 @@ local_costmap:
      
   static_layer:
     enabled: true
-    map_topic: "/drone1/projected_map"
+    map_topic: "/$(arg namespace)/projected_map"
   
 
 
@@ -25,9 +25,9 @@ obstacle_layer:
   enabled: true
   observation_sources: point_cloud_sensor
   point_cloud_sensor: {
-    sensor_frame: drone1/velodyne_base_link,
+    sensor_frame: $(arg namespace)/velodyne_base_link,
     data_type: PointCloud2,
-    topic: /drone1/velodyne_points,
+    topic: /$(arg namespace)/velodyne_points,
     marking: true,
     clearing: true
     }

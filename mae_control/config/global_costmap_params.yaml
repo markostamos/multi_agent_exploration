@@ -1,6 +1,6 @@
 global_costmap:
   global_frame: world
-  robot_base_frame: drone1/base_link
+  robot_base_frame: $(arg namespace)/base_link
   update_frequency: 1
   static_map: false
   cost_factor: 0.55
@@ -14,4 +14,4 @@ global_costmap:
 
   static_layer:
     enabled: true
-    map_topic: "/drone1/projected_map"
+    map_topic: "/$(arg namespace)/projected_map"

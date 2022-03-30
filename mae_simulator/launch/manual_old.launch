@@ -1,23 +1,29 @@
 <launch>
-  <!-- GAZEBO arguments -->
+  <arg name="mav_name" default="neo11"/>
   <arg name="world_name" default="cave"/>
-  <arg name="debug" default="false"/>
-  <arg name="gui" default="false"/> <!-- Gazebo CLIENT -->
-  <arg name="verbose" default="false"/>
-  <arg name="use_sim_time" default="true"/>
-  <arg name="paused" default="false"/>
-  
-  <!-- UAV arguments -->
   <arg name="enable_logging" default="false" />
   <arg name="enable_ground_truth" default="true" />
+  <arg name="debug" default="false"/>
+  <arg name="gui" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="paused" default="false"/>
   <arg name="lidar_gpu" default="true"/>
-  <arg name="enable_rviz" default="true"/>
+  <!-- Set true to spawn 3 UAVS -->
+  <arg name="many" default="false"/>
 
-  <!-- Map -->
-  <arg name="globally_shared_map" default="false"/>
+  <arg name="globally_shared_map" default="true"/>
+
+
+  <!-- Set True to open an rviz window for each UAV -->
+  <arg name="individual_rviz" default="true"/>
   <!-- Set True to open a global rviz window with all UAV positions -->
   <arg name="global_rviz" default="false"/>
-  
+
+
+
+
+
+  <arg name="verbose" default="false"/>
 
 
   <!-- GAZEBO  -->
@@ -28,54 +34,55 @@
     <arg name="debug" value="$(arg debug)" />
     <arg name="paused" value="$(arg paused)" />
     <arg name="gui" value="$(arg gui)" />
+   
     <arg name="verbose" value="$(arg verbose)"/>
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
   
   </include>
 
-
-  <!-- SPAWN A UAV -->  
+  
+  <!-- SPAWN A UAV -->
   <include file="$(find mae_simulator)/launch/helpers/single_drone_spawn.launch">
 
     <!-- UAV name -->
     <arg name="namespace" value="drone1"/>
 
-    <!-- Drone spawn position -->
-    <arg name="x" default="-1.64"/>
-    <arg name="y" default="2.234"/>
+    <!-- Drone position -->
+    <arg name="x" default="-1.5"/>
+    <arg name="y" default="-21"/>
     <arg name="z" default="0.5"/>
+    <!-- RVIZ for this UAV-->
+    <arg name="enable_rviz" value="$(arg individual_rviz)"/>
     
-    <!-- RVIZ for this UAV -->
-    <arg name="enable_rviz" value="$(arg enable_rviz)"/>
-
-    <!-- Ground truth odometry -->
+    
+    <arg name="globally_shared_map" value="$(arg globally_shared_map)"/>
     <arg name="enable_ground_truth" default="$(arg enable_ground_truth)"/>
     <arg name="enable_logging" value="$(arg enable_logging)"/>
     <arg name="lidar_gpu" default="$(arg lidar_gpu)"/>
 
-    <arg name="globally_shared_map" value="$(arg globally_shared_map)"/>
   </include>
 
-  <!-- SPAWN A UAV -->  
-  <include file="$(find mae_simulator)/launch/helpers/single_drone_spawn.launch">
-
+  <include file="$(find mae_simulator)/launch/helpers/single_drone_spawn.launch" if="$(arg many)">
+ 
     <!-- UAV name -->
     <arg name="namespace" value="drone2"/>
 
-    <!-- Drone spawn position -->
-    <arg name="x" default="2.64"/>
-    <arg name="y" default="2.234"/>
-    <arg name="z" default="0.5"/>
-    
-    <!-- RVIZ for this UAV -->
-    <arg name="enable_rviz" value="$(arg enable_rviz)"/>
+    <!-- Drone position -->
+   
+    <arg name="x" default="12.789"/>
+    <arg name="y" default="-8.672"/>
+    <arg name="z" default="0.2"/>
 
-    <!-- Ground truth odometry -->
+
+    <!-- RVIZ for this UAV-->
+    <arg name="enable_rviz" value="$(arg individual_rviz)"/>
+    
+    
+    <arg name="globally_shared_map" value="$(arg globally_shared_map)"/>
     <arg name="enable_ground_truth" default="$(arg enable_ground_truth)"/>
     <arg name="enable_logging" value="$(arg enable_logging)"/>
     <arg name="lidar_gpu" default="$(arg lidar_gpu)"/>
 
-    <arg name="globally_shared_map" value="$(arg globally_shared_map)"/>
   </include>
 
 
@@ -91,7 +98,7 @@
     </node>
 
     <!-- Point cloud sharing for global octomap server -->
-    <node name="pcl_reposter" pkg="mae_utils" type="point_cloud_reposter_node.py" output="screen"/>
+    <node name="pcl_reposter" pkg="mae_utils" type="point_cloud_reposter_node.py" output="screen" if="$(arg globally_shared_map)" />
  
 
     <!-- Create a global rviz with all drone positions and complete map -->
@@ -100,12 +107,18 @@
           respawn="false" 
           output="screen" 
           args="-d $(find mae_simulator)/rviz/global.rviz"
-          if = "$(arg global_rviz)"> 
+          if = "$(arg global_rviz)">
+        
         <remap from="/drone1_loc" to="/drone1/ground_truth/position"/>
         <remap from="/drone2_loc" to="/drone2/ground_truth/position"/>
         <remap from="/drone3_loc" to="/drone3/ground_truth/position"/> 
     </node>
   </group>
+  
+  
 
 
+
+ 
+  
 </launch>
