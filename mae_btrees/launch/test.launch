@@ -1,0 +1,5 @@
+<launch>
+	<node pkg="mae_btrees" type="test_bt" name="test_bt" output="screen" />
+	<node name="groot" pkg="groot" type="Groot" output="screen"/>
+	
+</launch>
