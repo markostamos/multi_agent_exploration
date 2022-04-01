@@ -1,5 +1,11 @@
 <launch>
-	<node pkg="mae_btrees" type="test_bt" name="test_bt" output="screen" />
+	<arg name="file" default="test_tree.xml"/>
+	
+	<node pkg="mae_btrees" type="bt" name="test_bt" output="screen">
+		<param name="file" value="$(arg file)"/>
+	
+	
+	</node>
 	<node name="groot" pkg="groot" type="Groot" output="screen"/>
 	
 </launch>

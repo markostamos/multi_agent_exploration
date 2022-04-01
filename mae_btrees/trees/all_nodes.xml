@@ -1,0 +1,15 @@
+<root>
+    <TreeNodesModel>
+        <Action ID="ApproachObject"/>
+        <Action ID="GoTo">
+            <input_port name="goal"/>
+        </Action>
+        <Action ID="print_blackboard_value">
+            <input_port name="input"/>
+        </Action>
+        <Action ID="update_blackboard">
+            <output_port name="text" default="TEST"/>
+        </Action>
+    </TreeNodesModel>
+</root>
+

@@ -24,6 +24,7 @@ catkin_package(
 )
 
 include_directories( include ${catkin_INCLUDE_DIRS})
+install(DIRECTORY trees DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 ######################################################
 # LIBRARIES
@@ -35,12 +36,20 @@ include_directories( include ${catkin_INCLUDE_DIRS})
 
 ######################################################
 # TESTS
-add_library(test_library test/actions.cpp) 
-target_link_libraries(test_library ${catkin_LIBRARIES})
+add_library(test_actions_library src/nodes/test_bt_actions.cpp) 
+target_link_libraries(test_actions_library ${catkin_LIBRARIES})
 
-add_executable(test_bt test/test_bt.cpp)
-add_dependencies(test_bt ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(test_bt ${catkin_LIBRARIES} test_library )
+add_library(utils src/nodes/utils.cpp) 
+target_link_libraries(utils ${catkin_LIBRARIES})
+
+add_library(drone_actions src/nodes/drone_actions.cpp) 
+target_link_libraries(drone_actions ${catkin_LIBRARIES})
+
+
+
+add_executable(bt src/test_bt.cpp)
+add_dependencies(bt ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(bt ${catkin_LIBRARIES} test_actions_library utils drone_actions )
 
 
 

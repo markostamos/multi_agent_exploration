@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Sequence>
+            <Action ID="GoTo" goal="5,0" name="drone1"/>
+            <Action ID="GoTo" goal="3,0" name="drone1"/>
+            <Action ID="GoTo" goal="6,0" name="drone1"/>
+            <Action ID="GoTo" goal="-4.9,6" name="drone1"/>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="GoTo">
+            <input_port name="goal"/>
+        </Action>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
+
