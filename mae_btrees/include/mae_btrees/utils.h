@@ -1,6 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
-#include <behaviortree_cpp_v3/behavior_tree.h>
+
 
 BT::NodeStatus print_blackboard_value(BT::TreeNode &self);
 
@@ -37,7 +37,8 @@ Position2D pos2D_from_string(std::string str){
     output.x = BT::convertFromString<double>(tokens[0]);
     output.y = BT::convertFromString<double>(tokens[1]);
     return output;
-}
+};
 
 
-#endif
+
+#endif // UTILS_H

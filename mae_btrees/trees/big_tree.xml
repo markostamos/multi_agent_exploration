@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="Battery_Low">
+        <Fallback>
+            <Inverter>
+                <Condition ID="isBatteryLow"/>
+            </Inverter>
+            <Sequence>
+                <Action ID="GoTo" name="{charging_station}"/>
+                <Action ID="WaitToCharge"/>
+            </Sequence>
+        </Fallback>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Parallel failure_threshold="2" name="" success_threshold="2">
+            <Action ID="GatherRosState" name="postBlackboard"/>
+            <Sequence>
+                <SubTree ID="Set_important_locations"/>
+                <Action ID="TakeOff"/>
+                <ReactiveSequence>
+                    <SubTree ID="Battery_Low"/>
+                    <SubTree ID="Exploration" __shared_blackboard="false"/>
+                </ReactiveSequence>
+                <Action ID="GoTo" name="{home}"/>
+            </Sequence>
+        </Parallel>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="Exploration">
+        <Parallel failure_threshold="3" success_threshold="3">
+            <SubTree ID="Frontier Generation"/>
+            <SubTree ID="Planning"/>
+            <SubTree ID="navigation"/>
+        </Parallel>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="Frontier Generation">
+        <ReactiveFallback>
+            <Condition ID="MapCompleted"/>
+            <ReactiveSequence>
+                <Condition ID="MapChanged"/>
+                <Action ID="Generate_Frontiers" name="Keeps running"/>
+            </ReactiveSequence>
+        </ReactiveFallback>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="Planning">
+        <ReactiveFallback>
+            <Condition ID="Target_List_Empty"/>
+            <ReactiveSequence>
+                <Fallback>
+                    <Inverter>
+                        <Condition ID="Frontiers_Changed"/>
+                    </Inverter>
+                    <Action ID="restartGA"/>
+                </Fallback>
+                <Action ID="keep_solving_with_GA" name="Always returns running"/>
+            </ReactiveSequence>
+        </ReactiveFallback>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="Set_important_locations">
+        <Sequence>
+            <SetBlackboard name="charging_loc" output_key="charging station" value="3,0"/>
+            <SetBlackboard name="home_loc" output_key="home" value="{pos}"/>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="navigation">
+        <ReactiveFallback name="">
+            <Condition ID="Arrived_At_Last_target"/>
+            <KeepRunningUntilFailure>
+                <Sequence>
+                    <Action ID="Pop_Target"/>
+                    <Action ID="GoTo" name="{next_target}"/>
+                </Sequence>
+            </KeepRunningUntilFailure>
+        </ReactiveFallback>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Condition ID="Arrived_At_Last_target"/>
+        <SubTree ID="Battery_Low"/>
+        <SubTree ID="Exploration">
+            <input_port default="false" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
+        </SubTree>
+        <SubTree ID="Frontier Generation"/>
+        <Condition ID="Frontiers_Changed"/>
+        <Action ID="GatherRosState"/>
+        <Action ID="Generate_Frontiers"/>
+        <Action ID="GoTo"/>
+        <Action ID="GoTo_next_target"/>
+        <Action ID="Land"/>
+        <Condition ID="MapChanged"/>
+        <Condition ID="MapCompleted"/>
+        <SubTree ID="Planning"/>
+        <Action ID="Pop_Target"/>
+        <Action ID="Reorder_Frontiers_with_GA"/>
+        <SubTree ID="Set_important_locations"/>
+        <Action ID="TakeOff"/>
+        <Condition ID="Target_List_Empty"/>
+        <Action ID="WaitToCharge"/>
+        <Action ID="goHome"/>
+        <Action ID="goToChargingStation"/>
+        <Condition ID="isBatteryLow"/>
+        <Condition ID="isUavMoving"/>
+        <Action ID="keep_solving_with_GA"/>
+        <SubTree ID="navigation"/>
+        <Action ID="restartGA"/>
+        <Action ID="setHome"/>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
+

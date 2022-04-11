@@ -2,17 +2,34 @@
 <root main_tree_to_execute="BehaviorTree">
     <!-- ////////// -->
     <BehaviorTree ID="BehaviorTree">
-        <Sequence>
-            <Action ID="GoTo" goal="5,0" name="drone1"/>
-            <Action ID="GoTo" goal="3,0" name="drone1"/>
-            <Action ID="GoTo" goal="6,0" name="drone1"/>
-            <Action ID="GoTo" goal="-4.9,6" name="drone1"/>
-        </Sequence>
+        <Parallel failure_threshold="2" success_threshold="2">
+            <Delay delay_msec="500">
+                <Repeat num_cycles="20">
+                    <Action ID="SaySomething" test="{test}"/>
+                </Repeat>
+            </Delay>
+            <Sequence>
+                <Action ID="ApproachObject"/>
+                <Action ID="GoTo" goal="-7.2,-0.1" name="drone1"/>
+                <Action ID="GoTo" goal="-5.2,7.2" name="drone1"/>
+                <Action ID="GoTo" goal="6.3,0.23" name="drone1"/>
+            </Sequence>
+        </Parallel>
     </BehaviorTree>
     <!-- ////////// -->
     <TreeNodesModel>
+        <Action ID="ApproachObject"/>
         <Action ID="GoTo">
             <input_port name="goal"/>
+        </Action>
+        <Action ID="SaySomething">
+            <input_port name="test"/>
+        </Action>
+        <Action ID="print_blackboard_value">
+            <input_port name="input"/>
+        </Action>
+        <Action ID="update_blackboard">
+            <output_port default="TEST" name="text"/>
         </Action>
     </TreeNodesModel>
     <!-- ////////// -->
