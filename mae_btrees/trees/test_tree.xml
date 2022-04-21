@@ -2,34 +2,29 @@
 <root main_tree_to_execute="BehaviorTree">
     <!-- ////////// -->
     <BehaviorTree ID="BehaviorTree">
-        <Parallel failure_threshold="2" success_threshold="2">
-            <Delay delay_msec="500">
-                <Repeat num_cycles="20">
-                    <Action ID="SaySomething" test="{test}"/>
-                </Repeat>
-            </Delay>
-            <Sequence>
-                <Action ID="ApproachObject"/>
-                <Action ID="GoTo" goal="-7.2,-0.1" name="drone1"/>
-                <Action ID="GoTo" goal="-5.2,7.2" name="drone1"/>
-                <Action ID="GoTo" goal="6.3,0.23" name="drone1"/>
-            </Sequence>
-        </Parallel>
+        <Sequence>
+            <Action Height="1.4" ID="TakeOff"/>
+            <Action ID="SetLocation" Name="home" Pos="1,2" name="home"/>
+            <Action ID="SetLocation" Name="charger" Pos="5,5" name="charger"/>
+            <Action ID="GoTo" name="drone1" target="charger"/>
+            <Action ID="GoTo" name="drone1" target="home"/>
+            <Action ID="Land" name=""/>
+            <Action Height="1" ID="TakeOff"/>
+            <Action ID="Land"/>
+        </Sequence>
     </BehaviorTree>
     <!-- ////////// -->
     <TreeNodesModel>
-        <Action ID="ApproachObject"/>
         <Action ID="GoTo">
-            <input_port name="goal"/>
+            <input_port name="target" type="std::string"/>
         </Action>
-        <Action ID="SaySomething">
-            <input_port name="test"/>
+        <Action ID="Land"/>
+        <Action ID="SetLocation">
+            <input_port name="Name"/>
+            <input_port name="Pos"/>
         </Action>
-        <Action ID="print_blackboard_value">
-            <input_port name="input"/>
-        </Action>
-        <Action ID="update_blackboard">
-            <output_port default="TEST" name="text"/>
+        <Action ID="TakeOff">
+            <input_port name="Height"/>
         </Action>
     </TreeNodesModel>
     <!-- ////////// -->

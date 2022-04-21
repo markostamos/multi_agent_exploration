@@ -1,6 +1,6 @@
 <launch>
   <!-- GAZEBO arguments -->
-  <arg name="world_name" default="cave"/>
+  <arg name="world_name" default="office"/>
   <arg name="debug" default="false"/>
   <arg name="gui" default="false"/> <!-- Gazebo CLIENT -->
   <arg name="verbose" default="false"/>
@@ -12,7 +12,9 @@
   <arg name="enable_ground_truth" default="true" />
   <arg name="lidar_gpu" default="true"/>
   <arg name="enable_rviz" default="true"/>
+  <arg name = "BT" default="false"/>  <!-- BT = Behavior Tree controller -->
  
+ <env name="ROSCONSOLE_CONFIG_FILE" value="$(find mae_simulator)/config/log_verbosity.conf"/>
 
   <!-- GAZEBO  -->
   <env name="GAZEBO_MODEL_PATH" value="${GAZEBO_MODEL_PATH}:$(find rotors_gazebo)/models:$(find mae_simulator)/worlds/models"/>
@@ -27,7 +29,7 @@
   
   </include>
 
-  
+ 
   <!-- SPAWN A UAV -->
   <include file="$(find mae_simulator)/launch/helpers/single_drone_spawn.launch">
 
@@ -35,9 +37,12 @@
     <arg name="namespace" value="drone1"/>
 
     <!-- Drone spawn position -->
-    <arg name="x" default="-1.64"/>
+    <!-- <arg name="x" default="-1.64"/>
     <arg name="y" default="2.234"/>
-    <arg name="z" default="0.5"/>
+    <arg name="z" default="0.5"/> -->
+    <arg name="x" default="1"/>
+    <arg name="y" default="0"/>
+    <arg name="z" default="1.5"/>
     
     <!-- RVIZ for this UAV -->
     <arg name="enable_rviz" value="$(arg enable_rviz)"/>
@@ -46,8 +51,9 @@
     <arg name="enable_ground_truth" default="$(arg enable_ground_truth)"/>
     <arg name="enable_logging" value="$(arg enable_logging)"/>
     <arg name="lidar_gpu" default="$(arg lidar_gpu)"/>
+    <arg name = "BT" default = "$(arg BT)"/>
 
-  </include>
-
+  </include> 
+  
   
 </launch>

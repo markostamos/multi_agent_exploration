@@ -17,7 +17,7 @@ EBandPlannerROS:
   eband_tiny_bubble_distance: 0.01
   eband_tiny_bubble_expansion: 0.01
   in_place_trans_vel: 0.0
-  k_damp: 4.2
+  k_damp: 4.6
   k_prop: 1000
   marker_lifetime: 0.5
   max_acceleration: 2.5
@@ -34,5 +34,5 @@ EBandPlannerROS:
   rotation_threshold_multiplier: 1.0
   trans_stopped_vel: 0.01
   virtual_mass: 0.2
-  xy_goal_tolerance: 0.3
+  xy_goal_tolerance: 0.2
   yaw_goal_tolerance: 6.24

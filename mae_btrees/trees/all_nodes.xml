@@ -1,14 +1,15 @@
 <root>
     <TreeNodesModel>
-        <Action ID="ApproachObject"/>
         <Action ID="GoTo">
-            <input_port name="goal"/>
+            <input_port name="target" type="std::string"/>
         </Action>
-        <Action ID="print_blackboard_value">
-            <input_port name="input"/>
+        <Action ID="Land"/>
+        <Action ID="SetLocation">
+            <input_port name="Name"/>
+            <input_port name="Pos"/>
         </Action>
-        <Action ID="update_blackboard">
-            <output_port name="text" default="TEST"/>
+        <Action ID="TakeOff">
+            <input_port name="Height"/>
         </Action>
     </TreeNodesModel>
 </root>

@@ -11,6 +11,7 @@
   <arg name="z" default="0.1"/>
   <arg name="globally_shared_map" default="false"/>
   <arg name="enable_rviz" default="false"/>
+  <arg name="BT" default="false"/>
   
   <group ns="$(arg namespace)">
       <include file="$(find mae_simulator)/launch/helpers/spawn_mav.launch">
@@ -39,15 +40,15 @@
       <!-- If the map is globally shared don't create octomap servers for each drone -->
       <node pkg="octomap_server" type="octomap_server_node" name="$(arg namespace)_octomap_server" unless="$(arg globally_shared_map)">
         
-        <param name="resolution" value="0.08" />
+        <param name="resolution" value="0.15" />
         <param name="latch" value="false" />
         <param name="frame_id" type="string" value="world" />
-        <param name="sensor_model/max_range" value="10" />
+        <param name="sensor_model/max_range" value="40" />
         <!-- <param name="occupancy_min_z" value="0.15"/>
         <param name="occupancy_max_z" value="1.5"/> -->
 
         <param name="pointcloud_min_z" value="0.09"/>
-        <param name="pointcloud_max_z" value="1.2"/>
+        <param name="pointcloud_max_z" value="2"/>
         
         <remap from="cloud_in" to="/$(arg namespace)/velodyne_points" />
     
@@ -84,6 +85,15 @@
       
       
     </node>
+
+    <!-- BEHAVIOR TREE CONTROLLER -->
+    <group if="$(arg BT)">
+      <node pkg="mae_btrees" type="bt" name="test_bt" output="screen" >
+		    <param name="file" value="test_tree.xml"/>
+	    </node>
+	    <node name="groot" pkg="groot" type="Groot" output="screen"/>
+    </group>
+    
    
   </group>
    

@@ -2,7 +2,7 @@
 	<arg name="file" default="test_tree.xml"/>
 	
 	<node pkg="mae_btrees" type="bt" name="test_bt" output="screen">
-		<param name="file" value="$(arg file)"/>
+		<param name="file" value="test_tree.xml"/>
 	
 	
 	</node>
