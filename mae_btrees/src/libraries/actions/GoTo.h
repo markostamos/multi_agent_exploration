@@ -41,6 +41,7 @@ public:
             msg.target_pose.header.frame_id = "world";
             msg.target_pose.header.stamp = ros::Time::now();
             msg.target_pose.pose = goal;
+
             client_.sendGoal(msg);
         }
         else

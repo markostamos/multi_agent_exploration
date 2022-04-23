@@ -82,19 +82,20 @@
       <remap from="/current_goal" to="/$(arg namespace)/$(arg namespace)_move_base/current_goal"/>
       <remap from="/plan" to="/$(arg namespace)/$(arg namespace)_move_base/NavfnROS/plan"/>
       <remap from="/local_plan" to="/$(arg namespace)/$(arg namespace)_move_base/EBandPlannerROS/global_plan"/>
-      
+      <remap from="/frontiers_viz" to="/$(arg namespace)/frontiers_viz"/>
       
     </node>
 
     <!-- BEHAVIOR TREE CONTROLLER -->
     <group if="$(arg BT)">
-      <node pkg="mae_btrees" type="bt" name="test_bt" output="screen" >
+      <node pkg="mae_btrees" type="bt_node" name="behavior_tree_node" output="screen" >
 		    <param name="file" value="test_tree.xml"/>
 	    </node>
 	    <node name="groot" pkg="groot" type="Groot" output="screen"/>
     </group>
     
-   
+
+    <node pkg="mae_frontier_generation" type="frontier_generation_node" name="frontier_generation_node" output="screen"/>
   </group>
    
 </launch>

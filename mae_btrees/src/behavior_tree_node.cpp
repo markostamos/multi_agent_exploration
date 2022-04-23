@@ -1,19 +1,18 @@
-
+#include <ros/ros.h>
 #include <behaviortree_cpp_v3/loggers/bt_zmq_publisher.h>
 #include <ros/package.h>
-
-#include <mae_btrees/utils.hpp>
-#include <mae_btrees/InitBT.hpp>
+#include <mae_btrees/HandleBT.h>
 using namespace BT;
 
 std::string ns;
+RosComm state;
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "behavior_tree_handler");
+  ros::init(argc, argv, "behavior_tree_node");
   ros::NodeHandle nh;
   ns = nh.getNamespace().c_str();
-  InitBT handler(nh);
+  HandleBT handler(nh);
 
   // xml tree file
   std::string xml_filename;
@@ -23,13 +22,13 @@ int main(int argc, char **argv)
   handler.createTree(path);
 
   NodeStatus status = NodeStatus::IDLE;
-  PublisherZMQ publisher_zmq(handler.tree);
+  PublisherZMQ publisher_zmq(handler.tree_);
 
   while (ros::ok() && (status == NodeStatus::IDLE || status == NodeStatus::RUNNING))
   {
     ros::spinOnce();
-    status = handler.tree.tickRoot();
-
+    status = handler.tree_.tickRoot();
+    ROS_WARN_STREAM(status);
     ros::Duration sleep_time(0.01);
     sleep_time.sleep();
   }

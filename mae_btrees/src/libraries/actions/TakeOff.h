@@ -40,7 +40,7 @@ public:
         }
 
         halt_requested_.store(false);
-        double a = 3.0;
+
         return BT::NodeStatus::RUNNING;
     }
 

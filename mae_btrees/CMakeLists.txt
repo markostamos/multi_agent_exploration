@@ -18,12 +18,12 @@ find_package(catkin REQUIRED COMPONENTS ${ROS_DEPENDENCIES} )
 
 
 catkin_package(
-    INCLUDE_DIRS include
+    INCLUDE_DIRS include src/libraries
     LIBRARIES
     CATKIN_DEPENDS ${ROS_DEPENDENCIES}
 )
 
-include_directories( include ${catkin_INCLUDE_DIRS})
+include_directories( include src/libraries ${catkin_INCLUDE_DIRS})
 install(DIRECTORY trees DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 ######################################################
@@ -37,12 +37,23 @@ install(DIRECTORY trees DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 ######################################################
 # TESTS
 
+add_library(handle_bt src/HandleBT.cpp)
+add_library(ros_comm src/libraries/ros_comm.cpp)
+add_library(bt_utils src/libraries/utils.cpp)
+
+add_library(bt_actions src/libraries/actions.cpp )
 
 
 
-add_executable(bt src/test_bt.cpp)
-add_dependencies(bt ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(bt ${catkin_LIBRARIES})
+
+add_executable(bt_node src/behavior_tree_node.cpp)
+add_dependencies(bt_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(bt_node 
+                        handle_bt
+                        ros_comm
+                        bt_actions
+                        bt_utils
+                        ${catkin_LIBRARIES})
 
 
 
