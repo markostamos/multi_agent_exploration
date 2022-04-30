@@ -35,14 +35,16 @@ public:
 
         if (getInput<std::string>("target", goal_string))
         {
+
             geometry_msgs::Pose goal = config_.blackboard->get<geometry_msgs::Pose>(goal_string);
-            // send target to actionlib
+
             move_base_msgs::MoveBaseGoal msg;
             msg.target_pose.header.frame_id = "world";
             msg.target_pose.header.stamp = ros::Time::now();
             msg.target_pose.pose = goal;
 
             client_.sendGoal(msg);
+            state.active_target = goal;
         }
         else
         {
@@ -50,16 +52,16 @@ public:
             return BT::NodeStatus::FAILURE;
         }
 
-        halt_requested_.store(false);
-
         return BT::NodeStatus::RUNNING;
     }
 
     BT::NodeStatus onRunning()
     {
-        if (halt_requested_)
+        if (state.cancel_goal_req)
         {
-            client_.cancelAllGoals();
+            // client_.cancelAllGoals();
+            client_.cancelGoal();
+            state.cancel_goal_req = false;
             return BT::NodeStatus::FAILURE;
         }
 
@@ -79,11 +81,10 @@ public:
     }
     void onHalted()
     {
-        halt_requested_.store(true);
+        state.cancel_goal_req = true;
     }
 
 private:
-    std::atomic_bool halt_requested_;
     typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
     MoveBaseClient client_;

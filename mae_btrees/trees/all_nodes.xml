@@ -1,5 +1,6 @@
 <root>
     <TreeNodesModel>
+        <Action ID="CancelGoal"/>
         <Action ID="GoTo">
             <input_port name="target" type="std::string"/>
         </Action>
@@ -8,9 +9,12 @@
             <input_port name="Name"/>
             <input_port name="Pos"/>
         </Action>
+        <Action ID="SetNextTargetGreedy"/>
         <Action ID="TakeOff">
             <input_port name="Height"/>
         </Action>
+        <Action ID="TargetDiscovered"/>
+        <Condition ID="isFrontierListEmpty"/>
     </TreeNodesModel>
 </root>
 

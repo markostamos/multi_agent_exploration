@@ -28,7 +28,6 @@ int main(int argc, char **argv)
   {
     ros::spinOnce();
     status = handler.tree_.tickRoot();
-    ROS_WARN_STREAM(status);
     ros::Duration sleep_time(0.01);
     sleep_time.sleep();
   }

@@ -14,6 +14,7 @@
   <arg name="BT" default="false"/>
   
   <group ns="$(arg namespace)">
+  <!-- Spawn UAV -->
       <include file="$(find mae_simulator)/launch/helpers/spawn_mav.launch">
         <arg name="namespace" value="$(arg namespace)" />
         <arg name="model" value="$(find mae_simulator)/urdf/mav_generic_odometry_and_lidar.xacro" />
@@ -26,7 +27,7 @@
         <arg name="y" default="$(arg y)"/>
         <arg name="z" default="$(arg z)"/>
       </include>
-
+  <!-- Control Nodes -->
       <node name="$(arg namespace)_position_controller_node" pkg="rotors_control" type="lee_position_controller_node" output="screen">
         <rosparam command="load" file="$(find rotors_gazebo)/resource/lee_controller_neo11.yaml" />
         <rosparam command="load" file="$(find rotors_gazebo)/resource/neo11.yaml" />
@@ -37,7 +38,7 @@
       
       <node name="$(arg namespace)_vel_controller_node" pkg="mae_control" type="vel_controller_node.py" output="screen"/>
 
-      <!-- If the map is globally shared don't create octomap servers for each drone -->
+  <!-- Octomap -->
       <node pkg="octomap_server" type="octomap_server_node" name="$(arg namespace)_octomap_server" unless="$(arg globally_shared_map)">
         
         <param name="resolution" value="0.15" />
@@ -54,7 +55,7 @@
     
       </node>
 
-    <!-- 2d Navigation -->
+  <!-- 2d Navigation -->
     <node name="$(arg namespace)_move_base" pkg="move_base" type="move_base"  output="screen" respawn="false">
       <rosparam file="$(find mae_control)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
       <rosparam file="$(find mae_control)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
@@ -69,7 +70,7 @@
       <remap from="/$(arg namespace)/cmd_vel" to="/$(arg namespace)/command/cmd_vel"/>
       <remap from="/$(arg namespace)/odom" to="/$(arg namespace)/ground_truth/odometry"/>       
     </node>
-
+  <!-- Rviz -->
     <node pkg="rviz" type="rviz" name="$(arg namespace)_rviz" respawn="false" output="screen" args="-d $(find mae_simulator)/rviz/lidar.rviz" if="$(arg enable_rviz)" >
       <remap from="/move_base_simple/goal" to="/$(arg namespace)/move_base_simple/goal"/>
       <remap from="/lidar_points_topic" to="/$(arg namespace)/velodyne_points"/>
@@ -86,7 +87,7 @@
       
     </node>
 
-    <!-- BEHAVIOR TREE CONTROLLER -->
+  <!-- Behavior Tree Controller -->
     <group if="$(arg BT)">
       <node pkg="mae_btrees" type="bt_node" name="behavior_tree_node" output="screen" >
 		    <param name="file" value="test_tree.xml"/>

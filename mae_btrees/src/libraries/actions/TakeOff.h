@@ -30,12 +30,7 @@ public:
         }
         else
         {
-
-            while (state.publishers.commandVel.getNumSubscribers() < 1)
-            {
-                // wait for a connection to publisher
-            }
-            geometry_msgs::Twist msg = twistMsgFromVec({0, 0, 0.2});
+            geometry_msgs::Twist msg = twistFromVec({0, 0, 0.2});
             state.publishers.commandVel.publish(msg);
         }
 
@@ -52,7 +47,7 @@ public:
         }
         if (std::abs(state.pose.position.z - height_) < 0.1)
         {
-            geometry_msgs::Twist msg = twistMsgFromVec({0, 0, 0});
+            geometry_msgs::Twist msg = twistFromVec({0, 0, 0});
             state.publishers.commandVel.publish(msg);
             return BT::NodeStatus::SUCCESS;
         }

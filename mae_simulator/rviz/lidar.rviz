@@ -28,7 +28,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: VLP-16
+    SyncSource: ""
 Preferences:
   PromptSaveOnExit: false
 Toolbars:
@@ -140,7 +140,7 @@ Visualization Manager:
       Color: 255; 255; 255
       Color Transformer: Intensity
       Decay Time: 0
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Min Color: 0; 0; 0
@@ -155,7 +155,7 @@ Visualization Manager:
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
+      Value: false
     - Class: rviz/MarkerArray
       Enabled: true
       Marker Topic: /occupied_cells_vis_array
@@ -305,7 +305,7 @@ Visualization Manager:
       Marker Topic: /frontiers_viz
       Name: Marker
       Namespaces:
-        {}
+        viz: true
       Queue Size: 100
       Value: true
   Enabled: true
@@ -333,7 +333,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 15.356842994689941
+      Distance: 24.164291381835938
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -341,17 +341,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 2.1027417182922363
-        Y: 0.17672967910766602
-        Z: 9.5367431640625e-06
+        X: -4.77533483505249
+        Y: -3.27701473236084
+        Z: 1.239776611328125e-05
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.9847975969314575
+      Pitch: 1.2597973346710205
       Target Frame: <Fixed Frame>
-      Yaw: 5.9069294929504395
+      Yaw: 6.011931419372559
     Saved: ~
 Window Geometry:
   Displays:

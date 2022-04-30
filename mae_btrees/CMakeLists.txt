@@ -11,6 +11,7 @@ set(ROS_DEPENDENCIES
     behaviortree_cpp_v3
     actionlib_msgs
     actionlib
+    mae_utils
     
     )
 
@@ -37,11 +38,11 @@ install(DIRECTORY trees DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 ######################################################
 # TESTS
 
+add_library(bt_actions src/libraries/actions.cpp )
+add_library(bt_conditions src/libraries/conditions.cpp)
 add_library(handle_bt src/HandleBT.cpp)
 add_library(ros_comm src/libraries/ros_comm.cpp)
 add_library(bt_utils src/libraries/utils.cpp)
-
-add_library(bt_actions src/libraries/actions.cpp )
 
 
 
@@ -53,6 +54,7 @@ target_link_libraries(bt_node
                         ros_comm
                         bt_actions
                         bt_utils
+                        bt_conditions
                         ${catkin_LIBRARIES})
 
 

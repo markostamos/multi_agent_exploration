@@ -5,12 +5,18 @@ project(mae_frontier_generation)
 ######################################################
 
 set(ROS_DEPENDENCIES
-    roscpp 
+    roscpp
+    std_msgs 
     nav_msgs
     geometry_msgs
+    mae_utils
     )
 
 find_package(catkin REQUIRED COMPONENTS ${ROS_DEPENDENCIES} )
+
+
+
+
 
 catkin_package(
     INCLUDE_DIRS include
@@ -31,5 +37,5 @@ add_executable(frontier_generation_node src/frontier_generation_node.cpp)
 add_dependencies(frontier_generation_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(frontier_generation_node 
                         fg_utils 
-                        frontier_generation 
+                        frontier_generation
                         ${catkin_LIBRARIES})

@@ -9,10 +9,5 @@
 template <>
 geometry_msgs::Pose BT::convertFromString(StringView str);
 
-geometry_msgs::Pose poseMsgFromVec(std::vector<double> pos, std::vector<double> rpy = {0, 0, 0});
-
-geometry_msgs::PoseStamped poseStampedMsgFromVec(std::vector<double> pos, std::vector<double> rpy = {0, 0, 0});
-
-geometry_msgs::Twist twistMsgFromVec(std::vector<double> linear = {0, 0, 0}, std::vector<double> angular = {0, 0, 0});
-
+float calcDistPoses(geometry_msgs::Pose pose1, geometry_msgs::Pose pose2);
 #endif // UTILS_H

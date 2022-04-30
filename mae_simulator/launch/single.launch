@@ -1,6 +1,6 @@
 <launch>
   <!-- GAZEBO arguments -->
-  <arg name="world_name" default="office"/>
+  <arg name="world_name" default="maze1"/>
   <arg name="debug" default="false"/>
   <arg name="gui" default="false"/> <!-- Gazebo CLIENT -->
   <arg name="verbose" default="false"/>
@@ -14,6 +14,8 @@
   <arg name="enable_rviz" default="true"/>
   <arg name = "BT" default="false"/>  <!-- BT = Behavior Tree controller -->
  
+  
+
  <env name="ROSCONSOLE_CONFIG_FILE" value="$(find mae_simulator)/config/log_verbosity.conf"/>
 
   <!-- GAZEBO  -->
@@ -26,10 +28,12 @@
     <arg name="gui" value="$(arg gui)" />
     <arg name="verbose" value="$(arg verbose)"/>
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+
   
   </include>
 
- 
+  <param name="gazebo/max_update_rate" value="200"/>
+  
   <!-- SPAWN A UAV -->
   <include file="$(find mae_simulator)/launch/helpers/single_drone_spawn.launch">
 
@@ -40,9 +44,9 @@
     <!-- <arg name="x" default="-1.64"/>
     <arg name="y" default="2.234"/>
     <arg name="z" default="0.5"/> -->
-    <arg name="x" default="1"/>
+    <arg name="x" default="0"/>
     <arg name="y" default="0"/>
-    <arg name="z" default="1.5"/>
+    <arg name="z" default="0"/>
     
     <!-- RVIZ for this UAV -->
     <arg name="enable_rviz" value="$(arg enable_rviz)"/>
