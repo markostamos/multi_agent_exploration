@@ -11,7 +11,8 @@
   <arg name="z" default="0.1"/>
   <arg name="globally_shared_map" default="false"/>
   <arg name="enable_rviz" default="false"/>
-  <arg name="BT" default="false"/>
+  <arg name="enable_bt" default="false"/>
+  <arg name="tree_file" default="test_tree.xml"/>
   
   <group ns="$(arg namespace)">
   <!-- Spawn UAV -->
@@ -88,15 +89,20 @@
     </node>
 
   <!-- Behavior Tree Controller -->
-    <group if="$(arg BT)">
+    <group if="$(arg enable_bt)">
       <node pkg="mae_btrees" type="bt_node" name="behavior_tree_node" output="screen" >
-		    <param name="file" value="test_tree.xml"/>
+		    <param name="file" value="$(arg tree_file)"/>
 	    </node>
 	    <node name="groot" pkg="groot" type="Groot" output="screen"/>
     </group>
     
 
-    <node pkg="mae_frontier_generation" type="frontier_generation_node" name="frontier_generation_node" output="screen"/>
+    <node pkg="mae_frontier_generation" type="frontier_generation_node" name="frontier_generation_node" output="screen">
+      <remap from="/map_in" to="/$(arg namespace)/projected_map"/>
+      <remap from="/frontiers_out" to="/$(arg namespace)/frontiers"/>
+      <remap from="/frontiers_viz_out" to="/$(arg namespace)/frontiers_viz"/>
+      
+    </node>
   </group>
    
 </launch>

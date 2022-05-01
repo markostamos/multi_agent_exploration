@@ -3,24 +3,23 @@
     <!-- ////////// -->
     <BehaviorTree ID="BehaviorTree">
         <Sequence>
+            <Action Height="1" ID="TakeOff"/>
             <RetryUntilSuccessful num_attempts="-1">
                 <WhileDoElse>
                     <Inverter>
                         <Condition ID="isFrontierListEmpty"/>
                     </Inverter>
-                    <Parallel failure_threshold="1" success_threshold="3">
-                        <ForceSuccess>
-                            <IfThenElse>
-                                <Condition ID="TargetDiscovered"/>
-                                <Action ID="CancelGoal"/>
-                            </IfThenElse>
-                        </ForceSuccess>
+                    <Sequence>
                         <Action ID="SetNextTargetGreedy"/>
-                        <Sequence>
+                        <WhileDoElse>
+                            <Inverter>
+                                <Condition ID="TargetDiscovered"/>
+                            </Inverter>
                             <Action ID="GoTo" target="next_target"/>
-                            <AlwaysFailure/>
-                        </Sequence>
-                    </Parallel>
+                            <Action ID="CancelGoal"/>
+                        </WhileDoElse>
+                        <AlwaysFailure/>
+                    </Sequence>
                     <Sequence>
                         <Action ID="SetLocation" Name="home" Pos="0,0"/>
                         <Action ID="GoTo" target="home"/>

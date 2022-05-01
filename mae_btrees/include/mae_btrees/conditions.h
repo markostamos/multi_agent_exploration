@@ -8,6 +8,7 @@
 // include utils
 #include <mae_btrees/ros_comm.h>
 #include <mae_btrees/utils.h>
+#include <mae_utils/utils.h>
 
 // include all actions
 #include <conditions/isFrontierListEmpty.h>

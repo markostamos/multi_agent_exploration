@@ -18,7 +18,7 @@ public:
 
     BT::NodeStatus onStart()
     {
-        geometry_msgs::Twist msg = twistFromVec({0, 0, -0.2});
+        geometry_msgs::Twist msg = twistFromVec({0, 0, -0.4});
         state.publishers.commandVel.publish(msg);
 
         halt_requested_.store(false);
@@ -32,7 +32,7 @@ public:
         {
             return BT::NodeStatus::FAILURE;
         }
-        if (state.pose.position.z < 0.25)
+        if (state.pose.position.z < 0.1)
         {
             geometry_msgs::Twist msg = twistFromVec({0, 0, 0});
             state.publishers.commandVel.publish(msg);

@@ -23,7 +23,7 @@ geometry_msgs::Point pointFrom2DMapIndex(const int i, const int j, const nav_msg
 }
 
 // single marker msg of sphere lists from vector of poses
-visualization_msgs::Marker createMarkerMsg(const std::vector<geometry_msgs::Pose> &poses)
+visualization_msgs::Marker createMarkerMsg(const std::vector<geometry_msgs::Pose> &poses, float scale)
 {
     visualization_msgs::Marker msg;
     msg.header.frame_id = "world";
@@ -33,9 +33,9 @@ visualization_msgs::Marker createMarkerMsg(const std::vector<geometry_msgs::Pose
     msg.type = visualization_msgs::Marker::SPHERE_LIST;
     msg.action = visualization_msgs::Marker::ADD;
     msg.pose.orientation.w = 1.0;
-    msg.scale.x = 0.2;
-    msg.scale.y = 0.2;
-    msg.scale.z = 0.2;
+    msg.scale.x = scale;
+    msg.scale.y = scale;
+    msg.scale.z = scale;
     msg.color.a = 1.0;
     msg.color.r = 1.0;
     msg.color.g = 0.0;
@@ -52,7 +52,7 @@ visualization_msgs::Marker createMarkerMsg(const std::vector<geometry_msgs::Pose
 }
 
 // create marker msg from points
-visualization_msgs::Marker createMarkerMsg(const std::vector<geometry_msgs::Point> &points)
+visualization_msgs::Marker createMarkerMsg(const std::vector<geometry_msgs::Point> &points, float scale)
 {
     visualization_msgs::Marker msg;
     msg.header.frame_id = "world";
@@ -62,9 +62,9 @@ visualization_msgs::Marker createMarkerMsg(const std::vector<geometry_msgs::Poin
     msg.type = visualization_msgs::Marker::SPHERE_LIST;
     msg.action = visualization_msgs::Marker::ADD;
     msg.pose.orientation.w = 1.0;
-    msg.scale.x = 0.2;
-    msg.scale.y = 0.2;
-    msg.scale.z = 0.2;
+    msg.scale.x = scale;
+    msg.scale.y = scale;
+    msg.scale.z = scale;
     msg.color.a = 1.0;
     msg.color.r = 1.0;
     msg.color.g = 0.0;
@@ -74,7 +74,7 @@ visualization_msgs::Marker createMarkerMsg(const std::vector<geometry_msgs::Poin
         geometry_msgs::Point p;
         p.x = points[i].x;
         p.y = points[i].y;
-        p.z = 0;
+        p.z = 0.5;
 
         msg.points.push_back(p);
     }
@@ -84,11 +84,7 @@ visualization_msgs::Marker createMarkerMsg(const std::vector<geometry_msgs::Poin
 mae_utils::PointArray createPointArrayMsg(const std::vector<geometry_msgs::Point> &points)
 {
     mae_utils::PointArray msg;
-    msg.points.resize(points.size());
-    for (auto point : points)
-    {
-        msg.points.push_back(point);
-    }
+    msg.points = points;
     return msg;
 }
 
@@ -126,4 +122,18 @@ geometry_msgs::Twist twistFromVec(std::vector<double> linear, std::vector<double
     msg.angular.y = angular[1];
     msg.angular.z = angular[2];
     return msg;
+}
+
+float dist2D(geometry_msgs::Point p1, geometry_msgs::Point p2)
+{
+    return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
+}
+
+geometry_msgs::Point pointFromPose(geometry_msgs::Pose pose)
+{
+    geometry_msgs::Point p;
+    p.x = pose.position.x;
+    p.y = pose.position.y;
+    p.z = pose.position.z;
+    return p;
 }

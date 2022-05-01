@@ -20,10 +20,8 @@ struct RosComm
     std::vector<geometry_msgs::Point> frontier_pts;
     Pubs publishers;
 
-    // current target as seen by the GoTo action
-    geometry_msgs::Pose active_target;
-    geometry_msgs::Pose next_target;
     bool cancel_goal_req;
+    geometry_msgs::Pose next_target;
 };
 
 void initRosComm(ros::NodeHandle &nh);

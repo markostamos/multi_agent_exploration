@@ -12,8 +12,8 @@
   <arg name="enable_ground_truth" default="true" />
   <arg name="lidar_gpu" default="true"/>
   <arg name="enable_rviz" default="true"/>
-  <arg name = "enable_bt" default="false"/>  <!-- BT = Behavior Tree controller -->
-  <arg name= "tree_file" default="test_tree.xml"/>
+  <arg name="enable_bt" default="true"/>  <!-- BT = Behavior Tree controller -->
+  <arg name= "tree_file" default="greedy_frontier_exploration_single_uav.xml"/>
   
 
  <env name="ROSCONSOLE_CONFIG_FILE" value="$(find mae_simulator)/config/log_verbosity.conf"/>
@@ -52,7 +52,7 @@
     <arg name="enable_ground_truth" default="$(arg enable_ground_truth)"/>
     <arg name="enable_logging" value="$(arg enable_logging)"/>
     <arg name="lidar_gpu" default="$(arg lidar_gpu)"/>
-    <arg name = "enable_bt" default = "$(arg enable_bt)"/>
+    <arg name = "enable_bt" default = "$(arg enable_bt)"/> <!-- BT controller -->
     <arg name= "tree_file" default="$(arg tree_file)"/>
   </include> 
   

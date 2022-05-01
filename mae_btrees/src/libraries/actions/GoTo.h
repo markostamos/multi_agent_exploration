@@ -42,9 +42,7 @@ public:
             msg.target_pose.header.frame_id = "world";
             msg.target_pose.header.stamp = ros::Time::now();
             msg.target_pose.pose = goal;
-
             client_.sendGoal(msg);
-            state.active_target = goal;
         }
         else
         {
@@ -59,7 +57,6 @@ public:
     {
         if (state.cancel_goal_req)
         {
-            // client_.cancelAllGoals();
             client_.cancelGoal();
             state.cancel_goal_req = false;
             return BT::NodeStatus::FAILURE;

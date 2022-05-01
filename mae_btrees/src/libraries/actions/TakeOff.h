@@ -30,7 +30,7 @@ public:
         }
         else
         {
-            geometry_msgs::Twist msg = twistFromVec({0, 0, 0.2});
+            geometry_msgs::Twist msg = twistFromVec({0, 0, 0.4});
             state.publishers.commandVel.publish(msg);
         }
 

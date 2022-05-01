@@ -1,5 +1,6 @@
 #include <ros/ros.h>
 #include <behaviortree_cpp_v3/loggers/bt_zmq_publisher.h>
+#include <behaviortree_cpp_v3/loggers/bt_cout_logger.h>
 #include <ros/package.h>
 #include <mae_btrees/HandleBT.h>
 using namespace BT;
@@ -22,8 +23,10 @@ int main(int argc, char **argv)
   handler.createTree(path);
 
   NodeStatus status = NodeStatus::IDLE;
-  PublisherZMQ publisher_zmq(handler.tree_);
 
+  // loggers
+
+  PublisherZMQ publisher_zmq(handler.tree_);
   while (ros::ok() && (status == NodeStatus::IDLE || status == NodeStatus::RUNNING))
   {
     ros::spinOnce();

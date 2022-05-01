@@ -1,8 +1,8 @@
 local_costmap:
   global_frame: world
   robot_base_frame: $(arg namespace)/base_link
-  update_frequency: 10
-  publish_frequency: 10
+  update_frequency: 5
+  publish_frequency: 1
   static_map: false
   rolling_window: true
   width: 10

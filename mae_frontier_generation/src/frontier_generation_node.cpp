@@ -14,10 +14,19 @@ private:
     ros::NodeHandle nh_;
 
     ros::Subscriber map_sub_;
-    ros::Subscriber costmap_sub_;
     ros::Publisher frontiers_viz_pub_;
     ros::Publisher frontiers_pub_;
+
     ros::Timer get_frontiers_timer_;
+
+    // params
+    float update_rate_;
+    float obstacle_threshold_;
+    float viz_scale_;
+    // DBSCAN params
+    bool filter_frontiers_;
+    float min_pts_;
+    float epsilon_;
 
     FrontierGeneration FrontierGeneration_;
 
@@ -26,13 +35,18 @@ public:
                                                         ns_(nh.getNamespace().c_str()),
                                                         FrontierGeneration_(FrontierGeneration())
     {
+        map_sub_ = nh_.subscribe("/map_in", 10, &FrontierGenerationNode::storeMap, this);
+        frontiers_viz_pub_ = nh_.advertise<visualization_msgs::Marker>("/frontiers_viz_out", 10);
+        frontiers_pub_ = nh_.advertise<mae_utils::PointArray>("/frontiers_out", 10);
 
-        map_sub_ = nh_.subscribe(ns_ + "/projected_map", 10, &FrontierGenerationNode::storeMap, this);
-        costmap_sub_ = nh_.subscribe("/drone1/drone1_move_base/global_costmap/costmap", 10, &FrontierGenerationNode::storeCostMap, this);
+        nh.param<float>("update_rate", update_rate_, 10);
+        nh.param<bool>("filter_frontiers", filter_frontiers_, true);
+        nh.param<float>("min_pts", min_pts_, 1);
+        nh.param<float>("epsilon", epsilon_, 0.5);
+        nh.param<float>("obstacle_padding", obstacle_threshold_, 0.4);
+        nh.param<float>("viz_scale", viz_scale_, 0.5);
 
-        frontiers_viz_pub_ = nh_.advertise<visualization_msgs::Marker>(ns_ + "/frontiers_viz", 100);
-        frontiers_pub_ = nh_.advertise<mae_utils::PointArray>(ns_ + "/frontiers", 100);
-        get_frontiers_timer_ = nh_.createTimer(ros::Duration(0.05), &FrontierGenerationNode::publishFrontiers, this);
+        get_frontiers_timer_ = nh_.createTimer(ros::Duration(1 / update_rate_), &FrontierGenerationNode::publishFrontiers, this);
     }
 
 private:
@@ -40,17 +54,17 @@ private:
     {
         FrontierGeneration_.updateMap(*msg);
     }
-    void storeCostMap(const nav_msgs::OccupancyGrid::ConstPtr &msg)
-    {
-        FrontierGeneration_.updateCostMap(*msg);
-    }
 
     void publishFrontiers(const ros::TimerEvent &event)
     {
-
         std::vector<geometry_msgs::Point> frontiers;
-        FrontierGeneration_.getFrontiers(&frontiers);
-        frontiers_viz_pub_.publish(createMarkerMsg(frontiers));
+        FrontierGeneration_.getFrontiers(&frontiers, obstacle_threshold_);
+        if (filter_frontiers_)
+        {
+            FrontierGeneration_.filterFrontiersDBSCAN(&frontiers, min_pts_, epsilon_);
+        }
+
+        frontiers_viz_pub_.publish(createMarkerMsg(frontiers, viz_scale_));
         frontiers_pub_.publish(createPointArrayMsg(frontiers));
     }
 };
