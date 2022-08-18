@@ -1,0 +1,6 @@
+obstacle_range: 3.0
+raytrace_range: 3.5
+
+footprint: [[-0.15, -0.15], [-0.15, 0.15], [0.15, 0.15], [0.15, -0.15]]
+#robot_radius: 0.105
+clearing_rotation_allowed: false

@@ -28,8 +28,10 @@ void FrontierGeneration::getFrontiers(std::vector<geometry_msgs::Point> *frontie
         for (int j = 0; j < map_.info.height; j++)
         {
             if (map_.data[i + j * map_.info.width] == 0 &&
-                FrontierGeneration::isFrontier(i, j) &&
-                !FrontierGeneration::isNearObstacle(i, j, threshold))
+                isFrontier(i, j) &&
+                !isBlacklisted(i, j) &&
+                isInExplorationArea(i, j) &&
+                !isNearObstacle(i, j, threshold))
             {
                 frontiers->push_back(pointFrom2DMapIndex(i, j, map_));
             }
@@ -119,7 +121,10 @@ void FrontierGeneration::filterFrontiersDBSCAN(std::vector<geometry_msgs::Point>
         }
         center.x /= cluster.size();
         center.y /= cluster.size();
-        new_frontiers_centers.push_back(center);
+        if (!isBlacklisted(center))
+        {
+            new_frontiers_centers.push_back(center);
+        }
     }
 
     *frontiers = new_frontiers_centers;
@@ -138,4 +143,50 @@ std::vector<int> FrontierGeneration::getNeighbors(const std::vector<geometry_msg
         }
     }
     return neighbors;
+}
+
+void FrontierGeneration::setExplorationArea(const geometry_msgs::Point &center, const int radius)
+{
+    exploration_center_ = center;
+    exploration_radius_ = radius;
+}
+
+bool FrontierGeneration::isInExplorationArea(const int i, const int j)
+{
+    return dist2D(pointFrom2DMapIndex(i, j, map_), exploration_center_) < exploration_radius_;
+}
+
+bool FrontierGeneration::isBlacklisted(const int i, const int j)
+{
+    for (auto pt : blacklisted_pts_)
+    {
+        if (dist2D(pointFrom2DMapIndex(i, j, map_), pt) < 0.2)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool FrontierGeneration::isBlacklisted(const geometry_msgs::Point &pt)
+{
+    for (auto blacklisted_pt : blacklisted_pts_)
+    {
+        if (dist2D(blacklisted_pt, pt) < 0.1)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+void FrontierGeneration::addToBlacklist(const geometry_msgs::Point &pt)
+{
+    blacklisted_pts_.push_back(pt);
+}
+
+void FrontierGeneration::getExplorationArea(geometry_msgs::Point *exploration_center = nullptr, int *exploration_radius = nullptr)
+{
+    *exploration_center = exploration_center_;
+    *exploration_radius = exploration_radius_;
 }

@@ -7,7 +7,7 @@ HandleBT::HandleBT(ros::NodeHandle &nh) : nh_(nh)
 
     initRosComm(nh_);
 
-    pose_subscriber_ = nh_.subscribe(state.ns + "/ground_truth/pose", 100, &HandleBT::subPositionCallback, this);
+    pose_subscriber_ = nh_.subscribe(state.ns + "/ground_truth/odometry", 100, &HandleBT::subPoseCallback, this);
     frontier_subscriber_ = nh_.subscribe(state.ns + "/frontiers", 100, &HandleBT::subFrontierCallback, this);
 
     waitForConnection();
@@ -33,10 +33,10 @@ void HandleBT::createTree(std::string path)
 /*
     SUBSCRIBER CALLBACKS
  */
-void HandleBT::subPositionCallback(const geometry_msgs::Pose::ConstPtr &msg)
+void HandleBT::subPoseCallback(const nav_msgs::Odometry::ConstPtr &msg)
 {
     /* ree.blackboard_stack.back()->set<geometry_msgs::Pose>("pose", *msg); */
-    state.pose = *msg;
+    state.pose = msg->pose.pose;
 };
 
 void HandleBT::subFrontierCallback(const mae_utils::PointArray::ConstPtr &msg)

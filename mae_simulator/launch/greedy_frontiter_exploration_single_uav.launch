@@ -51,9 +51,9 @@
     <!-- Ground truth odometry -->
     <arg name="enable_ground_truth" default="$(arg enable_ground_truth)"/>
     <arg name="enable_logging" value="$(arg enable_logging)"/>
-    <arg name="lidar_gpu" default="$(arg lidar_gpu)"/>
-    <arg name = "enable_bt" default = "$(arg enable_bt)"/> <!-- BT controller -->
-    <arg name= "tree_file" default="$(arg tree_file)"/>
+    <arg name="lidar_gpu" value="$(arg lidar_gpu)"/>
+    <arg name = "enable_bt" value = "$(arg enable_bt)"/> <!-- BT controller -->
+    <arg name= "tree_file" value="$(arg tree_file)"/>
   </include> 
   
   

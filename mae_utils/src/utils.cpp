@@ -137,3 +137,22 @@ geometry_msgs::Point pointFromPose(geometry_msgs::Pose pose)
     p.z = pose.position.z;
     return p;
 }
+
+geometry_msgs::PoseStamped poseStampedFromPose(geometry_msgs::Pose pose)
+{
+    geometry_msgs::PoseStamped p;
+    p.header.stamp = ros::Time::now();
+    p.header.frame_id = "world";
+    p.pose = pose;
+    return p;
+}
+
+geometry_msgs::PoseStamped poseStampedFromPoint(geometry_msgs::Point point)
+{
+    geometry_msgs::PoseStamped p;
+    p.header.stamp = ros::Time::now();
+    p.header.frame_id = "world";
+    p.pose.position = point;
+    p.pose.orientation.w = 1;
+    return p;
+}

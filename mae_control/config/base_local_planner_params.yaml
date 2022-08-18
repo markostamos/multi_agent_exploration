@@ -1,7 +1,7 @@
 base_local_planner: eband_local_planner/EBandPlannerROS
 clearing_rotation_allowed: false
-planner_patience: 2
-controller_patience: 2
+planner_patience: 0
+controller_patience: 0
 
 EBandPlannerROS:
   Ctrl_Rate: 10.0
@@ -18,16 +18,16 @@ EBandPlannerROS:
   eband_tiny_bubble_distance: 0.01
   eband_tiny_bubble_expansion: 0.01
   in_place_trans_vel: 0.0
-  k_damp: 4.8
+  k_damp: 5.1
   k_prop: 1000
   marker_lifetime: 0.5
-  max_acceleration: 2.5
+  max_acceleration: 10
   max_rotational_acceleration: 0
-  max_translational_acceleration: 2.5
+  max_translational_acceleration: 10
   max_vel_lin: 2
   max_vel_th: 0
   min_in_place_vel_th: 0.0
-  min_vel_lin: 0
+  min_vel_lin: 0.2
   min_vel_th: 0.0
   num_iterations_eband_optimization: 3
   rot_stopped_vel: 0.01

@@ -6,6 +6,7 @@
 #include <behaviortree_cpp_v3/behavior_tree.h>
 #include <behaviortree_cpp_v3/bt_factory.h>
 #include <mae_utils/PointArray.h>
+#include <nav_msgs/Odometry.h>
 class HandleBT
 {
 public:
@@ -22,7 +23,7 @@ private:
     ros::Subscriber frontier_subscriber_;
 
 private:
-    void subPositionCallback(const geometry_msgs::Pose::ConstPtr &msg);
+    void subPoseCallback(const nav_msgs::Odometry::ConstPtr &msg);
     void subFrontierCallback(const mae_utils::PointArray::ConstPtr &msg);
 };
 

@@ -82,11 +82,3 @@ class vel_controller_node:
 if __name__ == "__main__":
     name_node = vel_controller_node()
     rospy.spin()
-
-
-# find max of two numbers
-def max(a, b):
-    if a > b:
-        return a
-    else:
-        return b

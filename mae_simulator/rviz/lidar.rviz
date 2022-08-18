@@ -4,10 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /TF1/Frames1
-        - /octomap1
-        - /local_plan1
-        - /Marker1
+        - /Global Options1
       Splitter Ratio: 0.3034681975841522
     Tree Height: 532
   - Class: rviz/Selection
@@ -28,7 +25,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: ""
+    SyncSource: VLP-16
 Preferences:
   PromptSaveOnExit: false
 Toolbars:
@@ -36,21 +33,6 @@ Toolbars:
 Visualization Manager:
   Class: ""
   Displays:
-    - Class: rviz/TF
-      Enabled: false
-      Frame Timeout: 15
-      Frames:
-        All Enabled: false
-      Marker Alpha: 1
-      Marker Scale: 1
-      Name: TF
-      Show Arrows: true
-      Show Axes: true
-      Show Names: true
-      Tree:
-        {}
-      Update Interval: 0
-      Value: false
     - Alpha: 1
       Class: rviz/RobotModel
       Collision Enabled: false
@@ -175,84 +157,6 @@ Visualization Manager:
       Use Timestamp: false
       Value: true
     - Alpha: 1
-      Class: rviz/PointStamped
-      Color: 255; 0; 0
-      Enabled: true
-      History Length: 1
-      Name: drone1_loc
-      Queue Size: 10
-      Radius: 0.20000000298023224
-      Topic: /drone1_loc
-      Unreliable: false
-      Value: true
-    - Alpha: 1
-      Class: rviz/PointStamped
-      Color: 0; 255; 255
-      Enabled: true
-      History Length: 1
-      Name: drone2_loc
-      Queue Size: 10
-      Radius: 0.20000000298023224
-      Topic: /drone2_loc
-      Unreliable: false
-      Value: true
-    - Alpha: 1
-      Class: rviz/PointStamped
-      Color: 255; 0; 255
-      Enabled: true
-      History Length: 1
-      Name: drone3_loc
-      Queue Size: 10
-      Radius: 0.20000000298023224
-      Topic: /drone3_loc
-      Unreliable: false
-      Value: true
-    - Alpha: 0.699999988079071
-      Class: rviz/Map
-      Color Scheme: map
-      Draw Behind: false
-      Enabled: false
-      Name: local_costmap
-      Topic: /local_costmap
-      Unreliable: false
-      Use Timestamp: false
-      Value: false
-    - Alpha: 1
-      Class: rviz/Polygon
-      Color: 25; 255; 0
-      Enabled: false
-      Name: footprint
-      Queue Size: 10
-      Topic: /footprint
-      Unreliable: false
-      Value: false
-    - Alpha: 0.699999988079071
-      Class: rviz/Map
-      Color Scheme: map
-      Draw Behind: false
-      Enabled: false
-      Name: global_costmap
-      Topic: /global_costmap
-      Unreliable: false
-      Use Timestamp: false
-      Value: false
-    - Alpha: 1
-      Axes Length: 1
-      Axes Radius: 0.10000000149011612
-      Class: rviz/Pose
-      Color: 255; 25; 0
-      Enabled: false
-      Head Length: 0.30000001192092896
-      Head Radius: 0.10000000149011612
-      Name: current_goal
-      Queue Size: 10
-      Shaft Length: 1
-      Shaft Radius: 0.05000000074505806
-      Shape: Arrow
-      Topic: /current_goal
-      Unreliable: false
-      Value: false
-    - Alpha: 1
       Buffer Length: 1
       Class: rviz/Path
       Color: 205; 55; 100
@@ -262,7 +166,7 @@ Visualization Manager:
       Length: 0.30000001192092896
       Line Style: Lines
       Line Width: 0.029999999329447746
-      Name: Path
+      Name: global_plan
       Offset:
         X: 0
         Y: 0
@@ -303,9 +207,17 @@ Visualization Manager:
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /frontiers_viz
-      Name: Marker
+      Name: frontiers
       Namespaces:
         viz: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /drone1/exploration_area
+      Name: exploration_area
+      Namespaces:
+        exploration_area: true
       Queue Size: 100
       Value: true
   Enabled: true
@@ -333,7 +245,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 24.164291381835938
+      Distance: 20.732501983642578
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -341,17 +253,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -4.77533483505249
-        Y: -3.27701473236084
-        Z: 1.239776611328125e-05
+        X: -0.4221181869506836
+        Y: -1.6608508825302124
+        Z: 1.079743196896743e-05
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.2597973346710205
+      Pitch: 1.1497981548309326
       Target Frame: <Fixed Frame>
-      Yaw: 6.011931419372559
+      Yaw: 0.05056850239634514
     Saved: ~
 Window Geometry:
   Displays:

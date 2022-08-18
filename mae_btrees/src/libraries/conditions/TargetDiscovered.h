@@ -8,7 +8,7 @@ BT::NodeStatus TargetDiscovered()
 {
     for (const auto &pt : state.frontier_pts)
     {
-        if (dist2D(pointFromPose(state.next_target), pt) < 3)
+        if (dist2D(pointFromPose(state.next_target), pt) < 1)
         {
             return BT::NodeStatus::FAILURE;
         }

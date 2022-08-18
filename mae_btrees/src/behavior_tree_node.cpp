@@ -31,6 +31,7 @@ int main(int argc, char **argv)
   {
     ros::spinOnce();
     status = handler.tree_.tickRoot();
+    logit_(status);
     ros::Duration sleep_time(0.01);
     sleep_time.sleep();
   }

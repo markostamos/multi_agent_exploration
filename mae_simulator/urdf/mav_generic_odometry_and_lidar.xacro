@@ -66,7 +66,8 @@
       max_range="100.0" 
       noise="0.008" 
       min_angle="-${M_PI}" 
-      max_angle="${M_PI}">
+      max_angle="${M_PI}"
+      namespace="${namespace}">
       <origin xyz="0.0 0 -0.12" rpy="0.0 0.0 0.0" />
     </xacro:VLP-16>
   </xacro:if>

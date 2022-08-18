@@ -16,7 +16,7 @@
   <arg name= "tree_file" default="test_tree.xml"/>
   
 
- <env name="ROSCONSOLE_CONFIG_FILE" value="$(find mae_simulator)/config/log_verbosity.conf"/>
+ 
 
   <!-- GAZEBO  -->
   <env name="GAZEBO_MODEL_PATH" value="${GAZEBO_MODEL_PATH}:$(find rotors_gazebo)/models:$(find mae_simulator)/worlds/models"/>
@@ -33,7 +33,7 @@
   </include>
 
   
-  
+
   <!-- SPAWN A UAV -->
   <include file="$(find mae_simulator)/launch/helpers/single_drone_spawn.launch">
 
@@ -51,10 +51,12 @@
     <!-- Ground truth odometry -->
     <arg name="enable_ground_truth" default="$(arg enable_ground_truth)"/>
     <arg name="enable_logging" value="$(arg enable_logging)"/>
-    <arg name="lidar_gpu" default="$(arg lidar_gpu)"/>
-    <arg name = "enable_bt" default = "$(arg enable_bt)"/>
-    <arg name= "tree_file" default="$(arg tree_file)"/>
+    <arg name="lidar_gpu" value="$(arg lidar_gpu)"/>
+    <arg name = "enable_bt" value = "$(arg enable_bt)"/> <!-- BT controller -->
+    <arg name= "tree_file" value="$(arg tree_file)"/>
   </include> 
+
+
   
   
 </launch>

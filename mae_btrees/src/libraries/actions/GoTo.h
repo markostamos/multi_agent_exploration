@@ -17,6 +17,7 @@ public:
           config_(config),
           client_(state.ns + "/move_base", true)
     {
+        blacklist_pt_pub_ = state.nh->advertise<geometry_msgs::Point>(state.ns + "/blacklist_pt", 1);
     }
 
     static BT::PortsList providedPorts()
@@ -36,12 +37,12 @@ public:
         if (getInput<std::string>("target", goal_string))
         {
 
-            geometry_msgs::Pose goal = config_.blackboard->get<geometry_msgs::Pose>(goal_string);
+            goal_ = config_.blackboard->get<geometry_msgs::Pose>(goal_string);
 
             move_base_msgs::MoveBaseGoal msg;
             msg.target_pose.header.frame_id = "world";
             msg.target_pose.header.stamp = ros::Time::now();
-            msg.target_pose.pose = goal;
+            msg.target_pose.pose = goal_;
             client_.sendGoal(msg);
         }
         else
@@ -71,6 +72,12 @@ public:
 
             return BT::NodeStatus::RUNNING;
         }
+        // TODO: if goal is rejected must be removed from frontiers
+        else if (client_.getState() == actionlib::SimpleClientGoalState::ABORTED)
+        {
+            blacklist_pt_pub_.publish(goal_);
+            return BT::NodeStatus::FAILURE;
+        }
         else
         {
             return BT::NodeStatus::FAILURE;
@@ -86,6 +93,8 @@ private:
 
     MoveBaseClient client_;
     BT::NodeConfiguration config_;
+    geometry_msgs::Pose goal_;
+    ros::Publisher blacklist_pt_pub_;
 };
 
 #endif // GOTO_H

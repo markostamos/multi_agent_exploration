@@ -17,7 +17,7 @@ class rviz_goal_publisher_node:
 
     def callback(self, goal_pose):
 
-        goal_pose.pose.position.z = rospy.get_param('altitude', default=1)
+        goal_pose.pose.position.z = 1
 
         goal_pose.pose.orientation = Quaternion()
         self.lee_publisher.publish(goal_pose)
