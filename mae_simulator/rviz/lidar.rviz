@@ -5,6 +5,7 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
+        - /comm_locs1
       Splitter Ratio: 0.3034681975841522
     Tree Height: 532
   - Class: rviz/Selection
@@ -25,7 +26,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: VLP-16
+    SyncSource: ""
 Preferences:
   PromptSaveOnExit: false
 Toolbars:
@@ -220,6 +221,14 @@ Visualization Manager:
         exploration_area: true
       Queue Size: 100
       Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /drone_locations
+      Name: comm_locs
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -245,7 +254,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 20.732501983642578
+      Distance: 31.065122604370117
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -253,17 +262,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -0.4221181869506836
-        Y: -1.6608508825302124
-        Z: 1.079743196896743e-05
+        X: -0.9993886947631836
+        Y: -1.8490803241729736
+        Z: 1.2606888049049303e-06
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.1497981548309326
+      Pitch: 1.1897977590560913
       Target Frame: <Fixed Frame>
-      Yaw: 0.05056850239634514
+      Yaw: 0.0005698204040527344
     Saved: ~
 Window Geometry:
   Displays:
