@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Sequence>
+            <Action Height="1" ID="TakeOff"/>
+            <RetryUntilSuccessful num_attempts="-1">
+                <WhileDoElse>
+                    <Inverter>
+                        <Condition ID="isFrontierListEmpty"/>
+                    </Inverter>
+                    <Sequence>
+                        <Action ID="SetNextTargetGreedy"/>
+                        <WhileDoElse>
+                            <Inverter>
+                                <Condition ID="TargetDiscovered"/>
+                            </Inverter>
+                            <Action ID="GoTo" target="next_target"/>
+                            <Action ID="CancelGoal"/>
+                        </WhileDoElse>
+                        <AlwaysFailure/>
+                    </Sequence>
+                    <Sequence>
+                        <Action ID="SetLocation" Name="home" Pos="0,0"/>
+                        <Action ID="GoTo" target="home"/>
+                        <Action ID="Land"/>
+                    </Sequence>
+                </WhileDoElse>
+            </RetryUntilSuccessful>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="CancelGoal"/>
+        <Action ID="GoTo">
+            <input_port name="target" type="std::string"/>
+        </Action>
+        <Action ID="Land"/>
+        <Action ID="SetLocation">
+            <input_port name="Name" type="std::string"/>
+            <input_port name="Pos" type="geometry_msgs::Pose_&lt;std::allocator&lt;void&gt; &gt;"/>
+        </Action>
+        <Action ID="SetNextTargetGreedy"/>
+        <Action ID="TakeOff">
+            <input_port name="Height" type="double"/>
+        </Action>
+        <Condition ID="TargetDiscovered"/>
+        <Condition ID="isFrontierListEmpty"/>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
+
