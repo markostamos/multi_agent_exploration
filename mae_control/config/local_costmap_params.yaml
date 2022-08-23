@@ -22,7 +22,7 @@ local_costmap:
     track_unknown_space: true
 
   inflation_layer:
-    inflation_radius: 0.6
+    inflation_radius: 0.2
     cost_scaling_factor: 3.0
     inflate_unknown: true
   obstacle_layer:
@@ -35,6 +35,6 @@ local_costmap:
       topic: /$(arg namespace)/velodyne_points,
       marking: true,
       clearing: true,
-      min_obstacle_height: 0.5,
+      min_obstacle_height: 0.1,
       obstacle_range: 15
       }

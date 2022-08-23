@@ -7,6 +7,7 @@ from functools import partial
 import sensor_msgs.point_cloud2 as pc2
 from octomap_msgs.srv import BoundingBoxQuery, BoundingBoxQueryRequest
 from nav_msgs.msg import OccupancyGrid
+from visualization_msgs.msg import MarkerArray
 
 
 class global_map_sharing_node:
@@ -57,8 +58,8 @@ class global_map_sharing_node:
             # point to 2dmap index
             grid_x = int((point.x - map_msg.info.origin.position.x) / map_msg.info.resolution)
             grid_y = int((point.y - map_msg.info.origin.position.y) / map_msg.info.resolution)
-            for i in range(grid_x - 2, grid_x + 3):
-                for j in range(grid_y - 2, grid_y + 3):
+            for i in range(grid_x - 3, grid_x + 3):
+                for j in range(grid_y - 3, grid_y + 3):
                     map_msg.data[int(i + j * map_msg.info.width)] = 0
 
         self.map_publisher.publish(map_msg)

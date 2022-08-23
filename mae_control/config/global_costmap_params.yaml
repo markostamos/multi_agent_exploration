@@ -19,7 +19,7 @@ global_costmap:
     track_unknown_space: true
 
   inflation_layer:
-    inflation_radius: 0.6
+    inflation_radius: 1
     cost_scaling_factor: 3.0
     inflate_unknown: true
   obstacle_layer:
