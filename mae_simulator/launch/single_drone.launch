@@ -15,9 +15,6 @@
   <arg name = "enable_bt" default="false"/>  <!-- BT = Behavior Tree controller -->
   <arg name= "tree_file" default="test_tree.xml"/>
   
-
- 
-
   <!-- GAZEBO  -->
   <env name="GAZEBO_MODEL_PATH" value="${GAZEBO_MODEL_PATH}:$(find rotors_gazebo)/models:$(find mae_simulator)/worlds/models"/>
   <env name="GAZEBO_RESOURCE_PATH" value="${GAZEBO_RESOURCE_PATH}:$(find rotors_gazebo)/models"/>
@@ -28,11 +25,7 @@
     <arg name="gui" value="$(arg gui)" />
     <arg name="verbose" value="$(arg verbose)"/>
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
-
-  
   </include>
-
-  
 
   <!-- SPAWN A UAV -->
   <include file="$(find mae_simulator)/launch/helpers/single_drone_spawn.launch">
@@ -52,11 +45,32 @@
     <arg name="enable_ground_truth" default="$(arg enable_ground_truth)"/>
     <arg name="enable_logging" value="$(arg enable_logging)"/>
     <arg name="lidar_gpu" value="$(arg lidar_gpu)"/>
-    <arg name = "enable_bt" value = "$(arg enable_bt)"/> <!-- BT controller -->
+    <!-- BT controller -->
+    <arg name = "enable_bt" value = "$(arg enable_bt)"/> 
     <arg name= "tree_file" value="$(arg tree_file)"/>
   </include> 
 
+  <node pkg="octomap_server" type="octomap_server_node" name="octomap_server">
+    <param name="resolution" value="0.18" />
+    <param name="latch" value="false" />
+    <param name="frame_id" type="string" value="world" />
+    <param name="sensor_model/max_range" value="500" />
+    <param name="pointcloud_min_z" value="0.15"/>
+    <param name="pointcloud_max_z" value="2"/>
+    <remap from="cloud_in" to="/combined_pcl" />
+  </node>
+   
+  <!-- Frontier Generation package -->
+  <node pkg="mae_frontier_generation" type="frontier_generation_node" name="frontier_generation_node" output="screen">
+    <remap from="/map_in" to="/projected_map"/>
+    <remap from="/frontiers_out" to="/frontiers"/>
+    <remap from="/frontiers_viz_out" to="/frontiers_viz"/>
+    <remap from= "/blacklist_pt_in" to="/blacklist_pt"/>
+    <remap from= "/exploration_area_out" to="/exploration_area"/>
+  </node>
 
-  
+  <node name="global_map_sharing" pkg="mae_utils" type="global_map_sharing_node.py" output="screen"/>
+
+  <node pkg="rviz" type="rviz" name="global_rviz" respawn="false" output="screen" args="-d $(find mae_simulator)/rviz/global.rviz"/>
   
 </launch>

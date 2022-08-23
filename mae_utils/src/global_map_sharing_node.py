@@ -33,7 +33,8 @@ class global_map_sharing_node:
             if str_loc != -1:
                 drone_id = int(topic[0][str_loc + len("drone")])
                 if drone_id not in self.drones.keys():
-                    self.drones[drone_id] = Point()
+                    self.drones["home" + str(drone_id)] = rospy.wait_for_message(
+                        f"/drone{drone_id}/ground_truth/position", PointStamped).point
                     rospy.Subscriber(
                         f"/drone{drone_id}/ground_truth/position", PointStamped, partial(self.updateLocations, drone_id))
 
