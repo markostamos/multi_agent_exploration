@@ -38,22 +38,7 @@
       
       <node name="$(arg namespace)_vel_controller_node" pkg="mae_control" type="vel_controller_node.py"/>
 
-  <!-- Octomap -->
-      <node pkg="octomap_server" type="octomap_server_node" name="octomap_server">
-        
-        <param name="resolution" value="0.17" />
-        <param name="latch" value="false" />
-        <param name="frame_id" type="string" value="world" />
-        <param name="sensor_model/max_range" value="200" />
-        <!-- <param name="occupancy_min_z" value="0.15"/>
-        <param name="occupancy_max_z" value="1.5"/> -->
 
-        <param name="pointcloud_min_z" value="0.1"/>
-        <param name="pointcloud_max_z" value="2"/>
-        
-        <remap from="cloud_in" to="/$(arg namespace)/velodyne_points" />
-    
-      </node>
 
   <!-- 2d Navigation -->
     <node name="move_base" pkg="move_base" type="move_base"  output="screen" respawn="false">
@@ -70,23 +55,6 @@
       <remap from="/$(arg namespace)/cmd_vel" to="/$(arg namespace)/command/cmd_vel"/>
       <remap from="/$(arg namespace)/odom" to="/$(arg namespace)/ground_truth/odometry"/>       
     </node>
-  <!-- Rviz -->
-    <node pkg="rviz" type="rviz" name="$(arg namespace)_rviz" respawn="false" output="screen" args="-d $(find mae_simulator)/rviz/lidar.rviz" if="$(arg enable_rviz)" >
-      <remap from="/move_base_simple/goal" to="/$(arg namespace)/move_base_simple/goal"/>
-      <remap from="/lidar_points_topic" to="/$(arg namespace)/velodyne_points"/>
-      <remap from="/occupied_cells_vis_array" to="/$(arg namespace)/occupied_cells_vis_array" />
-      <remap from="/projected_map" to="/$(arg namespace)/projected_map" /> 
-
-      <remap from="/local_costmap" to="/$(arg namespace)/move_base/local_costmap/costmap"/>
-      <remap from="/footprint" to="/$(arg namespace)/move_base/global_costmap/footprint"/>
-      <remap from="/global_costmap" to="/$(arg namespace)/move_base/global_costmap/costmap"/>
-      <remap from="/current_goal" to="/$(arg namespace)/move_base/current_goal"/>
-      <remap from="/plan" to="/$(arg namespace)/move_base/NavfnROS/plan"/>
-      <remap from="/local_plan" to="/$(arg namespace)/move_base/EBandPlannerROS/global_plan"/>
-      <remap from="/frontiers_viz" to="/$(arg namespace)/frontiers_viz"/>
-      <remap from ="/drone_locations" to="/$(arg namespace)/comm/locations"/>
-      
-    </node>
 
   <!-- Behavior Tree Controller -->
     <group if="$(arg enable_bt)">
@@ -96,19 +64,6 @@
 	    <!-- <node name="groot" pkg="groot" type="Groot" output="screen"/> -->
     </group>
     
-<!-- Frontier Generation package -->
-    <node pkg="mae_frontier_generation" type="frontier_generation_node" name="frontier_generation_node" output="screen">
-      <remap from="/map_in" to="/$(arg namespace)/projected_map"/>
-      <remap from="/frontiers_out" to="/$(arg namespace)/frontiers"/>
-      <remap from="/frontiers_viz_out" to="/$(arg namespace)/frontiers_viz"/>
-      <remap from= "/blacklist_pt_in" to="/$(arg namespace)/blacklist_pt"/>
-      <remap from= "/exploration_area_out" to="/$(arg namespace)/exploration_area"/>
-    </node>
- 
 
-  <!-- drone comm node  -->
-    <node name="drone_comm_node" pkg="mae_utils" type="drone_comm_node.py"  output="log" respawn="false" respawn_delay="0">
-      
-    </node>
   </group>
 </launch>

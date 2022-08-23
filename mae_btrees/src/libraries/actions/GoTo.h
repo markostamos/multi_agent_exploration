@@ -17,7 +17,7 @@ public:
           config_(config),
           client_(state.ns + "/move_base", true)
     {
-        blacklist_pt_pub_ = state.nh->advertise<geometry_msgs::Point>(state.ns + "/blacklist_pt", 1);
+        blacklist_pt_pub_ = state.nh->advertise<geometry_msgs::Point>("/blacklist_pt", 1);
     }
 
     static BT::PortsList providedPorts()

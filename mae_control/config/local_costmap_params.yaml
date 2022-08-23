@@ -18,10 +18,23 @@ local_costmap:
      
   static_layer:
     enabled: true
-    map_topic: "/$(arg namespace)/projected_map"
+    map_topic: "/filtered_map"
     track_unknown_space: true
 
   inflation_layer:
     inflation_radius: 0.6
     cost_scaling_factor: 3.0
     inflate_unknown: true
+  obstacle_layer:
+    enabled: true
+    observation_sources: point_cloud_sensor
+    track_unknown_space: true
+    point_cloud_sensor: {
+      sensor_frame: $(arg namespace)/velodyne_base_link,
+      data_type: PointCloud2,
+      topic: /$(arg namespace)/velodyne_points,
+      marking: true,
+      clearing: true,
+      min_obstacle_height: 0.5,
+      obstacle_range: 15
+      }

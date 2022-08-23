@@ -87,9 +87,6 @@ class vel_controller_node:
         goal.position.y = self.curr_vel.linear.y * self.tstep
         goal.position.z = self.curr_vel.linear.z * self.tstep
 
-        if self.curr_pose.position.z > 1:
-            goal.position.z = -0.3 * self.tstep
-
         orientation = quaternion_from_euler(0, 0, 0)
 
         goal.orientation.x = orientation[0]

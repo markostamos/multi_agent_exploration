@@ -35,7 +35,7 @@ add_library(utils_lib src/utils.cpp)
 target_link_libraries(utils_lib ${catkin_LIBRARIES})
 
 catkin_install_python(PROGRAMS 
-  src/drone_comm_node.py
+  src/global_map_sharing_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

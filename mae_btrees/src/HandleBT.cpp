@@ -8,7 +8,7 @@ HandleBT::HandleBT(ros::NodeHandle &nh) : nh_(nh)
     initRosComm(nh_);
 
     pose_subscriber_ = nh_.subscribe(state.ns + "/ground_truth/odometry", 100, &HandleBT::subPoseCallback, this);
-    frontier_subscriber_ = nh_.subscribe(state.ns + "/frontiers", 100, &HandleBT::subFrontierCallback, this);
+    frontier_subscriber_ = nh_.subscribe("/frontiers", 100, &HandleBT::subFrontierCallback, this);
 
     waitForConnection();
 }

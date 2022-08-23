@@ -15,5 +15,6 @@
   <exec_depend>xacro</exec_depend>
   <exec_depend>mae_frontier_generation</exec_depend>
   <exec_depend>mae_btrees</exec_depend>
+  <exec_depend>map_merge_3d</exec_depend>
 
 </package>
