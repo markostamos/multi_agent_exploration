@@ -64,6 +64,8 @@
 	    <!-- <node name="groot" pkg="groot" type="Groot" output="screen"/> -->
     </group>
     
-
+    <node name="drone_comm_node" pkg="mae_utils" type="drone_comm_node.py"  output="screen">
+      <!-- TODO: add params -->
+    </node>
   </group>
 </launch>

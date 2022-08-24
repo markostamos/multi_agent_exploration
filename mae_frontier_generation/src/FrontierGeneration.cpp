@@ -160,7 +160,7 @@ bool FrontierGeneration::isBlacklisted(const int i, const int j)
 {
     for (auto pt : blacklisted_pts_)
     {
-        if (dist2D(pointFrom2DMapIndex(i, j, map_), pt) < 0.2)
+        if (dist2D(pointFrom2DMapIndex(i, j, map_), pt) < 2)
         {
             return true;
         }
@@ -172,7 +172,7 @@ bool FrontierGeneration::isBlacklisted(const geometry_msgs::Point &pt)
 {
     for (auto blacklisted_pt : blacklisted_pts_)
     {
-        if (dist2D(blacklisted_pt, pt) < 0.1)
+        if (dist2D(blacklisted_pt, pt) < 2)
         {
             return true;
         }

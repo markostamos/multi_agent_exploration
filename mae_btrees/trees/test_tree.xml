@@ -12,16 +12,19 @@
                     <Sequence>
                         <Action ID="SetNextTargetGreedy"/>
                         <WhileDoElse>
-                            <Inverter>
-                                <Condition ID="TargetDiscovered"/>
-                            </Inverter>
+                            <Sequence>
+                                <Inverter>
+                                    <Condition ID="TargetDiscovered"/>
+                                </Inverter>
+                            </Sequence>
                             <Action ID="GoTo" target="next_target"/>
-                            <Action ID="CancelGoal"/>
+                            <Delay delay_msec="300">
+                                <Action ID="CancelGoal" name=""/>
+                            </Delay>
                         </WhileDoElse>
                         <AlwaysFailure/>
                     </Sequence>
                     <Sequence>
-                        <Action ID="SetLocation" Name="home" Pos="0,0"/>
                         <Action ID="GoTo" target="home"/>
                         <Action ID="Land"/>
                     </Sequence>
@@ -46,6 +49,7 @@
         </Action>
         <Condition ID="TargetDiscovered"/>
         <Condition ID="isFrontierListEmpty"/>
+        <Condition ID="isNearOtherDrones"/>
     </TreeNodesModel>
     <!-- ////////// -->
 </root>

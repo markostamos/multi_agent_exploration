@@ -27,7 +27,7 @@ public:
             throw BT::RuntimeError("Missing input x,y");
         }
 
-        config_.blackboard->set<geometry_msgs::Pose>(name, pose);
+                config_.blackboard->set<geometry_msgs::Pose>(name, poseFromVec({pose.position.x, pose.position.y, pose.position.z}));
 
         return BT::NodeStatus::SUCCESS;
     }

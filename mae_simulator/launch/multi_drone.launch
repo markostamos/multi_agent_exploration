@@ -55,17 +55,15 @@
     <arg name = "enable_bt" value = "$(arg enable_bt)"/> <!-- BT controller -->
     <arg name= "tree_file" value="test_tree.xml"/>
   </include> 
-<!-- SPAWN A UAV -->
-
   <!-- SPAWN A UAV -->
   <include file="$(find mae_simulator)/launch/helpers/single_drone_spawn.launch">
 
     <!-- UAV name -->
-    <arg name="namespace" value="drone3"/>
+    <arg name="namespace" value="drone2"/>
 
     <!--spawn location -->
-    <arg name="x" default="-5"/>
-    <arg name="y" default="3"/>
+    <arg name="x" default="-2"/>
+    <arg name="y" default="0"/>
     <arg name="z" default="0"/>
     
     <!-- RVIZ for this UAV -->
@@ -78,7 +76,28 @@
     <arg name = "enable_bt" value = "$(arg enable_bt)"/> <!-- BT controller -->
     <arg name= "tree_file" value="test_tree.xml"/>
   </include> 
+<!-- SPAWN A UAV -->
 
+<include file="$(find mae_simulator)/launch/helpers/single_drone_spawn.launch">
+
+    <!-- UAV name -->
+    <arg name="namespace" value="drone3"/>
+
+    <!--spawn location -->
+    <arg name="x" default="1"/>
+    <arg name="y" default="-1"/>
+    <arg name="z" default="0"/>
+    
+    <!-- RVIZ for this UAV -->
+    <arg name="enable_rviz" value="$(arg enable_rviz)"/>
+
+    <!-- Ground truth odometry -->
+    <arg name="enable_ground_truth" default="$(arg enable_ground_truth)"/>
+    <arg name="enable_logging" value="$(arg enable_logging)"/>
+    <arg name="lidar_gpu" value="$(arg lidar_gpu)"/>
+    <arg name = "enable_bt" value = "$(arg enable_bt)"/> <!-- BT controller -->
+    <arg name= "tree_file" value="test_tree.xml"/>
+  </include> 
 
   
   

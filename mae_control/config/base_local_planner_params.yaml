@@ -1,10 +1,10 @@
 base_local_planner: eband_local_planner/EBandPlannerROS
 clearing_rotation_allowed: false
 planner_patience: 0.1
-controller_patience: 0.1
+controller_patience: 0
 
 EBandPlannerROS:
-  Ctrl_Rate: 20.0
+  Ctrl_Rate: 14.0
   bubble_velocity_multiplier: 2.0
   costmap_weight: 10.0
   differential_drive: false

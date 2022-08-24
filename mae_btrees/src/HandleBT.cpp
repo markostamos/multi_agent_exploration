@@ -9,7 +9,7 @@ HandleBT::HandleBT(ros::NodeHandle &nh) : nh_(nh)
 
     pose_subscriber_ = nh_.subscribe(state.ns + "/ground_truth/odometry", 100, &HandleBT::subPoseCallback, this);
     frontier_subscriber_ = nh_.subscribe("/frontiers", 100, &HandleBT::subFrontierCallback, this);
-
+    drone_position_subscriber_ = nh_.subscribe(state.ns + "/comm/drone_positions", 100, &HandleBT::subDronePositionsCallback, this);
     waitForConnection();
 }
 
@@ -27,6 +27,7 @@ void HandleBT::createTree(std::string path)
     // REGISTER CONDITIONS
     factory.registerSimpleCondition("isFrontierListEmpty", std::bind(isFrontierListEmpty));
     factory.registerSimpleCondition("TargetDiscovered", std::bind(TargetDiscovered));
+    factory.registerSimpleCondition("isNearOtherDrones", std::bind(isNearOtherDrones));
     tree_ = factory.createTreeFromFile(path);
 }
 
@@ -35,11 +36,22 @@ void HandleBT::createTree(std::string path)
  */
 void HandleBT::subPoseCallback(const nav_msgs::Odometry::ConstPtr &msg)
 {
-    /* ree.blackboard_stack.back()->set<geometry_msgs::Pose>("pose", *msg); */
+    static bool first_msg = true;
+    if (first_msg)
+    {
+        tree_.blackboard_stack.back()->set<geometry_msgs::Pose>("home", msg->pose.pose);
+        first_msg = false;
+    }
     state.pose = msg->pose.pose;
+    tree_.blackboard_stack.back()->set<geometry_msgs::Pose>("stay", msg->pose.pose);
 };
 
 void HandleBT::subFrontierCallback(const mae_utils::PointArray::ConstPtr &msg)
 {
     state.frontier_pts = msg->points;
 };
+
+void HandleBT::subDronePositionsCallback(const geometry_msgs::PointStamped::ConstPtr &msg)
+{
+    state.drone_positions[atoi(msg->header.frame_id.c_str())] = msg->point;
+}

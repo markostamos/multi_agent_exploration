@@ -42,7 +42,7 @@ public:
             move_base_msgs::MoveBaseGoal msg;
             msg.target_pose.header.frame_id = "world";
             msg.target_pose.header.stamp = ros::Time::now();
-            msg.target_pose.pose = goal_;
+            msg.target_pose.pose = poseFromVec({goal_.position.x, goal_.position.y, goal_.position.z});
             client_.sendGoal(msg);
         }
         else
@@ -56,9 +56,10 @@ public:
 
     BT::NodeStatus onRunning()
     {
-        if (state.cancel_goal_req)
+        /* if (state.cancel_goal_req)
         {
-            client_.cancelGoal();
+            if (client_.getState() == actionlib::SimpleClientGoalState::ACTIVE)
+                client_.cancelGoal();
             state.cancel_goal_req = false;
             return BT::NodeStatus::FAILURE;
         }
@@ -75,14 +76,41 @@ public:
         // TODO: if goal is rejected must be removed from frontiers
         else if (client_.getState() == actionlib::SimpleClientGoalState::ABORTED)
         {
-            blacklist_pt_pub_.publish(goal_);
+            // blacklist_pt_pub_.publish(goal_);
             return BT::NodeStatus::FAILURE;
         }
         else
         {
             return BT::NodeStatus::FAILURE;
+        } */
+        if (state.cancel_goal_req && (client_.getState() != actionlib::SimpleClientGoalState::ABORTED ||
+                                      client_.getState() != actionlib::SimpleClientGoalState::PREEMPTED))
+        {
+            client_.cancelAllGoals();
+            state.cancel_goal_req = false;
+            return BT::NodeStatus::FAILURE;
         }
+
+        if (client_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
+        {
+            return BT::NodeStatus::SUCCESS;
+        }
+        if (client_.getState() == actionlib::SimpleClientGoalState::ACTIVE ||
+            client_.getState() == actionlib::SimpleClientGoalState::PENDING)
+        {
+            return BT::NodeStatus::RUNNING;
+        }
+
+        // TODO: if goal is rejected must be removed from frontiers
+        if (client_.getState() == actionlib::SimpleClientGoalState::ABORTED)
+        {
+            blacklist_pt_pub_.publish(goal_);
+            return BT::NodeStatus::FAILURE;
+        }
+
+        return BT::NodeStatus::FAILURE;
     }
+
     void onHalted()
     {
         state.cancel_goal_req = true;

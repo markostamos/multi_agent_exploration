@@ -1,7 +1,7 @@
 local_costmap:
   global_frame: world
   robot_base_frame: $(arg namespace)/base_link
-  update_frequency: 5
+  update_frequency: 15.0
   publish_frequency: 1
   static_map: false
   rolling_window: true
@@ -22,8 +22,8 @@ local_costmap:
     track_unknown_space: true
 
   inflation_layer:
-    inflation_radius: 0.3
-    cost_scaling_factor: 3.0
+    inflation_radius: 0.4
+    cost_scaling_factor: 1
     inflate_unknown: true
   obstacle_layer:
     enabled: true
@@ -36,5 +36,7 @@ local_costmap:
       marking: true,
       clearing: true,
       min_obstacle_height: 0.1,
-      obstacle_range: 15
-      }
+      obstacle_range: 2.5,
+      raytrace_range: 3
+    }
+  

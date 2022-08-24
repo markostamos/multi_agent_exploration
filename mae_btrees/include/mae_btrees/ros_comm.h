@@ -3,6 +3,7 @@
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/PointStamped.h>
 #include <geometry_msgs/Twist.h>
 #include <mae_utils/PointArray.h>
 struct Pubs
@@ -22,6 +23,9 @@ struct RosComm
 
     bool cancel_goal_req;
     geometry_msgs::Pose next_target;
+
+    /* comm node */
+    std::map<int, geometry_msgs::Point> drone_positions;
 };
 
 void initRosComm(ros::NodeHandle &nh);
