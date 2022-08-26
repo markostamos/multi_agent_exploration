@@ -21,7 +21,7 @@ global_costmap:
 
   inflation_layer:
     inflation_radius: 1
-    cost_scaling_factor: 3.0
+    cost_scaling_factor: 2.0
     inflate_unknown: true
  
     

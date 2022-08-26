@@ -21,11 +21,14 @@ class global_map_sharing_node:
         rospy.init_node("global_map_sharing_node")
 
         self.drones = dict()
+        self.drone_pcl = dict()
+        self.next_publish = 1
         self.pcl_publisher = rospy.Publisher(
             '/combined_pcl', PointCloud2, queue_size=100)
-        self.map_publisher = rospy.Publisher('/filtered_map', OccupancyGrid, queue_size=100)
+        self.map_publisher = rospy.Publisher('/filtered_map', OccupancyGrid, queue_size=1000)
         rospy.Subscriber('/projected_map', OccupancyGrid, self.filterMap)
         rospy.Timer(rospy.Duration(0.5), self.checkForDrones)
+        rospy.Timer(rospy.Duration(0.1), self.postPCL)
 
     def checkForDrones(self, event):
         for topic in rospy.get_published_topics():
@@ -39,12 +42,17 @@ class global_map_sharing_node:
                         f"/drone{drone_id}/ground_truth/position", PointStamped, partial(self.updateLocations, drone_id))
 
                     rospy.Subscriber(f"/drone{drone_id}/velodyne_points", PointCloud2,
-                                     self.postPCL, drone_id)
+                                     self.updatePCL, drone_id)
 
-    def postPCL(self, pcl, drone_id):
-        pcl_generator = pc2.read_points(pcl)
+    def updatePCL(self, pcl, drone_id):
+        self.drone_pcl[drone_id] = pcl
 
-        self.pcl_publisher.publish(pcl)
+    def postPCL(self, event):
+        if self.next_publish in self.drone_pcl.keys():
+            self.pcl_publisher.publish(self.drone_pcl[self.next_publish])
+            self.next_publish += 1
+        else:
+            self.next_publish = 1
 
     def updateLocations(self, drone_id, msg):
         self.drones[drone_id] = msg.point

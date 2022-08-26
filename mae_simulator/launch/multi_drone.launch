@@ -109,7 +109,7 @@
         <param name="sensor_model/max_range" value="500" />
         <!-- <param name="occupancy_min_z" value="0.15"/>
         <param name="occupancy_max_z" value="1.5"/> -->
-
+        <param name="incremental_2D_projection" value="true"/>
         <param name="pointcloud_min_z" value="0.15"/>
         <param name="pointcloud_max_z" value="2"/>
         
