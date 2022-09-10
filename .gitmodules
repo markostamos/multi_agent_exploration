@@ -1,0 +1,3 @@
+[submodule "eband_local_planner"]
+	path = eband_local_planner
+	url = https://github.com/utexas-bwi/eband_local_planner
