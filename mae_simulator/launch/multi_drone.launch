@@ -43,7 +43,7 @@
     <!--spawn location -->
     <arg name="x" default="0"/>
     <arg name="y" default="0"/>
-    <arg name="z" default="0"/>
+    <arg name="z" default="0.5"/>
     
     <!-- RVIZ for this UAV -->
     <arg name="enable_rviz" value="$(arg enable_rviz)"/>
@@ -64,7 +64,7 @@
     <!--spawn location -->
     <arg name="x" default="-2"/>
     <arg name="y" default="0"/>
-    <arg name="z" default="0"/>
+    <arg name="z" default="0.5"/>
     
     <!-- RVIZ for this UAV -->
     <arg name="enable_rviz" value="$(arg enable_rviz)"/>
@@ -86,7 +86,7 @@
     <!--spawn location -->
     <arg name="x" default="1"/>
     <arg name="y" default="-1"/>
-    <arg name="z" default="0"/>
+    <arg name="z" default="0.5"/>
     
     <!-- RVIZ for this UAV -->
     <arg name="enable_rviz" value="$(arg enable_rviz)"/>

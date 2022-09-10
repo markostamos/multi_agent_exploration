@@ -34,9 +34,9 @@
         <remap from="odometry" to="ground_truth/odometry" />
       </node>
 
-      <node name="$(arg namespace)_robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+      <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
       
-      <node name="$(arg namespace)_vel_controller_node" pkg="mae_control" type="vel_controller_node.py"/>
+      <node name="vel_controller_node" pkg="mae_control" type="vel_controller_node.py"/>
 
 
 

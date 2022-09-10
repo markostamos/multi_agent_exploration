@@ -42,7 +42,6 @@ class vel_controller_node:
 
     def publishGoalCallback(self, event):
         goal = self.getGoalPose()
-
         if self.real_controller:
             msg = PoseStamped()
             msg.pose = goal
@@ -80,6 +79,12 @@ class vel_controller_node:
         return goal
 
     def updateCmdVel(self, vel):
+        if vel.linear.x != vel.linear.x:
+            vel.linear.x = 0
+        if vel.linear.y != vel.linear.y:
+            vel.linear.y = 0
+        if vel.linear.z != vel.linear.z:
+            vel.linear.z = 0
         self.cmd_vel = vel
 
 
