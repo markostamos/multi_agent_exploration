@@ -6,4 +6,4 @@
 	url = https://github.com/BehaviorTree/Groot
 [submodule "mae_global_planner"]
 	path = mae_global_planner
-	url = ./mae_global_planner/
+	url = https://github.com/markostamos/mae_global_planner
