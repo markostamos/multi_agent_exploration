@@ -14,9 +14,11 @@
   <exec_depend>velodyne_simulator</exec_depend>
   <exec_depend>mae_control</exec_depend>
   <exec_depend>mae_utils</exec_depend>
+   <exec_depend>mae_global_planner</exec_depend>
+
   <exec_depend>eband_local_planner</exec_depend>
   <exec_depend>groot</exec_depend>
-  <exec_depend>octomap_server</exec_depend>
+ 
   
   
   
