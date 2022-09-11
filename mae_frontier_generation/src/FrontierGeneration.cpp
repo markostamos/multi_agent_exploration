@@ -1,16 +1,12 @@
 #include <mae_frontier_generation/FrontierGeneration.h>
 #include <ros/ros.h>
-bool FrontierGeneration::isFrontier(int i, int j)
+inline bool FrontierGeneration::isFrontier(int i, int j) const
 {
 
-    if ((i > 0 && map_.data[i - 1 + j * map_.info.width] == -1) ||
-        (i < map_.info.width - 1 && map_.data[i + 1 + j * map_.info.width] == -1) ||
-        (j > 0 && map_.data[i + (j - 1) * map_.info.width] == -1) ||
-        (j < map_.info.height - 1 && map_.data[i + (j + 1) * map_.info.width] == -1))
-    {
-        return true;
-    }
-    return false;
+    return ((i > 0 && map_.data[i - 1 + j * map_.info.width] == -1) ||
+            (i < map_.info.width - 1 && map_.data[i + 1 + j * map_.info.width] == -1) ||
+            (j > 0 && map_.data[i + (j - 1) * map_.info.width] == -1) ||
+            (j < map_.info.height - 1 && map_.data[i + (j + 1) * map_.info.width] == -1));
 }
 
 void FrontierGeneration::updateMap(const nav_msgs::OccupancyGrid &map)
@@ -29,7 +25,7 @@ void FrontierGeneration::getFrontiers(std::vector<geometry_msgs::Point> *frontie
         {
             if (map_.data[i + j * map_.info.width] == 0 &&
                 isFrontier(i, j) &&
-                !isBlacklisted(i, j) &&
+                !isBlacklisted(pointFrom2DMapIndex(i, j, map_)) &&
                 isInExplorationArea(i, j) &&
                 !isNearObstacle(i, j, threshold))
             {
@@ -39,7 +35,7 @@ void FrontierGeneration::getFrontiers(std::vector<geometry_msgs::Point> *frontie
     }
 }
 
-bool FrontierGeneration::isNearObstacle(int i, int j, float threshold)
+bool FrontierGeneration::isNearObstacle(int i, int j, float threshold) const
 {
     // Objects are considered obstacles if they are within a certain distance of the robot
     // to avoid collisions
@@ -63,7 +59,6 @@ bool FrontierGeneration::isNearObstacle(int i, int j, float threshold)
 
 void FrontierGeneration::filterFrontiersDBSCAN(std::vector<geometry_msgs::Point> *frontiers, int min_points, float epsilon)
 {
-
     std::vector<int> labels(frontiers->size(), -1);
     std::vector<std::vector<int>> clusters;
     int cluster_id = -1;
@@ -108,13 +103,12 @@ void FrontierGeneration::filterFrontiersDBSCAN(std::vector<geometry_msgs::Point>
 
     // calculate center of mass of each cluster
     std::vector<geometry_msgs::Point> new_frontiers_centers;
-
-    for (auto cluster : clusters)
+    geometry_msgs::Point center;
+    for (const auto &cluster : clusters)
     {
-        geometry_msgs::Point center;
         center.x = 0;
         center.y = 0;
-        for (auto i : cluster)
+        for (const auto &i : cluster)
         {
             center.x += frontiers->operator[](i).x;
             center.y += frontiers->operator[](i).y;
@@ -135,9 +129,7 @@ std::vector<int> FrontierGeneration::getNeighbors(const std::vector<geometry_msg
     std::vector<int> neighbors;
     for (int j = 0; j < frontiers.size(); j++)
     {
-        if (i == j)
-            continue;
-        if (dist2D(frontiers[i], frontiers[j]) < epsilon)
+        if (dist2D(frontiers[i], frontiers[j]) < epsilon && i != j)
         {
             neighbors.push_back(j);
         }
@@ -151,24 +143,12 @@ void FrontierGeneration::setExplorationArea(const geometry_msgs::Point &center, 
     exploration_radius_ = radius;
 }
 
-bool FrontierGeneration::isInExplorationArea(const int i, const int j)
+bool FrontierGeneration::isInExplorationArea(const int i, const int j) const
 {
     return dist2D(pointFrom2DMapIndex(i, j, map_), exploration_center_) < exploration_radius_;
 }
 
-bool FrontierGeneration::isBlacklisted(const int i, const int j)
-{
-    for (auto pt : blacklisted_pts_)
-    {
-        if (dist2D(pointFrom2DMapIndex(i, j, map_), pt) < 0.5)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool FrontierGeneration::isBlacklisted(const geometry_msgs::Point &pt)
+bool FrontierGeneration::isBlacklisted(const geometry_msgs::Point &pt) const
 {
     for (auto blacklisted_pt : blacklisted_pts_)
     {

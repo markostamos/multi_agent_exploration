@@ -1,3 +1,9 @@
 [submodule "eband_local_planner"]
 	path = eband_local_planner
 	url = https://github.com/utexas-bwi/eband_local_planner
+[submodule "Groot"]
+	path = Groot
+	url = https://github.com/BehaviorTree/Groot
+[submodule "mae_global_planner"]
+	path = mae_global_planner
+	url = ./mae_global_planner/

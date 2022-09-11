@@ -31,11 +31,10 @@ public:
     void addToBlacklist(const geometry_msgs::Point &pt);
 
 private:
-    bool isFrontier(int i, int j);
-    bool isNearObstacle(int i, int j, float threshold);
-    bool isInExplorationArea(const int i, const int j);
-    bool isBlacklisted(const int i, const int j);
-    bool isBlacklisted(const geometry_msgs::Point &pt);
+    inline bool isFrontier(int i, int j) const;
+    bool isNearObstacle(int i, int j, float threshold) const;
+    bool isInExplorationArea(const int i, const int j) const;
+    bool isBlacklisted(const geometry_msgs::Point &pt) const;
 
     std::vector<int> getNeighbors(const std::vector<geometry_msgs::Point> &frontiers, int i, float epsilon);
 };
