@@ -35,7 +35,7 @@
   
 
   <!-- SPAWN A UAV -->
-  <include file="$(find mae_simulator)/launch/helpers/single_drone_spawn.launch">
+  <include file="$(find mae_simulator)/launch/helpers/single_complete.launch">
 
     <!-- UAV name -->
     <arg name="namespace" value="drone1"/>
@@ -55,14 +55,15 @@
     <arg name = "enable_bt" value = "$(arg enable_bt)"/> <!-- BT controller -->
     <arg name= "tree_file" value="test_tree.xml"/>
   </include> 
+
   <!-- SPAWN A UAV -->
-  <include file="$(find mae_simulator)/launch/helpers/single_drone_spawn.launch">
+  <include file="$(find mae_simulator)/launch/helpers/single_complete.launch">
 
     <!-- UAV name -->
     <arg name="namespace" value="drone2"/>
 
     <!--spawn location -->
-    <arg name="x" default="-2"/>
+    <arg name="x" default="-5"/>
     <arg name="y" default="0"/>
     <arg name="z" default="0.5"/>
     
@@ -77,15 +78,14 @@
     <arg name= "tree_file" value="test_tree.xml"/>
   </include> 
 <!-- SPAWN A UAV -->
-
-<include file="$(find mae_simulator)/launch/helpers/single_drone_spawn.launch">
+  <include file="$(find mae_simulator)/launch/helpers/single_complete.launch">
 
     <!-- UAV name -->
     <arg name="namespace" value="drone3"/>
 
     <!--spawn location -->
-    <arg name="x" default="1"/>
-    <arg name="y" default="-1"/>
+    <arg name="x" default="5"/>
+    <arg name="y" default="-3"/>
     <arg name="z" default="0.5"/>
     
     <!-- RVIZ for this UAV -->
@@ -98,34 +98,5 @@
     <arg name = "enable_bt" value = "$(arg enable_bt)"/> <!-- BT controller -->
     <arg name= "tree_file" value="test_tree.xml"/>
   </include> 
-
-  
-  
-  <node pkg="octomap_server" type="octomap_server_node" name="octomap_server">
-        
-        <param name="resolution" value="0.18" />
-        <param name="latch" value="false" />
-        <param name="frame_id" type="string" value="world" />
-        <param name="sensor_model/max_range" value="500" />
-        <!-- <param name="occupancy_min_z" value="0.15"/>
-        <param name="occupancy_max_z" value="1.5"/> -->
-        <param name="incremental_2D_projection" value="true"/>
-        <param name="pointcloud_min_z" value="0.15"/>
-        <param name="pointcloud_max_z" value="2"/>
-        
-        <remap from="cloud_in" to="/combined_pcl" />
-    
-    </node>
-   
-
-    <!-- Frontier Generation package -->
-    <node pkg="mae_frontier_generation" type="frontier_generation_node" name="frontier_generation_node" output="screen">
-      <remap from="/map_in" to="/projected_map"/>
-      <remap from="/frontiers_out" to="/frontiers"/>
-      <remap from="/frontiers_viz_out" to="/frontiers_viz"/>
-      <remap from= "/blacklist_pt_in" to="/blacklist_pt"/>
-      <remap from= "/exploration_area_out" to="/exploration_area"/>
-    </node>  
-  <node name="global_map_sharing" pkg="mae_utils" type="global_map_sharing_node.py" output="screen"/>
-  <node pkg="rviz" type="rviz" name="global_rviz" respawn="false" output="screen" args="-d $(find mae_simulator)/rviz/global.rviz"/>
+  <node pkg="rviz" type="rviz" name="global_rviz" respawn="false" output="screen" args="-d $(find mae_simulator)/rviz/global.rviz"/> 
 </launch>

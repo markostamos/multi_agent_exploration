@@ -10,7 +10,7 @@
                         <Condition ID="isFrontierListEmpty"/>
                     </Inverter>
                     <Sequence>
-                        <Action ID="NextTargetFromPlan"/>
+                        <Action ID="SetNextTargetGreedy"/>
                         <WhileDoElse>
                             <Sequence>
                                 <Inverter>
@@ -38,9 +38,7 @@
         <Action ID="GoTo">
             <input_port name="target" type="std::string"/>
         </Action>
-        <Condition ID="GreedyTargetDiscovered"/>
         <Action ID="Land"/>
-        <Action ID="NextTargetFromPlan"/>
         <Action ID="SetLocation">
             <input_port name="Name" type="std::string"/>
             <input_port name="Pos" type="geometry_msgs::Pose_&lt;std::allocator&lt;void&gt; &gt;"/>

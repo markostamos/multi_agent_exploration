@@ -23,11 +23,13 @@ private:
     ros::Subscriber pose_subscriber_;
     ros::Subscriber frontier_subscriber_;
     ros::Subscriber drone_position_subscriber_;
+    ros::Subscriber plan_subscriber_;
 
 private:
     void subPoseCallback(const nav_msgs::Odometry::ConstPtr &msg);
     void subFrontierCallback(const mae_utils::PointArray::ConstPtr &msg);
     void subDronePositionsCallback(const geometry_msgs::PointStamped::ConstPtr &msg);
+    void subPlanCallback(const mae_utils::PointArray::ConstPtr &msg);
 };
 
 #endif // HANDLE_BT_H

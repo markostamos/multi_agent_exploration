@@ -17,4 +17,5 @@
 #include <actions/SetLocation.h>
 #include <actions/SetNextTargetGreedy.h>
 #include <actions/CancelGoal.h>
+#include <actions/NextTargetFromPlan.h>
 #endif // ACTIONS_H

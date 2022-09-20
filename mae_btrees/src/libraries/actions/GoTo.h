@@ -17,7 +17,7 @@ public:
           config_(config),
           client_(state.ns + "/move_base", true)
     {
-        blacklist_pt_pub_ = state.nh->advertise<geometry_msgs::Point>("/blacklist_pt", 1);
+        blacklist_pt_pub_ = state.nh->advertise<geometry_msgs::Point>(state.ns + "/blacklist_pt", 1);
     }
 
     static BT::PortsList providedPorts()
@@ -43,6 +43,7 @@ public:
             msg.target_pose.header.frame_id = "world";
             msg.target_pose.header.stamp = ros::Time::now();
             msg.target_pose.pose = poseFromVec({goal_.position.x, goal_.position.y, goal_.position.z});
+            ROS_WARN_STREAM("Sending goal " << goal_.position.x << " " << goal_.position.y << " " << goal_.position.z);
             client_.sendGoal(msg);
         }
         else

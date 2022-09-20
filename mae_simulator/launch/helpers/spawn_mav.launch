@@ -38,6 +38,6 @@
          -y $(arg y)
          -z $(arg z)
          -model $(arg namespace)"
-   respawn="false" output="screen">
+   respawn="false" output="log">
   </node>
 </launch>
