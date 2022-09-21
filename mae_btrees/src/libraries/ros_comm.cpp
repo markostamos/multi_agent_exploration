@@ -9,6 +9,8 @@ void initRosComm(ros::NodeHandle &nh)
     state.publishers.commandVel = nh.advertise<geometry_msgs::Twist>(state.ns + "/command/cmd_vel", 100);
     state.frontier_pts = {};
     state.cancel_goal_req = false;
+    state.activity = "idle";
+    state.battery_percentage = 100;
 }
 
 void waitForConnection()

@@ -27,6 +27,9 @@ struct RosComm
 
     /* comm node */
     std::map<int, geometry_msgs::Point> drone_positions;
+
+    float battery_percentage;
+    std::string activity;
 };
 
 void initRosComm(ros::NodeHandle &nh);

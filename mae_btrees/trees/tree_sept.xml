@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="Activity Manager">
+        <Sequence>
+            <Condition ID="NewActivity"/>
+            <Action ID="SetActivity"/>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Fallback name="Main Loop">
+            <SubTree ID="Self Protection"/>
+            <Parallel failure_threshold="2" success_threshold="2">
+                <Sequence>
+                    <SubTree ID="User Interaction"/>
+                    <SubTree ID="Perform Activities"/>
+                </Sequence>
+                <SubTree ID="Activity Manager"/>
+            </Parallel>
+        </Fallback>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="Perform Activities">
+        <Fallback name="Activites Main Loop">
+            <Sequence name="Test_Activity">
+                <Condition ID="IsActive" activity_name="TEST" name=""/>
+                <Action ID="TestActivity" name=""/>
+            </Sequence>
+        </Fallback>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="Self Protection">
+        <Fallback name="SafetyLoop">
+            <Sequence>
+                <Condition ID="LowBattery"/>
+                <Action ID="TestActivity"/>
+            </Sequence>
+        </Fallback>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="User Interaction">
+        <Fallback>
+            <Condition ID="HaveActivity"/>
+            <AlwaysFailure name=""/>
+        </Fallback>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <SubTree ID="Activity Manager"/>
+        <Condition ID="HaveActivity"/>
+        <Condition ID="IsActive">
+            <input_port name="activity_name"/>
+        </Condition>
+        <Condition ID="LowBattery"/>
+        <Condition ID="NewActivity"/>
+        <SubTree ID="Perform Activities"/>
+        <Action ID="RechargeBattery"/>
+        <Action ID="RequestActivity"/>
+        <SubTree ID="Self Protection"/>
+        <Action ID="SetActivity"/>
+        <Action ID="TestActivity"/>
+        <SubTree ID="User Interaction"/>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
+

@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <ReactiveSequence>
+            <ReactiveFallback>
+                <SubTree ID="Self_Protection" __shared_blackboard="true"/>
+                <SubTree ID="User_Interaction" __shared_blackboard="true"/>
+                <AlwaysSuccess/>
+            </ReactiveFallback>
+            <ReactiveSequence>
+                <SubTree ID="Recovery_Tasks" __shared_blackboard="true"/>
+                <SubTree ID="User_Tasks" __shared_blackboard="true"/>
+            </ReactiveSequence>
+        </ReactiveSequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="Recovery_Tasks">
+        <Fallback name="Recovery Tasks">
+            <BlackboardCheckBool return_on_mismatch="" value_A="{SAFE}" value_B="true">
+                <AlwaysSuccess/>
+            </BlackboardCheckBool>
+            <Sequence name="Recharge">
+                <BlackboardCheckString return_on_mismatch="" value_A="{TASK}" value_B="Recharge">
+                    <AlwaysSuccess/>
+                </BlackboardCheckString>
+                <Action ID="Recharge"/>
+            </Sequence>
+        </Fallback>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="Self_Protection">
+        <Sequence>
+            <SetBlackboard output_key="SAFE" value="true"/>
+            <Fallback>
+                <Sequence>
+                    <Condition ID="LowBattery"/>
+                    <SetBlackboard output_key="TASK" value="Recharge"/>
+                </Sequence>
+            </Fallback>
+            <SetBlackboard output_key="SAFE" value="false"/>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="User_Interaction">
+        <Sequence>
+            <Condition ID="NewTaskReceived"/>
+            <Action ID="SetTask" Task="{TASK}"/>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="User_Tasks">
+        <Fallback name="User Tasks Main Loop">
+            <ReactiveSequence name="TestActivity">
+                <BlackboardCheckString name="Check if Test_Activity is active" return_on_mismatch="" value_A="{TASK}" value_B="Test_Activity">
+                    <AlwaysSuccess/>
+                </BlackboardCheckString>
+                <Action ID="TestActivity" msec="30000" name=""/>
+            </ReactiveSequence>
+        </Fallback>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Condition ID="LowBattery"/>
+        <Condition ID="NewTaskReceived"/>
+        <Action ID="Recharge"/>
+        <Action ID="RechargeBattery"/>
+        <SubTree ID="Recovery_Tasks">
+            <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
+        </SubTree>
+        <Action ID="RequestActivity"/>
+        <SubTree ID="Self_Protection">
+            <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
+        </SubTree>
+        <Action ID="SetTask">
+            <output_port default="{TASK}" name="Task"/>
+        </Action>
+        <Action ID="TestActivity">
+            <input_port default="5000" name="msec"/>
+        </Action>
+        <SubTree ID="User_Interaction">
+            <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
+        </SubTree>
+        <SubTree ID="User_Tasks">
+            <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
+        </SubTree>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
+

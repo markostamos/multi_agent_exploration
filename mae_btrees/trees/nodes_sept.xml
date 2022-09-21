@@ -1,0 +1,19 @@
+<root>
+    <TreeNodesModel>
+        <SubTree ID="Activity Manager"/>
+        <Condition ID="HaveActivity"/>
+        <Condition ID="IsActive">
+            <input_port name="activity_name"/>
+        </Condition>
+        <Condition ID="LowBattery"/>
+        <Condition ID="NewActivity"/>
+        <SubTree ID="Perform Activities"/>
+        <Action ID="RechargeBattery"/>
+        <Action ID="RequestActivity"/>
+        <SubTree ID="Self Protection"/>
+        <Action ID="SetActivity"/>
+        <Action ID="TestActivity"/>
+        <SubTree ID="User Interaction"/>
+    </TreeNodesModel>
+</root>
+

@@ -83,6 +83,7 @@
       <remap from= "/blacklist_pt_in" to="/$(arg namespace)/blacklist_pt"/>
       <remap from= "/exploration_area_out" to="/$(arg namespace)/exploration_area"/>
     </node>  
+    
      <node name="global_planner_node" pkg="mae_global_planner" type="global_planner_node" output="screen"/>
 
     <node name="drone_comm_node" pkg="mae_utils" type="drone_comm_node.py"  output="screen">

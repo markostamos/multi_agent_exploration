@@ -8,6 +8,7 @@
 #include <mae_utils/PointArray.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/PointStamped.h>
+#include <std_msgs/String.h>
 class HandleBT
 {
 public:
@@ -24,12 +25,14 @@ private:
     ros::Subscriber frontier_subscriber_;
     ros::Subscriber drone_position_subscriber_;
     ros::Subscriber plan_subscriber_;
+    ros::Subscriber activity_subscriber_;
 
 private:
     void subPoseCallback(const nav_msgs::Odometry::ConstPtr &msg);
     void subFrontierCallback(const mae_utils::PointArray::ConstPtr &msg);
     void subDronePositionsCallback(const geometry_msgs::PointStamped::ConstPtr &msg);
     void subPlanCallback(const mae_utils::PointArray::ConstPtr &msg);
+    void subActivityCallback(const std_msgs::String::ConstPtr &msg);
 };
 
 #endif // HANDLE_BT_H

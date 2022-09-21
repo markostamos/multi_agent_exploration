@@ -11,7 +11,8 @@ HandleBT::HandleBT(ros::NodeHandle &nh) : nh_(nh)
     frontier_subscriber_ = nh_.subscribe(state.ns + "/frontiers", 100, &HandleBT::subFrontierCallback, this);
     plan_subscriber_ = nh_.subscribe(state.ns + "/plan", 100, &HandleBT::subPlanCallback, this);
     drone_position_subscriber_ = nh_.subscribe(state.ns + "/comm/drone_positions", 100, &HandleBT::subDronePositionsCallback, this);
-    waitForConnection();
+    activity_subscriber_ = nh_.subscribe(state.ns + "/activity", 100, &HandleBT::subActivityCallback, this);
+    // waitForConnection();
 }
 
 void HandleBT::createTree(std::string path)
@@ -25,8 +26,15 @@ void HandleBT::createTree(std::string path)
     factory.registerNodeType<Land>("Land");
     factory.registerNodeType<SetNextTargetGreedy>("SetNextTargetGreedy");
     factory.registerNodeType<NextTargetFromPlan>("NextTargetFromPlan");
+
+    factory.registerNodeType<SetTask>("SetTask");
+    factory.registerNodeType<TestActivity>("TestActivity");
     factory.registerSimpleAction("CancelGoal", std::bind(CancelGoal));
+    factory.registerSimpleAction("Recharge", std::bind(Recharge));
     // REGISTER CONDITIONS
+    factory.registerSimpleCondition("NewTaskReceived", std::bind(NewTaskReceived));
+    factory.registerSimpleCondition("LowBattery", std::bind(LowBattery));
+
     factory.registerSimpleCondition("isFrontierListEmpty", std::bind(isFrontierListEmpty));
     factory.registerSimpleCondition("TargetDiscovered", std::bind(TargetDiscovered));
     factory.registerSimpleCondition("GreedyTargetDiscovered", std::bind(GreedyTargetDiscovered));
@@ -64,4 +72,9 @@ void HandleBT::subPlanCallback(const mae_utils::PointArray::ConstPtr &msg)
     // get all poitns from msg except from first
     state.plan_pts = std::vector<geometry_msgs::Point>(msg->points.begin() + 1, msg->points.end());
     state.replan = true;
+}
+
+void HandleBT::subActivityCallback(const std_msgs::String::ConstPtr &msg)
+{
+    state.activity = msg->data;
 }

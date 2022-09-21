@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 
   // xml tree file
   std::string xml_filename;
-  private_nh.param<std::string>("file", xml_filename, "bad");
+  private_nh.param<std::string>("file", xml_filename, "test_stept.xml");
 
   std::string path = ros::package::getPath("mae_btrees") + "/trees/" + xml_filename;
 
@@ -28,8 +28,9 @@ int main(int argc, char **argv)
 
   // loggers
 
-  // PublisherZMQ publisher_zmq(handler.tree_);
-  while (ros::ok() && (status == NodeStatus::IDLE || status == NodeStatus::RUNNING))
+  PublisherZMQ publisher_zmq(handler.tree_);
+  // StdCoutLogger logger_cout(handler.tree_);
+  while (ros::ok())
   {
     ros::spinOnce();
     status = handler.tree_.tickRoot();
