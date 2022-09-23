@@ -11,7 +11,7 @@
   <arg name="z" default="0.1"/>
   <arg name="enable_rviz" default="false"/>
   <arg name="enable_bt" default="false"/>
-  <arg name="tree_file"/>
+  <arg name="tree_file" default="main_tree.xml"/>
   
   <group ns="$(arg namespace)">
   <!-- Spawn UAV -->

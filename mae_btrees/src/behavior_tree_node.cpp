@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 
   // xml tree file
   std::string xml_filename;
-  private_nh.param<std::string>("file", xml_filename, "test_stept.xml");
+  private_nh.param<std::string>("file", xml_filename, "main_tree.xml");
 
   std::string path = ros::package::getPath("mae_btrees") + "/trees/" + xml_filename;
 

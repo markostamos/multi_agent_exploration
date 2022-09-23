@@ -1,10 +1,12 @@
-#ifndef SET_TASK_H
-#define SET_TASK_H
+#ifndef CLEAR_TASKS_H
+#define CLEAR_TASKS_H
+
 extern RosComm state;
-class SetTask : public BT::SyncActionNode
+extern RosComm state;
+class ClearTask : public BT::SyncActionNode
 {
 public:
-    SetTask(const std::string &name, const BT::NodeConfiguration &config)
+    ClearTask(const std::string &name, const BT::NodeConfiguration &config)
         : BT::SyncActionNode(name, config)
     {
     }
@@ -18,8 +20,8 @@ public:
     BT::NodeStatus tick()
 
     {
-        setOutput<std::string>("Task", state.requested_task);
+        setOutput<std::string>("Task", "");
         return BT::NodeStatus::SUCCESS;
     }
 };
-#endif // SET_TASK_H
+#endif // CLEAR_TASKS_H

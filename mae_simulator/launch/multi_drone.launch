@@ -13,7 +13,7 @@
   <arg name="lidar_gpu" default="true"/>
   <arg name="enable_rviz" default="false"/>
   <arg name = "enable_bt" default="false"/>  <!-- BT = Behavior Tree controller -->
-  <arg name= "tree_file" default="test_tree.xml"/>
+  <arg name= "tree_file" default="main_tree.xml"/>
   
 
  
@@ -53,7 +53,7 @@
     <arg name="enable_logging" value="$(arg enable_logging)"/>
     <arg name="lidar_gpu" value="$(arg lidar_gpu)"/>
     <arg name = "enable_bt" value = "$(arg enable_bt)"/> <!-- BT controller -->
-    <arg name= "tree_file" value="test_tree.xml"/>
+    <arg name= "tree_file" value="$(arg tree_file)"/>
   </include> 
 
   <!-- SPAWN A UAV -->
@@ -75,7 +75,7 @@
     <arg name="enable_logging" value="$(arg enable_logging)"/>
     <arg name="lidar_gpu" value="$(arg lidar_gpu)"/>
     <arg name = "enable_bt" value = "$(arg enable_bt)"/> <!-- BT controller -->
-    <arg name= "tree_file" value="test_tree.xml"/>
+    <arg name= "tree_file" value="$(arg tree_file)"/>
   </include> 
 <!-- SPAWN A UAV -->
   <include file="$(find mae_simulator)/launch/helpers/single_complete.launch">

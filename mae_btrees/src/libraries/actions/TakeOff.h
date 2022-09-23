@@ -24,42 +24,47 @@ public:
     {
 
         if (!getInput<double>("Height", height_))
+            throw BT::RuntimeError("missing required input [Height]");
+
+        if (shouldStart())
         {
-            ROS_ERROR("No height specified");
-            return BT::NodeStatus::FAILURE;
-        }
-        else
-        {
+            ROS_WARN_STREAM("TakeOff task started");
             geometry_msgs::Twist msg = twistFromVec({0, 0, 0.4});
             state.publishers.commandVel.publish(msg);
+            return BT::NodeStatus::RUNNING;
         }
-
-        halt_requested_.store(false);
-
-        return BT::NodeStatus::RUNNING;
+        return BT::NodeStatus::SUCCESS;
     }
 
     BT::NodeStatus onRunning()
     {
-        if (halt_requested_)
-        {
-            return BT::NodeStatus::FAILURE;
-        }
-        if (std::abs(state.pose.position.z - height_) < 0.1)
+        if (taskCompleted())
         {
             geometry_msgs::Twist msg = twistFromVec({0, 0, 0});
             state.publishers.commandVel.publish(msg);
+            ROS_WARN_STREAM("TakeOff task completed");
             return BT::NodeStatus::SUCCESS;
         }
         return BT::NodeStatus::RUNNING;
     }
     void onHalted()
     {
-        halt_requested_.store(true);
+        geometry_msgs::Twist msg = twistFromVec({0, 0, 0});
+        state.publishers.commandVel.publish(msg);
+        ROS_WARN_STREAM("TakeOff Halted");
+    }
+
+    inline bool shouldStart()
+    {
+        return state.pose.position.z < height_ - 0.1;
+    }
+
+    inline bool taskCompleted()
+    {
+        return state.pose.position.z >= height_ - 0.1;
     }
 
 private:
-    std::atomic_bool halt_requested_;
     double height_;
 };
 

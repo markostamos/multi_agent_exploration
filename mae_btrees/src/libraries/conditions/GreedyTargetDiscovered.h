@@ -3,17 +3,33 @@
 
 extern RosComm state;
 
-// if the new target is substantially different than the active target, then it has been discovered
-BT::NodeStatus GreedyTargetDiscovered()
+class GreedyTargetDiscovered : public BT::ConditionNode
 {
-    for (const auto &pt : state.frontier_pts)
+public:
+    GreedyTargetDiscovered(const std::string &name,
+                           const BT::NodeConfiguration &config) : BT::ConditionNode(name, config) {}
+
+    static BT::PortsList providedPorts()
     {
-        if (dist2D(pointFromPose(state.next_target), pt) < 2)
-        {
-            return BT::NodeStatus::FAILURE;
-        }
+        return {BT::InputPort<geometry_msgs::Pose>("Target")};
     }
-    return BT::NodeStatus::SUCCESS;
-}
+
+    BT::NodeStatus tick() override
+    {
+        geometry_msgs::Pose current_target;
+        if (!getInput<geometry_msgs::Pose>("Target", current_target))
+        {
+            return BT::NodeStatus::SUCCESS;
+        }
+        for (const auto &pt : state.frontier_pts)
+        {
+            if (dist2D(pointFromPose(current_target), pt) < 2)
+            {
+                return BT::NodeStatus::FAILURE;
+            }
+        }
+        return BT::NodeStatus::SUCCESS;
+    }
+};
 
 #endif // GREEDY_TARGET_DISCOVERED_H

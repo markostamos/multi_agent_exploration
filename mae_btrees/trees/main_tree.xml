@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <ReactiveSequence>
+            <SetBlackboard name="Set Starting Task" output_key="TASK" value="Greedy_Exploration"/>
+            <ReactiveFallback name="Protection-Interaction Fallback">
+                <SubTree ID="Self_Protection" __shared_blackboard="true"/>
+                <SubTree ID="User_Interaction" __shared_blackboard="true"/>
+                <AlwaysSuccess/>
+            </ReactiveFallback>
+            <ReactiveSequence>
+                <SubTree ID="Recovery_Tasks" __shared_blackboard="true"/>
+                <SubTree ID="User_Tasks" __shared_blackboard="true"/>
+            </ReactiveSequence>
+        </ReactiveSequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="Greedy_Exploration_S">
+        <ReactiveSequence name="Greedy_Exploration">
+            <BlackboardCheckString name="Active Task is Greedy_Exploration" return_on_mismatch="" value_A="{TASK}" value_B="Greedy_Exploration">
+                <AlwaysSuccess/>
+            </BlackboardCheckString>
+            <SequenceStar name="Greedy Exploration Sequence">
+                <Action Height="1.5" ID="TakeOff"/>
+                <ReactiveFallback>
+                    <Condition ID="isFrontierListEmpty"/>
+                    <ForceFailure>
+                        <Sequence>
+                            <Action ID="SetNextTargetGreedy" Target="{TARGET}"/>
+                            <ReactiveFallback>
+                                <Condition ID="GreedyTargetDiscovered" Target="{TARGET}"/>
+                                <Action ID="GoTo" Target="{TARGET}"/>
+                            </ReactiveFallback>
+                        </Sequence>
+                    </ForceFailure>
+                </ReactiveFallback>
+                <Action ID="Land"/>
+            </SequenceStar>
+        </ReactiveSequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="Land_S">
+        <ReactiveSequence name="Land">
+            <BlackboardCheckString name="Active user Task is Land" return_on_mismatch="" value_A="{TASK}" value_B="Land">
+                <AlwaysSuccess/>
+            </BlackboardCheckString>
+            <Action ID="Land"/>
+        </ReactiveSequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="Recharge_S">
+        <ReactiveSequence name="Recharge">
+            <BlackboardCheckString name="Active Recovery Task is Recharge" return_on_mismatch="" value_A="{TASK}" value_B="Recharge">
+                <AlwaysSuccess/>
+            </BlackboardCheckString>
+            <Action ID="Recharge"/>
+        </ReactiveSequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="Recovery_Tasks">
+        <ReactiveFallback name="Recovery Tasks Fallback">
+            <BlackboardCheckBool name="Active Task is Recovery Type" return_on_mismatch="" value_A="{SAFE}" value_B="true">
+                <AlwaysSuccess/>
+            </BlackboardCheckBool>
+            <SubTree ID="Recharge_S" __shared_blackboard="true"/>
+        </ReactiveFallback>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="Self_Protection">
+        <Sequence>
+            <SetBlackboard name="Set SAFE to true" output_key="SAFE" value="true"/>
+            <Fallback name="Safety flags fallback">
+                <Sequence name="Recharge Flag Sequence">
+                    <Condition ID="LowBattery" name="Low Battery Check"/>
+                    <SetBlackboard name="Set task to Recharge" output_key="TASK" value="Recharge"/>
+                </Sequence>
+            </Fallback>
+            <SetBlackboard name="Set SAFE to false" output_key="SAFE" value="false"/>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="TakeOff_S">
+        <ReactiveSequence name="TakeOff">
+            <BlackboardCheckString name="Active User Task is TakeOff" return_on_mismatch="" value_A="{TASK}" value_B="TakeOff">
+                <AlwaysSuccess/>
+            </BlackboardCheckString>
+            <Action Height="1.5" ID="TakeOff"/>
+        </ReactiveSequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="TestActivity_S">
+        <ReactiveSequence name="TestActivity">
+            <BlackboardCheckString name="Active User Task is TestActivity" return_on_mismatch="" value_A="{TASK}" value_B="TestActivity">
+                <AlwaysSuccess/>
+            </BlackboardCheckString>
+            <Action ID="TestActivity" msec="5000"/>
+        </ReactiveSequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="User_Interaction">
+        <Sequence>
+            <Condition ID="TaskAvailable" name="Check for tasks by user"/>
+            <Action ID="SetTask" Task="{TASK}" name="Set User's Task"/>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="User_Tasks">
+        <Fallback name="User Tasks Fallback">
+            <SubTree ID="TestActivity_S" __shared_blackboard="true"/>
+            <SubTree ID="Land_S" __shared_blackboard="true"/>
+            <SubTree ID="TakeOff_S" __shared_blackboard="true"/>
+            <SubTree ID="Greedy_Exploration_S" __shared_blackboard="true"/>
+        </Fallback>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="CancelGoal"/>
+        <Action ID="GoTo">
+            <input_port default="{TARGET}" name="Target"/>
+        </Action>
+        <Condition ID="GreedyTargetDiscovered">
+            <input_port default="{TARGET}" name="Target"/>
+        </Condition>
+        <SubTree ID="Greedy_Exploration_S">
+            <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
+        </SubTree>
+        <Action ID="Land"/>
+        <SubTree ID="Land_S">
+            <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
+        </SubTree>
+        <Condition ID="LowBattery"/>
+        <Action ID="Recharge"/>
+        <Action ID="RechargeBattery"/>
+        <SubTree ID="Recharge_S">
+            <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
+        </SubTree>
+        <SubTree ID="Recovery_Tasks">
+            <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
+        </SubTree>
+        <Action ID="RequestActivity"/>
+        <SubTree ID="Self_Protection">
+            <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
+        </SubTree>
+        <Action ID="SetLocation">
+            <input_port name="Name"/>
+            <input_port name="Pos"/>
+        </Action>
+        <Action ID="SetNextTargetGreedy">
+            <output_port default="{Target}" name="Target"/>
+        </Action>
+        <Action ID="SetTask">
+            <output_port default="{TASK}" name="Task"/>
+        </Action>
+        <Action ID="TakeOff">
+            <input_port name="Height"/>
+        </Action>
+        <SubTree ID="TakeOff_S">
+            <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
+        </SubTree>
+        <Action ID="TargetDiscovered">
+            <input_port default="{TARGET}" name="Target"/>
+        </Action>
+        <Condition ID="TaskAvailable"/>
+        <Action ID="TestActivity">
+            <input_port default="5000" name="msec"/>
+        </Action>
+        <SubTree ID="TestActivity_S">
+            <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
+        </SubTree>
+        <SubTree ID="User_Interaction">
+            <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
+        </SubTree>
+        <SubTree ID="User_Tasks">
+            <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
+        </SubTree>
+        <Condition ID="isFrontierListEmpty"/>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
+

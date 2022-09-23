@@ -14,7 +14,6 @@ class GoTo : public BT::StatefulActionNode
 public:
     GoTo(const std::string &name, const BT::NodeConfiguration &config)
         : StatefulActionNode(name, config),
-          config_(config),
           client_(state.ns + "/move_base", true)
     {
         blacklist_pt_pub_ = state.nh->advertise<geometry_msgs::Point>(state.ns + "/blacklist_pt", 1);
@@ -22,107 +21,69 @@ public:
 
     static BT::PortsList providedPorts()
     {
-        return {BT::InputPort<std::string>("target")};
+        return {BT::InputPort<geometry_msgs::Pose>("Target")};
     }
 
-    BT::NodeStatus onStart()
+    BT::NodeStatus onStart() override
     {
         if (!client_.waitForServer(ros::Duration(10.0)))
         {
-            ROS_ERROR("Failed to connect to move_base action server");
-            return BT::NodeStatus::FAILURE;
+            throw BT::RuntimeError("[GoTo] Could not connect to move_base server");
         }
-        std::string goal_string;
+        if (!getInput<geometry_msgs::Pose>("Target", target_))
+            throw BT::RuntimeError("[GoTo] missing required input [Target]");
 
-        if (getInput<std::string>("target", goal_string))
+        if (abs(state.pose.position.x - target_.position.x) < 0.1 &&
+            abs(state.pose.position.y - target_.position.y) < 0.1)
         {
-
-            goal_ = config_.blackboard->get<geometry_msgs::Pose>(goal_string);
-
-            move_base_msgs::MoveBaseGoal msg;
-            msg.target_pose.header.frame_id = "world";
-            msg.target_pose.header.stamp = ros::Time::now();
-            msg.target_pose.pose = poseFromVec({goal_.position.x, goal_.position.y, goal_.position.z});
-            ROS_WARN_STREAM("Sending goal " << goal_.position.x << " " << goal_.position.y << " " << goal_.position.z);
-            client_.sendGoal(msg);
+            ROS_WARN_STREAM("[GoTo] Agent already at target");
+            return BT::NodeStatus::SUCCESS;
         }
-        else
-        {
-            ROS_ERROR("No goal specified");
-            return BT::NodeStatus::FAILURE;
-        }
+
+        move_base_msgs::MoveBaseGoal msg;
+        msg.target_pose.header.frame_id = "world";
+        msg.target_pose.header.stamp = ros::Time::now();
+        msg.target_pose.pose = target_;
+        ROS_WARN_STREAM("[GoTo] Sending goal (" << target_.position.x << "," << target_.position.y << "," << target_.position.z << ")");
+        client_.sendGoal(msg);
 
         return BT::NodeStatus::RUNNING;
     }
 
-    BT::NodeStatus onRunning()
+    BT::NodeStatus onRunning() override
     {
-        /* if (state.cancel_goal_req)
-        {
-            if (client_.getState() == actionlib::SimpleClientGoalState::ACTIVE)
-                client_.cancelGoal();
-            state.cancel_goal_req = false;
-            return BT::NodeStatus::FAILURE;
-        }
 
-        if (client_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
+        switch (client_.getState().state_)
         {
+        case actionlib::SimpleClientGoalState::SUCCEEDED:
+            ROS_WARN_STREAM("[GoTo] Goal reached");
             return BT::NodeStatus::SUCCESS;
-        }
-        else if (client_.getState() == actionlib::SimpleClientGoalState::ACTIVE)
-        {
-
+        case actionlib::SimpleClientGoalState::ABORTED:
+            ROS_WARN_STREAM("[GoTo] Goal aborted");
+            blacklist_pt_pub_.publish(target_.position);
+            return BT::NodeStatus::FAILURE;
+        case actionlib::SimpleClientGoalState::REJECTED:
+            ROS_WARN_STREAM("[GoTo] Goal rejected");
+            return BT::NodeStatus::FAILURE;
+        case actionlib::SimpleClientGoalState::ACTIVE:
+        case actionlib::SimpleClientGoalState::PENDING:
+            return BT::NodeStatus::RUNNING;
+        default:
             return BT::NodeStatus::RUNNING;
         }
-        // TODO: if goal is rejected must be removed from frontiers
-        else if (client_.getState() == actionlib::SimpleClientGoalState::ABORTED)
-        {
-            // blacklist_pt_pub_.publish(goal_);
-            return BT::NodeStatus::FAILURE;
-        }
-        else
-        {
-            return BT::NodeStatus::FAILURE;
-        } */
-        if (state.cancel_goal_req && (client_.getState() != actionlib::SimpleClientGoalState::ABORTED ||
-                                      client_.getState() != actionlib::SimpleClientGoalState::PREEMPTED))
-        {
-            client_.cancelAllGoals();
-            state.cancel_goal_req = false;
-            return BT::NodeStatus::FAILURE;
-        }
-
-        if (client_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
-        {
-            return BT::NodeStatus::SUCCESS;
-        }
-        if (client_.getState() == actionlib::SimpleClientGoalState::ACTIVE ||
-            client_.getState() == actionlib::SimpleClientGoalState::PENDING)
-        {
-            return BT::NodeStatus::RUNNING;
-        }
-
-        // TODO: if goal is rejected must be removed from frontiers
-        if (client_.getState() == actionlib::SimpleClientGoalState::ABORTED)
-        {
-            blacklist_pt_pub_.publish(goal_);
-            return BT::NodeStatus::FAILURE;
-        }
-
-        return BT::NodeStatus::FAILURE;
     }
 
-    void onHalted()
+    void onHalted() override
     {
-        state.cancel_goal_req = true;
+        client_.cancelGoal();
+        ROS_WARN_STREAM("[GoTo] Halted");
     }
 
 private:
     typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
     MoveBaseClient client_;
-    BT::NodeConfiguration config_;
-    geometry_msgs::Pose goal_;
+    geometry_msgs::Pose target_;
     ros::Publisher blacklist_pt_pub_;
 };
 

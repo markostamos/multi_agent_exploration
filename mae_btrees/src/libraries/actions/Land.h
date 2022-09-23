@@ -18,35 +18,41 @@ public:
 
     BT::NodeStatus onStart()
     {
-        geometry_msgs::Twist msg = twistFromVec({0, 0, -0.4});
-        state.publishers.commandVel.publish(msg);
-
-        halt_requested_.store(false);
-
-        return BT::NodeStatus::RUNNING;
+        if (!taskCompleted())
+        {
+            ROS_WARN_STREAM("Land task started");
+            geometry_msgs::Twist msg = twistFromVec({0, 0, -0.4});
+            state.publishers.commandVel.publish(msg);
+            return BT::NodeStatus::RUNNING;
+        }
+        return BT::NodeStatus::SUCCESS;
     }
 
     BT::NodeStatus onRunning()
     {
-        if (halt_requested_)
-        {
-            return BT::NodeStatus::FAILURE;
-        }
-        if (state.pose.position.z < 0.1)
+        if (taskCompleted())
         {
             geometry_msgs::Twist msg = twistFromVec({0, 0, 0});
             state.publishers.commandVel.publish(msg);
+            ROS_WARN_STREAM("Land task completed");
             return BT::NodeStatus::SUCCESS;
         }
         return BT::NodeStatus::RUNNING;
     }
+
+    inline bool taskCompleted()
+    {
+        return state.pose.position.z < 0.1;
+    }
+
     void onHalted()
     {
-        halt_requested_.store(true);
+        ROS_WARN_STREAM("Land task halted");
+        geometry_msgs::Twist msg = twistFromVec({0, 0, 0});
+        state.publishers.commandVel.publish(msg);
     }
 
 private:
-    std::atomic_bool halt_requested_;
     double height_;
 };
 

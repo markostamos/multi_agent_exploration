@@ -15,7 +15,7 @@
 #include <conditions/TargetDiscovered.h>
 #include <conditions/GreedyTargetDiscovered.h>
 #include <conditions/isNearOtherDrones.h>
-#include <conditions/NewTaskReceived.h>
+#include <conditions/TaskAvailable.h>
 #include <conditions/LowBattery.h>
 
 #endif // CONDITIONS_H

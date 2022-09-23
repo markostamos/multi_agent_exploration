@@ -19,6 +19,7 @@
 #include <actions/CancelGoal.h>
 #include <actions/NextTargetFromPlan.h>
 #include <actions/SetTask.h>
+#include <actions/ClearTask.h>
 #include <actions/TestActivity.h>
 #include <actions/Recharge.h>
 #endif // ACTIONS_H
