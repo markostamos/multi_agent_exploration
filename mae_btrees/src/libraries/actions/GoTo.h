@@ -31,7 +31,10 @@ public:
             throw BT::RuntimeError("[GoTo] Could not connect to move_base server");
         }
         if (!getInput<geometry_msgs::Pose>("Target", target_))
-            throw BT::RuntimeError("[GoTo] missing required input [Target]");
+        {
+            ROS_WARN_STREAM("[GoTo] Could not get target pose, returning SUCCESS");
+            return BT::NodeStatus::SUCCESS;
+        }
 
         if (abs(state.pose.position.x - target_.position.x) < 0.1 &&
             abs(state.pose.position.y - target_.position.y) < 0.1)
@@ -65,10 +68,13 @@ public:
         case actionlib::SimpleClientGoalState::REJECTED:
             ROS_WARN_STREAM("[GoTo] Goal rejected");
             return BT::NodeStatus::FAILURE;
-        case actionlib::SimpleClientGoalState::ACTIVE:
-        case actionlib::SimpleClientGoalState::PENDING:
-            return BT::NodeStatus::RUNNING;
         default:
+
+            if (dist2d(state.pose, target_) < 0.1)
+            {
+                ROS_WARN_STREAM("[GoTo] Goal reached");
+                return BT::NodeStatus::SUCCESS;
+            }
             return BT::NodeStatus::RUNNING;
         }
     }
@@ -77,6 +83,11 @@ public:
     {
         client_.cancelGoal();
         ROS_WARN_STREAM("[GoTo] Halted");
+    }
+
+    inline float dist2d(const geometry_msgs::Pose &p1, const geometry_msgs::Pose &p2)
+    {
+        return sqrt(pow(p1.position.x - p2.position.x, 2) + pow(p1.position.y - p2.position.y, 2));
     }
 
 private:

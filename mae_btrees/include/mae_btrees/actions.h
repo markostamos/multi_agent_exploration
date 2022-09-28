@@ -16,7 +16,6 @@
 #include <actions/Land.h>
 #include <actions/SetLocation.h>
 #include <actions/SetNextTargetGreedy.h>
-#include <actions/CancelGoal.h>
 #include <actions/SetNextTargetFromPlan.h>
 #include <actions/SetTask.h>
 #include <actions/ClearTask.h>

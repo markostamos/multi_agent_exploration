@@ -2,7 +2,6 @@
 #define CLEAR_TASKS_H
 
 extern RosComm state;
-extern RosComm state;
 class ClearTask : public BT::SyncActionNode
 {
 public:
@@ -20,7 +19,8 @@ public:
     BT::NodeStatus tick()
 
     {
-        setOutput<std::string>("Task", "");
+        state.requested_task = "Idle";
+        setOutput<std::string>("Task", "Idle");
         return BT::NodeStatus::SUCCESS;
     }
 };

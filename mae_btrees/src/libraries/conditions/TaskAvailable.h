@@ -5,7 +5,7 @@ extern RosComm state;
 
 BT::NodeStatus TaskAvailable()
 {
-    if (state.requested_task == "idle")
+    if (state.requested_task == "Idle")
         return BT::NodeStatus::FAILURE;
     else
         return BT::NodeStatus::SUCCESS;

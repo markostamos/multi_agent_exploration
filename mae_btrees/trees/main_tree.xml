@@ -20,7 +20,7 @@
             <BlackboardCheckString return_on_mismatch="" value_A="{TASK}" value_B="Exploration">
                 <AlwaysSuccess/>
             </BlackboardCheckString>
-            <SequenceStar>
+            <Sequence>
                 <Action Height="1.5" ID="TakeOff"/>
                 <ReactiveFallback>
                     <Condition ID="isFrontierListEmpty"/>
@@ -35,8 +35,9 @@
                         </Sequence>
                     </ForceFailure>
                 </ReactiveFallback>
+                <Action ID="GoTo" Target="{Home}"/>
                 <Action ID="Land"/>
-            </SequenceStar>
+            </Sequence>
         </ReactiveSequence>
     </BehaviorTree>
     <!-- ////////// -->
@@ -45,13 +46,13 @@
             <BlackboardCheckString name="Active Task is Greedy_Exploration" return_on_mismatch="" value_A="{TASK}" value_B="Greedy_Exploration">
                 <AlwaysSuccess/>
             </BlackboardCheckString>
-            <SequenceStar name="Greedy Exploration Sequence">
+            <Sequence name="Greedy Exploration Sequence">
                 <Action Height="1.5" ID="TakeOff"/>
                 <ReactiveFallback>
                     <Condition ID="isFrontierListEmpty"/>
                     <ForceFailure>
                         <Sequence>
-                            <Action ID="SetNextTargetGreedy"/>
+                            <Action ID="SetNextTargetGreedy" Target="{TARGET}"/>
                             <ReactiveFallback>
                                 <Condition ID="GreedyTargetDiscovered" Target="{TARGET}"/>
                                 <Action ID="GoTo" Target="{TARGET}"/>
@@ -59,8 +60,20 @@
                         </Sequence>
                     </ForceFailure>
                 </ReactiveFallback>
+                <Action ID="GoTo" Target="{Home}"/>
                 <Action ID="Land"/>
-            </SequenceStar>
+            </Sequence>
+        </ReactiveSequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="IDLE_S">
+        <ReactiveSequence>
+            <BlackboardCheckString return_on_mismatch="" value_A="{TASK}" value_B="Idle">
+                <AlwaysSuccess/>
+            </BlackboardCheckString>
+            <Delay delay_msec="10000">
+                <AlwaysSuccess/>
+            </Delay>
         </ReactiveSequence>
     </BehaviorTree>
     <!-- ////////// -->
@@ -89,6 +102,19 @@
             </BlackboardCheckBool>
             <SubTree ID="Recharge_S" __shared_blackboard="true"/>
         </ReactiveFallback>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="Return_Home_S">
+        <ReactiveSequence>
+            <BlackboardCheckString return_on_mismatch="" value_A="{TASK}" value_B="Return_Home">
+                <AlwaysSuccess/>
+            </BlackboardCheckString>
+            <Sequence>
+                <Action Height="1.5" ID="TakeOff"/>
+                <Action ID="GoTo" Target="{Home}"/>
+                <Action ID="Land"/>
+            </Sequence>
+        </ReactiveSequence>
     </BehaviorTree>
     <!-- ////////// -->
     <BehaviorTree ID="Self_Protection">
@@ -124,24 +150,35 @@
     </BehaviorTree>
     <!-- ////////// -->
     <BehaviorTree ID="User_Interaction">
-        <Sequence>
-            <Condition ID="TaskAvailable" name="Check for tasks by user"/>
-            <Action ID="SetTask" Task="{TASK}" name="Set User's Task"/>
-        </Sequence>
+        <Fallback>
+            <Sequence>
+                <Condition ID="TaskAvailable" name="Check for tasks by user"/>
+                <Action ID="SetTask" Task="{TASK}" name="Set User's Task"/>
+            </Sequence>
+            <SetBlackboard output_key="TASK" value="Idle"/>
+        </Fallback>
     </BehaviorTree>
     <!-- ////////// -->
     <BehaviorTree ID="User_Tasks">
-        <Fallback name="User Tasks Fallback">
-            <SubTree ID="TestActivity_S" __shared_blackboard="true"/>
-            <SubTree ID="Land_S" __shared_blackboard="true"/>
-            <SubTree ID="TakeOff_S" __shared_blackboard="true"/>
-            <SubTree ID="Greedy_Exploration_S" __shared_blackboard="true"/>
-            <SubTree ID="Exploration_S" __shared_blackboard="true"/>
-        </Fallback>
+        <Sequence>
+            <Fallback name="User Tasks Fallback">
+                <SubTree ID="TestActivity_S" __shared_blackboard="true"/>
+                <SubTree ID="Land_S" __shared_blackboard="true"/>
+                <SubTree ID="TakeOff_S" __shared_blackboard="true"/>
+                <SubTree ID="Greedy_Exploration_S" __shared_blackboard="true"/>
+                <SubTree ID="Exploration_S" __shared_blackboard="true"/>
+                <SubTree ID="IDLE_S" __shared_blackboard="false"/>
+                <SubTree ID="Return_Home_S" __shared_blackboard="true"/>
+            </Fallback>
+            <Action ID="ClearTask" Task="{TASK}" name=""/>
+        </Sequence>
     </BehaviorTree>
     <!-- ////////// -->
     <TreeNodesModel>
         <Action ID="CancelGoal"/>
+        <Action ID="ClearTask">
+            <output_port default="{TASK}" name="Task"/>
+        </Action>
         <SubTree ID="Exploration_S">
             <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
         </SubTree>
@@ -152,6 +189,9 @@
             <input_port default="{TARGET}" name="Target"/>
         </Condition>
         <SubTree ID="Greedy_Exploration_S">
+            <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
+        </SubTree>
+        <SubTree ID="IDLE_S">
             <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
         </SubTree>
         <Action ID="Land"/>
@@ -169,6 +209,9 @@
             <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
         </SubTree>
         <Action ID="RequestActivity"/>
+        <SubTree ID="Return_Home_S">
+            <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
+        </SubTree>
         <SubTree ID="Self_Protection">
             <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
         </SubTree>
@@ -179,7 +222,9 @@
         <Action ID="SetNextTargetFromPlan">
             <input_port default="{TARGET}" name="Target"/>
         </Action>
-        <Action ID="SetNextTargetGreedy"/>
+        <Action ID="SetNextTargetGreedy">
+            <output_port default="{TARGET}" name="Target"/>
+        </Action>
         <Action ID="SetTask">
             <output_port default="{TASK}" name="Task"/>
         </Action>

@@ -7,8 +7,8 @@ void initRosComm(ros::NodeHandle &nh)
     state.ns = nh.getNamespace().c_str();
     state.publishers.commandVel = nh.advertise<geometry_msgs::Twist>(state.ns + "/command/cmd_vel", 100);
     state.frontier_pts = {};
-    state.cancel_goal_req = false;
-    state.requested_task = "idle";
+
+    state.requested_task = "Idle";
     state.battery_percentage = 100;
 }
 

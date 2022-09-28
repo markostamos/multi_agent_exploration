@@ -37,6 +37,8 @@ public:
             ROS_WARN_STREAM("Land task completed");
             return BT::NodeStatus::SUCCESS;
         }
+        geometry_msgs::Twist msg = twistFromVec({0, 0, -0.4});
+        state.publishers.commandVel.publish(msg);
         return BT::NodeStatus::RUNNING;
     }
 

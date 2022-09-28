@@ -16,18 +16,24 @@ struct RosComm
     ros::NodeHandle *nh;
     std::string ns;
 
+    // Agent current position
     geometry_msgs::Pose pose;
+
+    // Frontier points
     std::vector<geometry_msgs::Point> frontier_pts;
+
+    // Received plan points
     std::vector<geometry_msgs::Point> plan_pts;
+
+    // Current battery percentage
     float battery_percentage;
 
     Pubs publishers;
-    bool cancel_goal_req;
-    geometry_msgs::Pose next_target;
 
-    /* comm node */
+    // Positions of other agents
     std::map<int, geometry_msgs::Point> drone_positions;
 
+    // Task requested by user
     std::string requested_task;
 };
 

@@ -30,7 +30,6 @@ void HandleBT::createTree(std::string path)
     factory.registerNodeType<SetTask>("SetTask");
     factory.registerNodeType<ClearTask>("ClearTask");
     factory.registerNodeType<TestActivity>("TestActivity");
-    factory.registerSimpleAction("CancelGoal", std::bind(CancelGoal));
     factory.registerSimpleAction("Recharge", std::bind(Recharge));
     // REGISTER CONDITIONS
     factory.registerSimpleCondition("TaskAvailable", std::bind(TaskAvailable));
@@ -52,11 +51,11 @@ void HandleBT::subPoseCallback(const nav_msgs::Odometry::ConstPtr &msg)
     static bool first_msg = true;
     if (first_msg)
     {
-        tree_.blackboard_stack.back()->set<geometry_msgs::Pose>("home", msg->pose.pose);
+        tree_.blackboard_stack.front()->set<geometry_msgs::Pose>("Home", msg->pose.pose);
+        ROS_WARN_STREAM("Home set to: " << msg->pose.pose);
         first_msg = false;
     }
     state.pose = msg->pose.pose;
-    tree_.blackboard_stack.back()->set<geometry_msgs::Pose>("stay", msg->pose.pose);
 };
 
 void HandleBT::subFrontierCallback(const mae_utils::PointArray::ConstPtr &msg)
@@ -72,8 +71,9 @@ void HandleBT::subDronePositionsCallback(const geometry_msgs::PointStamped::Cons
 void HandleBT::subPlanCallback(const mae_utils::PointArray::ConstPtr &msg)
 {
     // get all poitns from msg except from first
-    state.plan_pts = std::vector<geometry_msgs::Point>(msg->points.begin() + 1, msg->points.end());
-    // state.replan = true;
+
+    if (msg->points.size() > 1)
+        state.plan_pts = std::vector<geometry_msgs::Point>(msg->points.begin() + 1, msg->points.end());
 }
 
 void HandleBT::subActivityCallback(const std_msgs::String::ConstPtr &msg)
