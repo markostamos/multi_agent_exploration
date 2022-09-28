@@ -28,8 +28,8 @@ int main(int argc, char **argv)
 
   // loggers
 
-  PublisherZMQ publisher_zmq(handler.tree_);
-  // StdCoutLogger logger_cout(handler.tree_);
+  // PublisherZMQ publisher_zmq(handler.tree_);
+  //  StdCoutLogger logger_cout(handler.tree_);
   while (ros::ok())
   {
     ros::spinOnce();

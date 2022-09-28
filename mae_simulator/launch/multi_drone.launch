@@ -76,8 +76,9 @@
     <arg name="lidar_gpu" value="$(arg lidar_gpu)"/>
     <arg name = "enable_bt" value = "$(arg enable_bt)"/> <!-- BT controller -->
     <arg name= "tree_file" value="$(arg tree_file)"/>
-  </include> 
-<!-- SPAWN A UAV -->
+  </include> <!-- SPAWN A UAV -->
+
+  <!-- SPAWN A UAV -->
   <include file="$(find mae_simulator)/launch/helpers/single_complete.launch">
 
     <!-- UAV name -->
@@ -85,7 +86,7 @@
 
     <!--spawn location -->
     <arg name="x" default="5"/>
-    <arg name="y" default="-3"/>
+    <arg name="y" default="0"/>
     <arg name="z" default="0.5"/>
     
     <!-- RVIZ for this UAV -->
@@ -96,7 +97,9 @@
     <arg name="enable_logging" value="$(arg enable_logging)"/>
     <arg name="lidar_gpu" value="$(arg lidar_gpu)"/>
     <arg name = "enable_bt" value = "$(arg enable_bt)"/> <!-- BT controller -->
-    <arg name= "tree_file" value="test_tree.xml"/>
-  </include> 
+    <arg name= "tree_file" value="$(arg tree_file)"/>
+  </include> <!-- SPAWN A UAV -->
+
+ 
   <node pkg="rviz" type="rviz" name="global_rviz" respawn="false" output="screen" args="-d $(find mae_simulator)/rviz/global.rviz"/> 
 </launch>

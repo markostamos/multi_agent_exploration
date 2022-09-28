@@ -17,5 +17,5 @@
 #include <conditions/isNearOtherDrones.h>
 #include <conditions/TaskAvailable.h>
 #include <conditions/LowBattery.h>
-
+#include <conditions/NewPlanArrived.h>
 #endif // CONDITIONS_H

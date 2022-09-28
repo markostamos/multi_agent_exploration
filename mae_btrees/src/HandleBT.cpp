@@ -25,7 +25,7 @@ void HandleBT::createTree(std::string path)
     factory.registerNodeType<TakeOff>("TakeOff");
     factory.registerNodeType<Land>("Land");
     factory.registerNodeType<SetNextTargetGreedy>("SetNextTargetGreedy");
-    factory.registerNodeType<NextTargetFromPlan>("NextTargetFromPlan");
+    factory.registerNodeType<SetNextTargetFromPlan>("SetNextTargetFromPlan");
 
     factory.registerNodeType<SetTask>("SetTask");
     factory.registerNodeType<ClearTask>("ClearTask");
@@ -37,9 +37,10 @@ void HandleBT::createTree(std::string path)
     factory.registerSimpleCondition("LowBattery", std::bind(LowBattery));
 
     factory.registerSimpleCondition("isFrontierListEmpty", std::bind(isFrontierListEmpty));
-    factory.registerSimpleCondition("TargetDiscovered", std::bind(TargetDiscovered));
+    factory.registerNodeType<TargetDiscovered>("TargetDiscovered");
     factory.registerNodeType<GreedyTargetDiscovered>("GreedyTargetDiscovered");
     factory.registerSimpleCondition("isNearOtherDrones", std::bind(isNearOtherDrones));
+    factory.registerSimpleCondition("NewPlanArrived", std::bind(NewPlanArrived));
     tree_ = factory.createTreeFromFile(path);
 }
 

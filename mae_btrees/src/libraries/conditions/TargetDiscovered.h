@@ -3,28 +3,35 @@
 
 extern RosComm state;
 
-// if the new target is substantially different than the active target, then it has been discovered
-BT::NodeStatus TargetDiscovered()
+class TargetDiscovered : public BT::ConditionNode
 {
-    /*   if (state.plan_pts.empty())
-      {
-          return BT::NodeStatus::FAILURE;
-      }
+public:
+    TargetDiscovered(const std::string &name,
+                     const BT::NodeConfiguration &config) : BT::ConditionNode(name, config) {}
 
-      bool pose_close_to_target = dist2D(pointFromPose(state.next_target), pointFromPose(state.pose)) < 1;
-      bool better_plan_0 = dist2D(pointFromPose(state.pose), state.plan_pts[0]) < dist2D(pointFromPose(state.pose), pointFromPose(state.next_target));
+    static BT::PortsList providedPorts()
+    {
+        return {BT::InputPort<geometry_msgs::Pose>("Target")};
+    }
 
-      bool target_not_in_frontiers = std::find_if(state.frontier_pts.begin(), state.frontier_pts.end(), [&](const geometry_msgs::Point &p)
-                                                  { return dist2D(p, state.plan_pts[0]) < 1; }) == state.frontier_pts.end();
-      if (pose_close_to_target || better_plan_0 || target_not_in_frontiers)
-      {
-          if (!state.replan)
-              state.plan_pts.erase(state.plan_pts.begin());
-          state.replan = false;
+    BT::NodeStatus tick() override
+    {
+        geometry_msgs::Pose current_target;
+        if (!getInput<geometry_msgs::Pose>("Target", current_target))
+        {
+            return BT::NodeStatus::SUCCESS;
+        }
 
-          return BT::NodeStatus::SUCCESS;
-      } */
-    return BT::NodeStatus::FAILURE;
-}
+        for (const auto &pt : state.frontier_pts)
+        {
+            if (dist2D(pointFromPose(current_target), pt) < 2)
+            {
+                return BT::NodeStatus::FAILURE;
+            }
+        }
+
+        return BT::NodeStatus::SUCCESS;
+    }
+};
 
 #endif // TARGET_DISCOVERED

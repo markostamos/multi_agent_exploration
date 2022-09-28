@@ -43,7 +43,7 @@ public:
         frontiers_viz_pub_ = nh_.advertise<visualization_msgs::Marker>("/frontiers_viz_out", 10);
         frontiers_pub_ = nh_.advertise<mae_utils::PointArray>("/frontiers_out", 10);
         exploration_area_pub_ = nh_.advertise<visualization_msgs::Marker>("/exploration_area_out", 10);
-        nh.param<float>("update_rate", update_rate_, 5);
+        nh.param<float>("update_rate", update_rate_, 2);
         nh.param<bool>("filter_frontiers", filter_frontiers_, true);
         nh.param<float>("min_pts", min_pts_, 1);
         nh.param<float>("epsilon", epsilon_, 0.5);

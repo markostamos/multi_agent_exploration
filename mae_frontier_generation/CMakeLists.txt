@@ -4,6 +4,7 @@ project(mae_frontier_generation)
 
 ######################################################
 
+set(CMAKE_BUILD_TYPE Release)
 set(ROS_DEPENDENCIES
     roscpp
     std_msgs 
