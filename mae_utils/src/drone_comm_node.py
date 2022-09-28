@@ -8,6 +8,7 @@ from mae_global_planner.srv import PlanService, PlanServiceRequest, PlanServiceR
 from mae_global_planner.srv import GlobalPlanService, GlobalPlanServiceRequest, GlobalPlanServiceResponse
 from visualization_msgs.msg import MarkerArray, Marker
 from mae_utils.msg import PointArray
+from std_msgs.msg import String
 from math import sqrt
 import sensor_msgs.point_cloud2 as pc2
 
@@ -31,6 +32,7 @@ class DroneCommNode:
         self.connected = dict()
         self.frontiers = PointArray()
         self.plan_publishers = dict()
+        self.active_tasks = dict()
 
         self.initCommunication()
         self.createTimers()
@@ -51,12 +53,13 @@ class DroneCommNode:
         self.marker_publisher = rospy.Publisher(
             f"/drone{self.id}/markers", Marker, queue_size=1000)
         # initialize services
-        rospy.wait_for_service("make_plan")
-        rospy.wait_for_service("make_global_plan")
+        rospy.wait_for_service("global_planner_node/make_single_plan")
+        rospy.wait_for_service("global_planner_node/make_global_plan")
         rospy.loginfo("Services are available")
         self.plan_service = rospy.ServiceProxy(
-            "make_plan", PlanService, persistent=True)
-        self.global_plan_service = rospy.ServiceProxy("make_global_plan", GlobalPlanService, True)
+            "global_planner_node/make_single_plan", PlanService, persistent=True)
+        self.global_plan_service = rospy.ServiceProxy(
+            "global_planner_node/make_global_plan", GlobalPlanService, True)
         self.checkForNewTopics(event=None)
 
     def checkForNewTopics(self, event):
@@ -75,6 +78,10 @@ class DroneCommNode:
 
                     self.plan_publishers[drone_id] = rospy.Publisher(
                         f"/drone{drone_id}/plan", PointArray, queue_size=1000)
+                    rospy.Subscriber(f"/drone{drone_id}/active_task",
+                                     String, self.getActiveTask, drone_id)
+
+                    self.active_tasks[drone_id] = "Idle"
                     self.connected[drone_id] = True if drone_id == self.id else False
                     self.lidar_readings[drone_id] = PointCloud2()
                     self.pcl_centers[drone_id] = PointCloud2()
@@ -98,11 +105,12 @@ class DroneCommNode:
         rospy.Timer(rospy.Duration(0.1), self.shareLidarReadings)
 
     def updatePlan(self):
-        connected_ids = [drone_id for drone_id in self.ids if self.connected[drone_id]]
+        available_agents = [drone_id for drone_id in self.ids if self.connected[drone_id]
+                            and self.active_tasks[drone_id] == "Exploration"]
         targets = self.frontiers.points
-        if len(targets) > 0 and self.id == min(connected_ids):
+        if len(targets) > 0 and len(available_agents) > 0 and self.id == min(available_agents):
 
-            if len(connected_ids) == 1:
+            if len(available_agents) == 1:
                 request = PlanServiceRequest()
                 request.starting_position = self.locations[self.id]
                 request.targets = PointArray(targets)
@@ -112,17 +120,17 @@ class DroneCommNode:
             else:
                 request = GlobalPlanServiceRequest()
                 request.starting_positions = PointArray(
-                    [self.locations[drone_id] for drone_id in connected_ids])
+                    [self.locations[drone_id] for drone_id in available_agents])
                 request.targets = PointArray(targets)
-                request.timeout_ms = len(connected_ids) * (50 if len(targets) < 100 else 100)
+                request.timeout_ms = len(available_agents) * (50 if len(targets) < 100 else 100)
                 response = self.global_plan_service(request)
-                for i in range(len(connected_ids)):
-                    self.plan_publishers[connected_ids[i]].publish(
+                for i in range(len(available_agents)):
+                    self.plan_publishers[available_agents[i]].publish(
                         response.global_plan[i])
 
     def visualizePlan(self, msg):
         marker = Marker()
-        color = ((0, 0, 0), (1, 0, 0), (0, 0.5, 0), (1, 0, 0), (1, 1, 0))[(self.id - 1) % 4]
+        color = ((1, 0, 0), (0, 0, 1), (1, 0, 1), (0, 1, 0), (1, 1, 0))[(self.id - 1) % 4]
         marker.header.frame_id = "world"
         marker.header.stamp = rospy.Time.now()
         marker.type = Marker.LINE_STRIP
@@ -185,6 +193,13 @@ class DroneCommNode:
 
     def dist(self, p1, p2):
         return sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2 + (p1.z - p2.z)**2)
+
+    def getActiveTask(self, msg, drone_id):
+        if self.active_tasks[drone_id] != msg.data and msg.data == "Exploration":
+            self.active_tasks[drone_id] = msg.data
+            self.updatePlan()
+        else:
+            self.active_tasks[drone_id] = msg.data
 
 
 if __name__ == "__main__":

@@ -18,7 +18,7 @@ local_costmap:
      
   static_layer:
     enabled: true
-    map_topic: "/$(arg namespace)/filtered_map"
+    map_topic: "$(arg map_topic)"
     track_unknown_space: true
 
   inflation_layer:

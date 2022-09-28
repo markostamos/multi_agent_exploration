@@ -23,16 +23,19 @@ private:
     ros::NodeHandle nh_;
     ros::Subscriber pose_subscriber_;
     ros::Subscriber frontier_subscriber_;
-    ros::Subscriber drone_position_subscriber_;
     ros::Subscriber plan_subscriber_;
-    ros::Subscriber activity_subscriber_;
+    ros::Subscriber task_subscriber_;
+    ros::Publisher active_task_publisher_;
+
+    ros::Timer timer_;
 
 private:
     void subPoseCallback(const nav_msgs::Odometry::ConstPtr &msg);
     void subFrontierCallback(const mae_utils::PointArray::ConstPtr &msg);
     void subDronePositionsCallback(const geometry_msgs::PointStamped::ConstPtr &msg);
     void subPlanCallback(const mae_utils::PointArray::ConstPtr &msg);
-    void subActivityCallback(const std_msgs::String::ConstPtr &msg);
+    void subTaskCallback(const std_msgs::String::ConstPtr &msg);
+    void activeTaskPubCallback(const ros::TimerEvent &event);
 };
 
 #endif // HANDLE_BT_H

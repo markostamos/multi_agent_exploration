@@ -1,0 +1,54 @@
+<launch>
+  <!-- GAZEBO arguments -->
+  <arg name="world_name" default="maze1"/>
+  <arg name="debug" default="false"/>
+  <arg name="gui" default="false"/> <!-- Gazebo CLIENT -->
+  <arg name="verbose" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="paused" default="false"/>
+  
+  <!-- UAV arguments -->
+  <arg name="enable_logging" default="false" />
+  <arg name="enable_ground_truth" default="true" />
+  <arg name="lidar_gpu" default="true"/>
+  <arg name= "tree_file" default="main_tree.xml"/>
+  
+
+ 
+
+  <!-- GAZEBO  -->
+  <env name="GAZEBO_MODEL_PATH" value="${GAZEBO_MODEL_PATH}:$(find rotors_gazebo)/models:$(find mae_simulator)/worlds/models"/>
+  <env name="GAZEBO_RESOURCE_PATH" value="${GAZEBO_RESOURCE_PATH}:$(find rotors_gazebo)/models"/>
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find mae_simulator)/worlds/$(arg world_name).world" />
+    <arg name="debug" value="$(arg debug)" />
+    <arg name="paused" value="$(arg paused)" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="verbose" value="$(arg verbose)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+
+  
+  </include>
+
+  
+
+  <!-- SPAWN A UAV -->
+  <include file="$(find mae_simulator)/launch/helpers/spawn_uav_complete.launch">
+
+    <!-- UAV name -->
+    <arg name="namespace" value="drone1"/>
+
+    <!--spawn location -->
+    <arg name="x" default="0"/>
+    <arg name="y" default="0"/>
+    <arg name="z" default="0.5"/>
+    
+    <arg name="rviz" value="true"/>
+    <!-- Ground truth odometry -->
+    <arg name="enable_ground_truth" default="$(arg enable_ground_truth)"/>
+    <arg name="enable_logging" value="$(arg enable_logging)"/>
+    <arg name="lidar_gpu" value="$(arg lidar_gpu)"/>
+  </include> 
+
+ <!--  <node pkg="rviz" type="rviz" name="global_rviz" respawn="false" output="screen" args="-d $(find mae_simulator)/rviz/global.rviz"/>  -->
+</launch>

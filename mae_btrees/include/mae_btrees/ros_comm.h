@@ -30,9 +30,6 @@ struct RosComm
 
     Pubs publishers;
 
-    // Positions of other agents
-    std::map<int, geometry_msgs::Point> drone_positions;
-
     // Task requested by user
     std::string requested_task;
 };

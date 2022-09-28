@@ -10,8 +10,10 @@ HandleBT::HandleBT(ros::NodeHandle &nh) : nh_(nh)
     pose_subscriber_ = nh_.subscribe(state.ns + "/ground_truth/odometry", 100, &HandleBT::subPoseCallback, this);
     frontier_subscriber_ = nh_.subscribe(state.ns + "/frontiers", 100, &HandleBT::subFrontierCallback, this);
     plan_subscriber_ = nh_.subscribe(state.ns + "/plan", 100, &HandleBT::subPlanCallback, this);
-    drone_position_subscriber_ = nh_.subscribe(state.ns + "/comm/drone_positions", 100, &HandleBT::subDronePositionsCallback, this);
-    activity_subscriber_ = nh_.subscribe(state.ns + "/task", 100, &HandleBT::subActivityCallback, this);
+    task_subscriber_ = nh_.subscribe(state.ns + "/task", 100, &HandleBT::subTaskCallback, this);
+    active_task_publisher_ = nh_.advertise<std_msgs::String>(state.ns + "/active_task", 1);
+
+    timer_ = nh_.createTimer(ros::Duration(0.5), &HandleBT::activeTaskPubCallback, this);
     waitForConnection();
 }
 
@@ -38,9 +40,10 @@ void HandleBT::createTree(std::string path)
     factory.registerSimpleCondition("isFrontierListEmpty", std::bind(isFrontierListEmpty));
     factory.registerNodeType<TargetDiscovered>("TargetDiscovered");
     factory.registerNodeType<GreedyTargetDiscovered>("GreedyTargetDiscovered");
-    factory.registerSimpleCondition("isNearOtherDrones", std::bind(isNearOtherDrones));
     factory.registerSimpleCondition("NewPlanArrived", std::bind(NewPlanArrived));
     tree_ = factory.createTreeFromFile(path);
+
+    tree_.rootBlackboard()->set<std::string>("TASK", "Idle");
 }
 
 /*
@@ -51,7 +54,7 @@ void HandleBT::subPoseCallback(const nav_msgs::Odometry::ConstPtr &msg)
     static bool first_msg = true;
     if (first_msg)
     {
-        tree_.blackboard_stack.front()->set<geometry_msgs::Pose>("Home", msg->pose.pose);
+        tree_.rootBlackboard()->set<geometry_msgs::Pose>("Home", msg->pose.pose);
         ROS_WARN_STREAM("Home set to: " << msg->pose.pose);
         first_msg = false;
     }
@@ -63,11 +66,6 @@ void HandleBT::subFrontierCallback(const mae_utils::PointArray::ConstPtr &msg)
     state.frontier_pts = msg->points;
 };
 
-void HandleBT::subDronePositionsCallback(const geometry_msgs::PointStamped::ConstPtr &msg)
-{
-    state.drone_positions[atoi(msg->header.frame_id.c_str())] = msg->point;
-}
-
 void HandleBT::subPlanCallback(const mae_utils::PointArray::ConstPtr &msg)
 {
     // get all poitns from msg except from first
@@ -76,7 +74,14 @@ void HandleBT::subPlanCallback(const mae_utils::PointArray::ConstPtr &msg)
         state.plan_pts = std::vector<geometry_msgs::Point>(msg->points.begin() + 1, msg->points.end());
 }
 
-void HandleBT::subActivityCallback(const std_msgs::String::ConstPtr &msg)
+void HandleBT::subTaskCallback(const std_msgs::String::ConstPtr &msg)
 {
     state.requested_task = msg->data;
+}
+
+void HandleBT::activeTaskPubCallback(const ros::TimerEvent &event)
+{
+    std_msgs::String msg;
+    msg.data = tree_.rootBlackboard()->get<std::string>("TASK");
+    active_task_publisher_.publish(msg);
 }
