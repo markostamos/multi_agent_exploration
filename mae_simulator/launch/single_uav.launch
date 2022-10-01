@@ -11,6 +11,8 @@
   <arg name="enable_logging" default="false" />
   <arg name="enable_ground_truth" default="true" />
   <arg name="lidar_gpu" default="true"/>
+  <arg name="enable_rviz" default="false"/>
+  <arg name = "enable_bt" default="true"/>  <!-- BT = Behavior Tree controller -->
   <arg name= "tree_file" default="main_tree.xml"/>
   
 
@@ -33,7 +35,7 @@
   
 
   <!-- SPAWN A UAV -->
-  <include file="$(find mae_simulator)/launch/helpers/spawn_uav_complete.launch">
+  <include file="$(find mae_simulator)/launch/helpers/spawn_uav.launch">
 
     <!-- UAV name -->
     <arg name="namespace" value="drone1"/>
@@ -42,13 +44,47 @@
     <arg name="x" default="0"/>
     <arg name="y" default="0"/>
     <arg name="z" default="0.5"/>
-    
-    <arg name="rviz" value="true"/>
     <!-- Ground truth odometry -->
     <arg name="enable_ground_truth" default="$(arg enable_ground_truth)"/>
     <arg name="enable_logging" value="$(arg enable_logging)"/>
     <arg name="lidar_gpu" value="$(arg lidar_gpu)"/>
   </include> 
 
- <!--  <node pkg="rviz" type="rviz" name="global_rviz" respawn="false" output="screen" args="-d $(find mae_simulator)/rviz/global.rviz"/>  -->
+
+
+
+
+    <!-- Octomap server -->
+
+    <node pkg="octomap_server" type="octomap_server_node" name="octomap_server">
+        
+        <param name="resolution" value="0.15" />
+        <param name="latch" value="false" />
+        <param name="frame_id" type="string" value="world" />
+        <param name="sensor_model/max_range" value="500" />
+        <param name="incremental_2D_projection" value="true"/>
+        <param name="pointcloud_min_z" value="0.15"/>
+        <param name="pointcloud_max_z" value="2"/>
+        
+        <remap from="cloud_in" to="/combined_pcl" />
+    
+    </node>
+
+    <!-- Frontier Generation package -->
+    <node pkg="mae_frontier_generation" type="frontier_generation_node" name="frontier_generation_node" output="screen">
+      <remap from="/map_in" to="/projected_map"/>
+      <remap from="/frontiers_out" to="/frontiers"/>
+      <remap from="/frontiers_viz_out" to="/frontiers_viz"/>
+      <remap from= "/blacklist_pt_in" to="/blacklist_pt"/>
+      <remap from= "/exploration_area_out" to="/exploration_area"/>
+    </node>  
+
+
+    <node pkg="mae_utils" type="global_communication_node.py" name="global_communication_node" output="screen"/>
+
+    <node name="global_planner_node" pkg="mae_global_planner" type="global_planner_node" output="screen"/>
+ 
+  <node pkg="rviz" type="rviz" name="global_rviz" respawn="false" output="screen" args="-d $(find mae_simulator)/rviz/global_comm.rviz"/> 
+
+  <node pkg="mae_utils" type="gui_node.py" name="gui_node" output="screen"/>
 </launch>

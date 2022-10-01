@@ -5,6 +5,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/PointStamped.h>
 #include <geometry_msgs/Twist.h>
+#include <sensor_msgs/PointCloud2.h>
 #include <mae_utils/PointArray.h>
 struct Pubs
 {
@@ -25,6 +26,9 @@ struct RosComm
     // Received plan points
     std::vector<geometry_msgs::Point> plan_pts;
 
+    // lidar sensor latest readings
+    sensor_msgs::PointCloud2 lidar_readings;
+
     // Current battery percentage
     float battery_percentage;
 
@@ -32,6 +36,7 @@ struct RosComm
 
     // Task requested by user
     std::string requested_task;
+    bool task_arrived;
 };
 
 void initRosComm(ros::NodeHandle &nh);

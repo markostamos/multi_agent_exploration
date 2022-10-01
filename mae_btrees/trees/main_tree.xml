@@ -21,22 +21,27 @@
                 <AlwaysSuccess/>
             </BlackboardCheckString>
             <Sequence>
-                <Action Height="1.5" ID="TakeOff"/>
                 <ReactiveFallback>
                     <Condition ID="isFrontierListEmpty"/>
                     <ForceFailure>
-                        <Sequence>
-                            <Action ID="SetNextTargetFromPlan" Target="{TARGET}"/>
-                            <ReactiveFallback>
-                                <Condition ID="NewPlanArrived"/>
-                                <Condition ID="TargetDiscovered" Target="{TARGET}"/>
-                                <Action ID="GoTo" Target="{TARGET}"/>
-                            </ReactiveFallback>
-                        </Sequence>
+                        <WhileDoElse>
+                            <Condition ID="isPlanEmpty"/>
+                            <Delay delay_msec="3000">
+                                <Action ID="Land"/>
+                            </Delay>
+                            <Sequence>
+                                <Action Height="1.5" ID="TakeOff"/>
+                                <Action ID="SetNextTargetFromPlan" Target="{TARGET}"/>
+                                <ReactiveFallback>
+                                    <Condition ID="NewPlanArrived"/>
+                                    <Condition ID="TargetDiscovered" Target="{TARGET}"/>
+                                    <Action ID="GoTo" Target="{TARGET}"/>
+                                </ReactiveFallback>
+                            </Sequence>
+                        </WhileDoElse>
                     </ForceFailure>
                 </ReactiveFallback>
-                <Action ID="GoTo" Target="{Home}"/>
-                <Action ID="Land"/>
+                <SetBlackboard name="Return_Home" output_key="TASK" value="Return_Home"/>
             </Sequence>
         </ReactiveSequence>
     </BehaviorTree>
@@ -60,8 +65,7 @@
                         </Sequence>
                     </ForceFailure>
                 </ReactiveFallback>
-                <Action ID="GoTo" Target="{Home}"/>
-                <Action ID="Land"/>
+                <SetBlackboard output_key="TASK" value="Return_Home"/>
             </Sequence>
         </ReactiveSequence>
     </BehaviorTree>
@@ -83,6 +87,7 @@
                 <AlwaysSuccess/>
             </BlackboardCheckString>
             <Action ID="Land"/>
+            <Action ID="ClearTask" Task="{TASK}"/>
         </ReactiveSequence>
     </BehaviorTree>
     <!-- ////////// -->
@@ -92,6 +97,7 @@
                 <AlwaysSuccess/>
             </BlackboardCheckString>
             <Action ID="Recharge"/>
+            <Action ID="ClearTask" Task="{TASK}"/>
         </ReactiveSequence>
     </BehaviorTree>
     <!-- ////////// -->
@@ -113,6 +119,7 @@
                 <Action Height="1.5" ID="TakeOff"/>
                 <Action ID="GoTo" Target="{Home}"/>
                 <Action ID="Land"/>
+                <Action ID="ClearTask" Task="{TASK}"/>
             </Sequence>
         </ReactiveSequence>
     </BehaviorTree>
@@ -137,6 +144,7 @@
                 <AlwaysSuccess/>
             </BlackboardCheckString>
             <Action Height="1.5" ID="TakeOff"/>
+            <Action ID="ClearTask" Task="{TASK}"/>
         </ReactiveSequence>
     </BehaviorTree>
     <!-- ////////// -->
@@ -146,17 +154,15 @@
                 <AlwaysSuccess/>
             </BlackboardCheckString>
             <Action ID="TestActivity" msec="5000"/>
+            <Action ID="ClearTask" Task="{TASK}"/>
         </ReactiveSequence>
     </BehaviorTree>
     <!-- ////////// -->
     <BehaviorTree ID="User_Interaction">
-        <Fallback>
-            <Sequence>
-                <Condition ID="TaskAvailable" name="Check for tasks by user"/>
-                <Action ID="SetTask" Task="{TASK}" name="Set User's Task"/>
-            </Sequence>
-            <SetBlackboard output_key="TASK" value="Idle"/>
-        </Fallback>
+        <Sequence>
+            <Condition ID="TaskAvailable" name="Check for tasks by user"/>
+            <Action ID="SetTask" Task="{TASK}" name="Set User's Task"/>
+        </Sequence>
     </BehaviorTree>
     <!-- ////////// -->
     <BehaviorTree ID="User_Tasks">
@@ -170,7 +176,6 @@
                 <SubTree ID="IDLE_S" __shared_blackboard="false"/>
                 <SubTree ID="Return_Home_S" __shared_blackboard="true"/>
             </Fallback>
-            <Action ID="ClearTask" Task="{TASK}" name=""/>
         </Sequence>
     </BehaviorTree>
     <!-- ////////// -->
@@ -235,7 +240,7 @@
             <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
         </SubTree>
         <Condition ID="TargetDiscovered">
-            <input_port default="{TARGET}" name="Target"/>
+            <inout_port default="{TARGET}" name="Target"/>
         </Condition>
         <Condition ID="TaskAvailable"/>
         <Action ID="TestActivity">
@@ -251,6 +256,7 @@
             <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
         </SubTree>
         <Condition ID="isFrontierListEmpty"/>
+        <Condition ID="isPlanEmpty"/>
     </TreeNodesModel>
     <!-- ////////// -->
 </root>

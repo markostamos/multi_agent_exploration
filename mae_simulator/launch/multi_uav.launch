@@ -70,6 +70,41 @@
     <arg name="lidar_gpu" value="$(arg lidar_gpu)"/>
   </include> 
 
+  <!-- SPAWN A UAV -->
+  <include file="$(find mae_simulator)/launch/helpers/spawn_uav_complete.launch">
+
+    <!-- UAV name -->
+    <arg name="namespace" value="drone3"/>
+
+    <!--spawn location -->
+    <arg name="x" default="0"/>
+    <arg name="y" default="-2"/>
+    <arg name="z" default="0.5"/>
+    
+    <arg name="rviz" value = "false"/>
+    <!-- Ground truth odometry -->
+    <arg name="enable_ground_truth" default="$(arg enable_ground_truth)"/>
+    <arg name="enable_logging" value="$(arg enable_logging)"/>
+    <arg name="lidar_gpu" value="$(arg lidar_gpu)"/>
+  </include> 
+
+ <!-- SPAWN A UAV -->
+  <include file="$(find mae_simulator)/launch/helpers/spawn_uav_complete.launch">
+
+    <!-- UAV name -->
+    <arg name="namespace" value="drone4"/>
+
+    <!--spawn location -->
+    <arg name="x" default="0"/>
+    <arg name="y" default="2"/>
+    <arg name="z" default="0.5"/>
+    
+    <arg name="rviz" value = "false"/>
+    <!-- Ground truth odometry -->
+    <arg name="enable_ground_truth" default="$(arg enable_ground_truth)"/>
+    <arg name="enable_logging" value="$(arg enable_logging)"/>
+    <arg name="lidar_gpu" value="$(arg lidar_gpu)"/>
+  </include> 
 
   
 

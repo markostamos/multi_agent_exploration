@@ -44,7 +44,8 @@ public:
 
     inline bool taskCompleted()
     {
-        return state.pose.position.z < 0.1;
+        // TODO: fix this
+        return state.pose.position.z < 0.5;
     }
 
     void onHalted()

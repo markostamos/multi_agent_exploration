@@ -24,6 +24,9 @@ geometry_msgs::Pose poseFromVec(std::vector<double> pos, std::vector<double> rpy
 geometry_msgs::Point pointFromPose(geometry_msgs::Pose pose);
 geometry_msgs::PoseStamped poseStampedFromVec(std::vector<double> pos, std::vector<double> rpy = {0, 0, 0});
 float dist2D(geometry_msgs::Point p1, geometry_msgs::Point p2);
+float dist2D(geometry_msgs::Pose p1, geometry_msgs::Pose p2);
+float dist3D(geometry_msgs::Point p1, geometry_msgs::Point p2);
+float dist3D(geometry_msgs::Pose p1, geometry_msgs::Pose p2);
 geometry_msgs::Twist twistFromVec(std::vector<double> linear = {0, 0, 0}, std::vector<double> angular = {0, 0, 0});
 geometry_msgs::PoseStamped poseStampedFromPose(geometry_msgs::Pose pose);
 geometry_msgs::PoseStamped poseStampedFromPoint(geometry_msgs::Point point);

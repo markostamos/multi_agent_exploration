@@ -13,19 +13,18 @@ public:
 
     static BT::PortsList providedPorts()
     {
-        return {BT::OutputPort<geometry_msgs::Pose>("Target")};
+        return {BT::BidirectionalPort<geometry_msgs::Pose>("Target")};
     }
 
     BT::NodeStatus tick()
     {
-        if (!state.plan_pts.empty())
-        {
-            geometry_msgs::Pose pose = poseFromVec({state.plan_pts[0].x, state.plan_pts[0].y, state.pose.position.z});
-            setOutput("Target", pose);
-            return BT::NodeStatus::SUCCESS;
-        }
+        geometry_msgs::Pose current_target;
 
-        return BT::NodeStatus::FAILURE;
+        if (state.plan_pts.empty())
+            return BT::NodeStatus::FAILURE;
+        geometry_msgs::Pose pose = poseFromVec({state.plan_pts[0].x, state.plan_pts[0].y, 0});
+        setOutput("Target", pose);
+        return BT::NodeStatus::SUCCESS;
     }
 };
 #endif // NEXT_TARGET_FROM_PLAN_H

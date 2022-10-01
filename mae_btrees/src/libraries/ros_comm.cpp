@@ -9,6 +9,7 @@ void initRosComm(ros::NodeHandle &nh)
     state.frontier_pts = {};
 
     state.requested_task = "Idle";
+    state.task_arrived = true;
     state.battery_percentage = 100;
 }
 

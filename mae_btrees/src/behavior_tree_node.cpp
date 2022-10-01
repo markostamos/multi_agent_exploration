@@ -3,6 +3,7 @@
 #include <behaviortree_cpp_v3/loggers/bt_cout_logger.h>
 #include <ros/package.h>
 #include <mae_btrees/HandleBT.h>
+#include <mae_btrees/ros_comm.h>
 using namespace BT;
 
 std::string ns;

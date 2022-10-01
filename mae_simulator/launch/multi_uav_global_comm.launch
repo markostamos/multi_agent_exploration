@@ -43,14 +43,14 @@
     <!--spawn location -->
     <arg name="x" default="0"/>
     <arg name="y" default="0"/>
-    <arg name="z" default="0.5"/>
     <!-- Ground truth odometry -->
     <arg name="enable_ground_truth" default="$(arg enable_ground_truth)"/>
     <arg name="enable_logging" value="$(arg enable_logging)"/>
     <arg name="lidar_gpu" value="$(arg lidar_gpu)"/>
   </include> 
 
-   <include file="$(find mae_simulator)/launch/helpers/spawn_uav.launch">
+  <!-- SPAWN A UAV -->
+  <include file="$(find mae_simulator)/launch/helpers/spawn_uav.launch">
 
     <!-- UAV name -->
     <arg name="namespace" value="drone2"/>
@@ -58,13 +58,25 @@
     <!--spawn location -->
     <arg name="x" default="0"/>
     <arg name="y" default="-5"/>
-    <arg name="z" default="0.5"/>
     <!-- Ground truth odometry -->
     <arg name="enable_ground_truth" default="$(arg enable_ground_truth)"/>
     <arg name="enable_logging" value="$(arg enable_logging)"/>
     <arg name="lidar_gpu" value="$(arg lidar_gpu)"/>
   </include> 
+  <!-- SPAWN A UAV -->
+  <include file="$(find mae_simulator)/launch/helpers/spawn_uav.launch">
 
+    <!-- UAV name -->
+    <arg name="namespace" value="drone3"/>
+
+    <!--spawn location -->
+    <arg name="x" default="-2"/>
+    <arg name="y" default="0"/>
+    <!-- Ground truth odometry -->
+    <arg name="enable_ground_truth" default="$(arg enable_ground_truth)"/>
+    <arg name="enable_logging" value="$(arg enable_logging)"/>
+    <arg name="lidar_gpu" value="$(arg lidar_gpu)"/>
+  </include> 
 
 
 
@@ -101,4 +113,6 @@
     <node name="global_planner_node" pkg="mae_global_planner" type="global_planner_node" output="screen"/>
  
   <node pkg="rviz" type="rviz" name="global_rviz" respawn="false" output="screen" args="-d $(find mae_simulator)/rviz/global_comm.rviz"/> 
+
+  <node pkg="mae_utils" type="gui_node.py" name="gui_node" output="screen"/>
 </launch>

@@ -22,6 +22,7 @@ class global_communication_node:
 
         # initialize variables
         self.agent_locations = dict()
+        self.home_locations = dict()
         self.drone_pcl = dict()
         self.frontiers = PointArray()
         self.active_tasks = dict()
@@ -42,7 +43,8 @@ class global_communication_node:
             "global_planner_node/make_global_plan", GlobalPlanService, True)
 
         rospy.Timer(rospy.Duration(0.5), self.checkForDrones)
-        rospy.Timer(rospy.Duration(0.05), self.postPCL)
+        rospy.Timer(rospy.Duration(0.1), self.postPCL)
+        rospy.Timer(rospy.Duration(2), self.updatePlan)
 
     def checkForDrones(self, event):
         for topic in rospy.get_published_topics():
@@ -68,6 +70,8 @@ class global_communication_node:
                                      String, self.getActiveTask, drone_id)
 
                     self.active_tasks[drone_id] = "Idle"
+                    self.home_locations[drone_id] = rospy.wait_for_message(
+                        f"/drone{drone_id}/ground_truth/position", PointStamped).point
 
     def updateFrontiers(self, msg):
         def significant_change(): return any(
@@ -77,12 +81,13 @@ class global_communication_node:
         if len(msg.points) != len(self.frontiers.points) or significant_change():
             self.frontiers = msg
             self.updatePlan()
+        self.frontiers = msg
 
-    def updatePlan(self):
+    def updatePlan(self, event=None):
+
         available_agents = [drone_id for drone_id in list(self.agent_locations.keys())
                             if self.active_tasks[drone_id] == "Exploration"]
         targets = self.frontiers.points
-
         if len(targets) > 0 and len(available_agents) > 0:
             request = GlobalPlanServiceRequest()
             request.starting_positions = PointArray(
@@ -99,9 +104,10 @@ class global_communication_node:
         self.drone_pcl[drone_id] = pcl
 
     def postPCL(self, event):
-        for drone_id in self.drone_pcl.keys():
+        keys = list(self.drone_pcl.keys())
+        for drone_id in keys:
             self.pcl_publisher.publish(self.drone_pcl[drone_id])
-            rospy.sleep(0.05)
+            rospy.sleep(0.1)
 
     def updateLocations(self, msg, drone_id):
         self.agent_locations[drone_id] = msg.point
@@ -112,7 +118,7 @@ class global_communication_node:
     def filterMap(self, map_msg):
         map_msg.data = list(map_msg.data)
 
-        for point in self.agent_locations.values():
+        for point in list(self.agent_locations.values()) + list(self.home_locations.values()):
             # point to 2dmap index
             grid_x = int((point.x - map_msg.info.origin.position.x) / map_msg.info.resolution)
             grid_y = int((point.y - map_msg.info.origin.position.y) / map_msg.info.resolution)

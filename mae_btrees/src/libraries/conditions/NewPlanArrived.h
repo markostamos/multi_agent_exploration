@@ -4,36 +4,32 @@
 #include <chrono>
 extern RosComm state;
 
+// TODO: CURRENT TARGET??
 BT::NodeStatus NewPlanArrived()
 {
-    /* static std::vector<geometry_msgs::Point> plan_pts = state.plan_pts;
+    static std::vector<geometry_msgs::Point> plan_pts = state.plan_pts;
     static auto now = std::chrono::system_clock::now();
 
     auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - now).count();
 
-    if (delta > 1500)
+    if (state.plan_pts.size() != plan_pts.size() && delta > 1500)
     {
+        plan_pts = state.plan_pts;
+        now = std::chrono::system_clock::now();
+        ROS_WARN_STREAM("New Plan Arrived");
+        return BT::NodeStatus::SUCCESS;
+    }
 
-        if (plan_pts.size() != state.plan_pts.size())
+    for (int i = 0; i < state.plan_pts.size(); i++)
+    {
+        if (dist2D(state.plan_pts[i], plan_pts[i]) > 1 && delta > 1500)
         {
-
             plan_pts = state.plan_pts;
+            ROS_WARN_STREAM("New Plan Arrived");
+            now = std::chrono::system_clock::now();
             return BT::NodeStatus::SUCCESS;
         }
-        else
-        {
-            for (int i = 0; i < plan_pts.size(); i++)
-            {
-                if (plan_pts[i].x != state.plan_pts[i].x || plan_pts[i].y != state.plan_pts[i].y || plan_pts[i].z != state.plan_pts[i].z)
-                {
-                    plan_pts = state.plan_pts;
-                    return BT::NodeStatus::SUCCESS;
-                }
-            }
-        }
-
-        now = std::chrono::system_clock::now();
-    } */
+    }
     return BT::NodeStatus::FAILURE;
 }
 

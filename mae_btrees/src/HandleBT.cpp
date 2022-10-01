@@ -1,5 +1,8 @@
 #include <mae_btrees/HandleBT.h>
+#include <behaviortree_cpp_v3/bt_factory.h>
 #include <mae_btrees/conditions.h>
+#include <mae_btrees/actions.h>
+#include <mae_btrees/ros_comm.h>
 extern RosComm state;
 
 HandleBT::HandleBT(ros::NodeHandle &nh) : nh_(nh)
@@ -12,8 +15,9 @@ HandleBT::HandleBT(ros::NodeHandle &nh) : nh_(nh)
     plan_subscriber_ = nh_.subscribe(state.ns + "/plan", 100, &HandleBT::subPlanCallback, this);
     task_subscriber_ = nh_.subscribe(state.ns + "/task", 100, &HandleBT::subTaskCallback, this);
     active_task_publisher_ = nh_.advertise<std_msgs::String>(state.ns + "/active_task", 1);
+    lidar_readings_subscriber_ = nh_.subscribe(state.ns + "/velodyne_points", 100, &HandleBT::subLidarReadingsCallback, this);
 
-    timer_ = nh_.createTimer(ros::Duration(0.5), &HandleBT::activeTaskPubCallback, this);
+    timer_ = nh_.createTimer(ros::Duration(0.5), &HandleBT::pubActiveTaskCallback, this);
     waitForConnection();
 }
 
@@ -38,6 +42,7 @@ void HandleBT::createTree(std::string path)
     factory.registerSimpleCondition("LowBattery", std::bind(LowBattery));
 
     factory.registerSimpleCondition("isFrontierListEmpty", std::bind(isFrontierListEmpty));
+    factory.registerSimpleCondition("isPlanEmpty", std::bind(isPlanEmpty));
     factory.registerNodeType<TargetDiscovered>("TargetDiscovered");
     factory.registerNodeType<GreedyTargetDiscovered>("GreedyTargetDiscovered");
     factory.registerSimpleCondition("NewPlanArrived", std::bind(NewPlanArrived));
@@ -70,18 +75,23 @@ void HandleBT::subPlanCallback(const mae_utils::PointArray::ConstPtr &msg)
 {
     // get all poitns from msg except from first
 
-    if (msg->points.size() > 1)
-        state.plan_pts = std::vector<geometry_msgs::Point>(msg->points.begin() + 1, msg->points.end());
+    state.plan_pts = std::vector<geometry_msgs::Point>(msg->points.begin() + 1, msg->points.end());
 }
 
 void HandleBT::subTaskCallback(const std_msgs::String::ConstPtr &msg)
 {
     state.requested_task = msg->data;
+    state.task_arrived = true;
 }
 
-void HandleBT::activeTaskPubCallback(const ros::TimerEvent &event)
+void HandleBT::pubActiveTaskCallback(const ros::TimerEvent &event)
 {
     std_msgs::String msg;
     msg.data = tree_.rootBlackboard()->get<std::string>("TASK");
     active_task_publisher_.publish(msg);
+}
+
+void HandleBT::subLidarReadingsCallback(const sensor_msgs::PointCloud2::ConstPtr &msg)
+{
+    state.lidar_readings = *msg;
 }

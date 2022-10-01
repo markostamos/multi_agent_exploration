@@ -129,6 +129,21 @@ float dist2D(geometry_msgs::Point p1, geometry_msgs::Point p2)
     return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
 }
 
+float dist2D(geometry_msgs::Pose p1, geometry_msgs::Pose p2)
+{
+    return sqrt(pow(p1.position.x - p2.position.x, 2) + pow(p1.position.y - p2.position.y, 2));
+}
+
+float dist3D(geometry_msgs::Point p1, geometry_msgs::Point p2)
+{
+    return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2) + pow(p1.z - p2.z, 2));
+}
+
+float dist3D(geometry_msgs::Pose p1, geometry_msgs::Pose p2)
+{
+    return sqrt(pow(p1.position.x - p2.position.x, 2) + pow(p1.position.y - p2.position.y, 2) + pow(p1.position.z - p2.position.z, 2));
+}
+
 geometry_msgs::Point pointFromPose(geometry_msgs::Pose pose)
 {
     geometry_msgs::Point p;

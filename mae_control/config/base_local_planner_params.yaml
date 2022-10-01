@@ -1,8 +1,11 @@
 base_local_planner: eband_local_planner/EBandPlannerROS
 clearing_rotation_allowed: false
 planner_patience: 0
-controller_patience: 0
-
+controller_patience: 1
+planner_frequency: 0
+make_plan_add_unreachable_goal: false
+make_plan_clear_costmap: false
+conservative_reset_dist: 10
 EBandPlannerROS:
   Ctrl_Rate: 14.0
   bubble_velocity_multiplier: 2.0

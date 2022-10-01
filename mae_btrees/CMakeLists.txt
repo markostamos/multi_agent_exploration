@@ -42,8 +42,6 @@ add_library(bt_actions src/libraries/actions.cpp )
 add_library(bt_conditions src/libraries/conditions.cpp)
 add_library(handle_bt src/HandleBT.cpp)
 add_library(ros_comm src/libraries/ros_comm.cpp)
-add_library(bt_utils src/libraries/utils.cpp)
-
 
 
 
@@ -53,7 +51,6 @@ target_link_libraries(bt_node
                         handle_bt
                         ros_comm
                         bt_actions
-                        bt_utils
                         bt_conditions
                         ${catkin_LIBRARIES})
 
