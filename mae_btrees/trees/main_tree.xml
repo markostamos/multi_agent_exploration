@@ -35,6 +35,7 @@
                                 <ReactiveFallback>
                                     <Condition ID="NewPlanArrived"/>
                                     <Condition ID="TargetDiscovered" Target="{TARGET}"/>
+                                    <Condition ID="TargetFound" Target="{TARGET}"/>
                                     <Action ID="GoTo" Target="{TARGET}"/>
                                 </ReactiveFallback>
                             </Sequence>
@@ -241,6 +242,9 @@
         </SubTree>
         <Condition ID="TargetDiscovered">
             <inout_port default="{TARGET}" name="Target"/>
+        </Condition>
+        <Condition ID="TargetFound">
+            <input_port default="{TARGET}" name="Target"/>
         </Condition>
         <Condition ID="TaskAvailable"/>
         <Action ID="TestActivity">

@@ -2,22 +2,23 @@
 import rospy
 import dearpygui.dearpygui as dpg
 from functools import partial
-from geometry_msgs.msg import PointStamped
+from geometry_msgs.msg import PointStamped, PoseStamped, Twist, Pose
 from std_msgs.msg import String
 import dearpygui.demo as demo
+from gazebo_msgs.msg import ModelState
+import rosservice
+from std_srvs.srv import Empty
 
 
 class GUI:
     def __init__(self, app):
         self.ros = app
-        self.window_width = 900
-        self.window_height = 300
+        self.window_width = 2000
+        self.window_height = 600
+        self.widget_width = 400
+        self.agent_windows = []
 
-        self.widget_width = 300
         self.initGUI()
-        self.create_agent_window(1)
-        self.create_agent_window(2)
-        self.create_agent_window(3)
 
     def initGUI(self):
         dpg.create_context()
@@ -27,47 +28,101 @@ class GUI:
         dpg.show_viewport()
 
     def update(self):
+        for agent_id in list(self.ros.agent_locations.keys()):
+            if agent_id not in self.agent_windows:
+                self.create_agent_window(agent_id)
+                self.agent_windows.append(agent_id)
+                print(self.agent_windows)
+                dpg.set_viewport_width(self.widget_width * len(self.agent_windows))
+
+        """ dpg.set_viewport_width(self.widget_width * len(self.agent_windows))
+        dpg.set_viewport_height(300) """
         dpg.render_dearpygui_frame()
+        # dpg.set_value(f"agent1_pose", f"Agent1 Pose: {self.ros.agent_locations[1]}")
+        for agent_id in self.ros.active_tasks.keys():
+            dpg.set_value(f"Agent{agent_id}_Active_Task",
+                          f"Active Task: {self.ros.active_tasks[agent_id]}")
+        for agent_id in self.ros.agent_locations.keys():
+            agent_pos = self.ros.agent_locations[agent_id]
 
-        # dpg.set_value(f"drone1_pose", f"Drone1 Pose: {self.ros.agent_locations[1]}")
-        for drone_id in self.ros.active_tasks.keys():
-            dpg.set_value(f"Agent{drone_id}_Active_Task",
-                          f"Active Task: {self.ros.active_tasks[drone_id]}")
+            pos_string = f"Position: ({agent_pos.x:.2f}, {agent_pos.y:.2f}, {agent_pos.z:.2f})"
 
-    def create_agent_window(self, drone_id):
-        # demo.show_demo()
-        with dpg.window(label=f"Drone{drone_id} commands", width=300, height=300, pos=(300 * (drone_id - 1), 0)):
-            with dpg.child_window(label="Behavior Tree Tasks", width=self.widget_width, height=300, pos=(0, 30)):
+            dpg.set_value(f"Agent{agent_id}_Position", pos_string)
+
+    def create_agent_window(self, agent_id):
+        with dpg.window(label=f"Agent{agent_id} commands", width=self.widget_width, height=300, pos=(self.widget_width * (agent_id - 1), 0)):
+            with dpg.group(label="Behavior Tree Tasks"):
                 dpg.add_button(label="EXPLORATION", width=self.widget_width, height=30,
-                               callback=self.button_callback, user_data=["Exploration", drone_id])
+                               callback=self.button_callback, user_data=["Exploration", agent_id])
 
                 dpg.add_button(label="LAND", width=self.widget_width, height=30,
-                               callback=self.button_callback, user_data=["Land", drone_id])
+                               callback=self.button_callback, user_data=["Land", agent_id])
                 dpg.add_button(label="TAKE OFF", width=self.widget_width, height=30,
-                               callback=self.button_callback, user_data=["TakeOff", drone_id])
+                               callback=self.button_callback, user_data=["TakeOff", agent_id])
 
                 dpg.add_button(label="GREEDY EXPLORATION", width=self.widget_width, height=30,
-                               callback=self.button_callback, user_data=["Greedy_Exploration", drone_id])
+                               callback=self.button_callback, user_data=["Greedy_Exploration", agent_id])
                 dpg.add_button(label="RETURN HOME", width=self.widget_width, height=30,
-                               callback=self.button_callback, user_data=["Return_Home", drone_id])
+                               callback=self.button_callback, user_data=["Return_Home", agent_id])
                 dpg.add_button(label="STOP TASK", width=self.widget_width, height=30,
-                               callback=self.button_callback, user_data=["Stop", drone_id])
-                dpg.add_text("Idle", tag=f"Agent{drone_id}_Active_Task", color=[
-                             255, 0, 0])
-            """ with dpg.child_window(label="subwindow 1", width=self.widget_width, height=360, pos=(0, 360)):
-                dpg.add_input_text(label="GoTo location (x,y,z)",
-                                   default_value="0,0,0", tag=f"Agent{drone_id}_GoTo", width=self.widget_width, height=30)
+                               callback=self.button_callback, user_data=["Stop", agent_id])
+                dpg.add_button(label="CLEAR MAP", width=self.widget_width, height=30,
+                               callback=self.clearMapCallback, user_data=agent_id)
+                dpg.add_text("Idle", tag=f"Agent{agent_id}_Active_Task", color=[
+                             255, 0, 0], indent=110)
+        with dpg.window(label=f"Agent{agent_id} GoTo", width=self.widget_width, height=150, pos=(self.widget_width * (agent_id - 1), 300)):
+            with dpg.group(horizontal=True):
+                width = self.widget_width / 2 - 15
+                with dpg.group():
+                    dpg.add_input_float(label="x", width=width, step=0, tag=f"Agent{agent_id}_x")
+                    dpg.add_input_float(label="y", width=width, step=0, tag=f"Agent{agent_id}_y")
+                    dpg.add_input_float(label="z", width=width, step=0, tag=f"Agent{agent_id}_z")
+                dpg.add_button(label="GoTo", height=65, width=width,
+                               callback=self.goToCallback, user_data=agent_id)
 
-                dpg.add_slider_float(label="float", default_value=0.273, max_value=1)
-            with dpg.child_window(label="subwindow 1", width=self.widget_width, height=360, pos=(0, 360 * 2)):
-                dpg.add_text(f"Hello, Drone{drone_id}")
-                dpg.add_button(label="Save")
-                dpg.add_input_text(label="string", default_value="Quick brown fox")
-                dpg.add_slider_float(label="float", default_value=0.273, max_value=1) """
+            dpg.add_text("Position: ", tag=f"Agent{agent_id}_Position", indent=85)
+
+        with dpg.window(label=f"Agent{agent_id} Manual Control", width=self.widget_width, height=250, pos=(self.widget_width * (agent_id - 1), 450)):
+            with dpg.handler_registry():
+                # dpg.add_checkbox(label="Keyboard Control", tag="keyboard_control")
+                dpg.add_key_press_handler(callback=self.keyCallback, user_data=agent_id)
+            dpg.add_slider_float(label="Speed", width=self.widget_width - 50,
+                                 min_value=0, max_value=100, default_value=0.5, tag=f"Agent{agent_id}_speed")
+
+            dpg.add_text("W,A,S,D for movement in x,y plane", indent=50)
+            dpg.add_text("Up,Down for movement in z plane", indent=50)
+
+    def keyCallback(self, sender, app_data, agent_id):
+        self.ros.publishTask(agent_id, "Idle")
+        speed = dpg.get_value(f"Agent{agent_id}_speed") * 2 / 100
+        target = [0, 0, 0]
+        if app_data == dpg.mvKey_W:
+            target[1] = speed
+        elif app_data == dpg.mvKey_A:
+            target[0] = -speed
+        elif app_data == dpg.mvKey_S:
+            target[1] = -speed
+        elif app_data == dpg.mvKey_D:
+            target[0] = speed
+        elif app_data == dpg.mvKey_Up:
+            target[2] = speed
+        elif app_data == dpg.mvKey_Down:
+            target[2] = -speed
+
+        self.ros.publishManualControl(drone_id=agent_id, target=target)
+
+    def goToCallback(self, sender, app_data, agent_id):
+        self.ros.publishTask(agent_id, "Idle")
+
+        print([dpg.get_value(f"Agent{agent_id}_x")])
+        self.ros.publishGoal(agent_id, [float(dpg.get_value(f"Agent{agent_id}_x")), float(dpg.get_value(
+            f"Agent{agent_id}_y")), float(dpg.get_value(f"Agent{agent_id}_z"))])
 
     def button_callback(self, sender, app_data, user_data):
+        self.ros.publishTask(user_data[1], user_data[0])
 
-        self.ros.task_publishers[user_data[1]].publish(user_data[0])
+    def clearMapCallback(self, sender, app_data, agent_id):
+        self.ros.publishClearMap(agent_id)
 
 
 class GuiNode:
@@ -77,8 +132,9 @@ class GuiNode:
         self.agent_locations = dict()
         self.active_tasks = dict()
         self.task_publishers = dict()
-
-        self.agent_locations[0] = PointStamped()
+        self.goTo_publishers = dict()
+        self.agent_locations = dict()
+        self.cmdvel_publishers = dict()
 
         rospy.Timer(rospy.Duration(0.5), self.checkForAgentTopics)
         self.checkForAgentTopics(None)
@@ -98,12 +154,55 @@ class GuiNode:
                     self.active_tasks[drone_id] = "Idle"
                     self.task_publishers[drone_id] = rospy.Publisher(
                         f"/drone{drone_id}/task", String, queue_size=10)
+                    self.goTo_publishers[drone_id] = rospy.Publisher(
+                        f"/drone{drone_id}/move_base_simple/goal", PoseStamped, queue_size=10)
+                    self.cmdvel_publishers[drone_id] = rospy.Publisher(
+                        f"drone{drone_id}/command/cmd_vel", Twist, queue_size=10)
 
     def getLocations(self, msg, drone_id):
         self.agent_locations[drone_id] = msg.point
 
     def getActiveTask(self, msg, drone_id):
         self.active_tasks[drone_id] = msg.data
+
+    def publishTask(self, drone_id, task):
+        self.task_publishers[drone_id].publish(task)
+
+    def publishGoal(self, drone_id, goal_xyz):
+        pose = PoseStamped()
+        pose.header.frame_id = "world"
+        pose.header.stamp = rospy.Time.now()
+        pose.pose.position.x = dpg.get_value(f"Agent{drone_id}_x")
+        pose.pose.position.y = dpg.get_value(f"Agent{drone_id}_y")
+        pose.pose.position.z = dpg.get_value(f"Agent{drone_id}_z")
+        pose.pose.orientation.w = 1
+        self.goTo_publishers[drone_id].publish(pose)
+
+    def publishManualControl(self, drone_id, target):
+        msg = Twist()
+
+        msg.linear.x = target[0]
+        msg.linear.y = target[1]
+        msg.linear.z = target[2]
+
+        self.cmdvel_publishers[drone_id].publish(msg)
+
+    def publishClearMap(self, drone_id):
+        service_name = f"/drone{drone_id}/octomap_server/reset"
+        if service_name in rosservice.get_service_list():
+            rospy.wait_for_service(service_name)
+            try:
+                reset_octomap = rospy.ServiceProxy(service_name, Empty)
+                reset_octomap()
+            except rospy.ServiceException as e:
+                print("Service call failed: %s" % e)
+        else:
+            rospy.wait_for_service("/octomap_server/reset")
+            try:
+                reset_octomap = rospy.ServiceProxy("/octomap_server/reset", Empty)
+                reset_octomap()
+            except rospy.ServiceException as e:
+                print("Service call failed: %s" % e)
 
 
 if __name__ == "__main__":

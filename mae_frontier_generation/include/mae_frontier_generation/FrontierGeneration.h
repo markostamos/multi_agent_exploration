@@ -1,10 +1,7 @@
 #ifndef FRONTIER_GENERATION_H
 #define FRONTIER_GENERATION_H
-#include <mae_frontier_generation/utils.h>
 #include <nav_msgs/OccupancyGrid.h>
 #include <geometry_msgs/Point.h>
-#include <map_msgs/OccupancyGridUpdate.h>
-#include <mae_utils/utils.h>
 /* TODO: ADD documentation */
 
 class FrontierGeneration

@@ -63,7 +63,7 @@
       lasers="16" 
       collision_range="0.3" 
       min_range="0.5" 
-      max_range="80.0" 
+      max_range="30.0" 
       noise="0.00" 
       min_angle="-${M_PI}" 
       max_angle="${M_PI}"

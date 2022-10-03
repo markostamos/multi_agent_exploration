@@ -2,7 +2,6 @@
 
 #include <nav_msgs/OccupancyGrid.h>
 #include <visualization_msgs/Marker.h>
-
 #include <mae_frontier_generation/FrontierGeneration.h>
 #include <mae_utils/PointArray.h>
 #include <mae_utils/utils.h>

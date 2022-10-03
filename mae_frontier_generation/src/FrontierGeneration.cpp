@@ -1,5 +1,5 @@
 #include <mae_frontier_generation/FrontierGeneration.h>
-#include <ros/ros.h>
+#include <mae_frontier_generation/utils.h>
 inline bool FrontierGeneration::isFrontier(int i, int j) const
 {
 

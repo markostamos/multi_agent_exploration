@@ -12,7 +12,7 @@ BT::NodeStatus NewPlanArrived()
 
     auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - now).count();
 
-    if (state.plan_pts.size() != plan_pts.size() && delta > 1500)
+    if (state.plan_pts.size() != plan_pts.size() && delta > 5000)
     {
         plan_pts = state.plan_pts;
         now = std::chrono::system_clock::now();
@@ -22,7 +22,7 @@ BT::NodeStatus NewPlanArrived()
 
     for (int i = 0; i < state.plan_pts.size(); i++)
     {
-        if (dist2D(state.plan_pts[i], plan_pts[i]) > 1 && delta > 1500)
+        if (dist2D(state.plan_pts[i], plan_pts[i]) > 1 && delta > 5000)
         {
             plan_pts = state.plan_pts;
             ROS_WARN_STREAM("New Plan Arrived");

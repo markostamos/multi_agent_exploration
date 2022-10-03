@@ -17,4 +17,5 @@
 #include <conditions/LowBattery.h>
 #include <conditions/NewPlanArrived.h>
 #include <conditions/isPlanEmpty.h>
+#include <conditions/TargetFound.h>
 #endif // CONDITIONS_H
