@@ -21,16 +21,16 @@
                 <AlwaysSuccess/>
             </BlackboardCheckString>
             <Sequence>
+                <Action Height="1.5" ID="TakeOff"/>
                 <ReactiveFallback>
                     <Condition ID="isFrontierListEmpty"/>
                     <ForceFailure>
                         <WhileDoElse>
                             <Condition ID="isPlanEmpty"/>
                             <Delay delay_msec="3000">
-                                <Action ID="Land"/>
+                                <Action ID="GoToBackupTarget"/>
                             </Delay>
                             <Sequence>
-                                <Action Height="1.5" ID="TakeOff"/>
                                 <Action ID="SetNextTargetFromPlan" Target="{TARGET}"/>
                                 <ReactiveFallback>
                                     <Condition ID="NewPlanArrived"/>
@@ -191,6 +191,7 @@
         <Action ID="GoTo">
             <input_port name="Target"/>
         </Action>
+        <Action ID="GoToBackupTarget"/>
         <Condition ID="GreedyTargetDiscovered">
             <input_port default="{TARGET}" name="Target"/>
         </Condition>

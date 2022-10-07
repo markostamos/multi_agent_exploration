@@ -13,7 +13,7 @@ public:
 
     static BT::PortsList providedPorts()
     {
-        return {BT::BidirectionalPort<geometry_msgs::Pose>("Target")};
+        return {BT::OutputPort<geometry_msgs::Pose>("Target")};
     }
 
     BT::NodeStatus tick()

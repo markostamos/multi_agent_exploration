@@ -20,5 +20,6 @@
 #include <actions/ClearTask.h>
 #include <actions/TestActivity.h>
 #include <actions/Recharge.h>
+#include <actions/GoToBackupTarget.h>
 
 #endif // ACTIONS_H

@@ -37,6 +37,9 @@ class global_communication_node:
         self.map_publisher = rospy.Publisher('/filtered_map', OccupancyGrid, queue_size=1000)
         self.plan_publishers = dict()
         self.plan_viz_publishers = dict()
+
+        self.checkpoint_publisher = rospy.Publisher("/checkpoints", PointArray, queue_size=1000)
+
         # initialize services
         rospy.wait_for_service("global_planner_node/make_global_plan")
         self.global_plan_service = rospy.ServiceProxy(
@@ -45,6 +48,7 @@ class global_communication_node:
         rospy.Timer(rospy.Duration(0.5), self.checkForDrones)
         rospy.Timer(rospy.Duration(0.1), self.postPCL)
         rospy.Timer(rospy.Duration(2), self.updatePlan)
+        rospy.Timer(rospy.Duration(2), self.publishCheckpoints)
 
     def checkForDrones(self, event):
         for topic in rospy.get_published_topics():
@@ -75,16 +79,20 @@ class global_communication_node:
 
     def updateFrontiers(self, msg):
         def significant_change(): return any(
-            [self.dist(msg.points[i], self.frontiers.points[i]) > 0.5 for i in range(len(msg.points))])
+            [self.dist(msg.points[i], self.frontiers.points[i]) > 0.2 for i in range(len(msg.points))])
 
         msg.points.sort(key=lambda p: self.dist(p, Point(0, 0, 0)))
-        if len(msg.points) != len(self.frontiers.points) or significant_change():
+        if len(msg.points) != len(self.frontiers.points):
             self.frontiers = msg
             self.updatePlan()
-        self.frontiers = msg
+        elif significant_change():
+            self.frontiers = msg
+            self.updatePlan()
+        else:
+            self.frontiers = msg
 
     def updatePlan(self, event=None):
-
+        rospy.logerr("Updating Plan")
         available_agents = [drone_id for drone_id in list(self.agent_locations.keys())
                             if self.active_tasks[drone_id] == "Exploration"]
         targets = self.frontiers.points
@@ -95,7 +103,7 @@ class global_communication_node:
             request.targets = PointArray(targets)
             request.timeout_ms = len(available_agents) * (50 if len(targets) < 100 else 100)
             response = self.global_plan_service(request)
-            for i in range(len(available_agents)):
+            for i in range(len(response.global_plan)):
                 self.plan_publishers[available_agents[i]].publish(
                     response.global_plan[i])
                 self.publish_plan_visualization(response.global_plan[i], available_agents[i])
@@ -150,6 +158,11 @@ class global_communication_node:
             self.updatePlan()
         else:
             self.active_tasks[drone_id] = msg.data
+
+    def publishCheckpoints(self, event):
+        msg = PointArray()
+        msg.points = list(self.agent_locations.values())
+        self.checkpoint_publisher.publish(msg)
 
 
 if __name__ == "__main__":

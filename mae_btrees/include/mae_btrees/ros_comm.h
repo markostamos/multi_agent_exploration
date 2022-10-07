@@ -34,6 +34,9 @@ struct RosComm
 
     Pubs publishers;
 
+    // checkpoints
+    std::vector<geometry_msgs::Point> checkpoints;
+
     // Task requested by user
     std::string requested_task;
     bool task_arrived;

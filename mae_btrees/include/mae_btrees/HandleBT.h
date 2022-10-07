@@ -26,6 +26,7 @@ private:
     ros::Subscriber task_subscriber_;
     ros::Publisher active_task_publisher_;
     ros::Subscriber lidar_readings_subscriber_;
+    ros::Subscriber checkpoints_subscriber_;
 
     ros::Timer timer_;
 
@@ -37,6 +38,7 @@ private:
     void subTaskCallback(const std_msgs::String::ConstPtr &msg);
     void pubActiveTaskCallback(const ros::TimerEvent &event);
     void subLidarReadingsCallback(const sensor_msgs::PointCloud2::ConstPtr &msg);
+    void subCheckpointsCallback(const mae_utils::PointArray::ConstPtr &msg);
 };
 
 #endif // HANDLE_BT_H

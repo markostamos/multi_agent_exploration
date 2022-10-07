@@ -18,6 +18,10 @@ public:
     {
         static auto now = std::chrono::system_clock::now();
         geometry_msgs::Pose current_target;
+
+        if (state.plan_pts.empty())
+            return BT::NodeStatus::FAILURE;
+
         if (!getInput<geometry_msgs::Pose>("Target", current_target))
         {
             return BT::NodeStatus::SUCCESS;

@@ -16,7 +16,7 @@ HandleBT::HandleBT(ros::NodeHandle &nh) : nh_(nh)
     task_subscriber_ = nh_.subscribe(state.ns + "/task", 100, &HandleBT::subTaskCallback, this);
     active_task_publisher_ = nh_.advertise<std_msgs::String>(state.ns + "/active_task", 1);
     lidar_readings_subscriber_ = nh_.subscribe(state.ns + "/velodyne_points", 100, &HandleBT::subLidarReadingsCallback, this);
-
+    checkpoints_subscriber_ = nh_.subscribe("/checkpoints", 100, &HandleBT::subCheckpointsCallback, this);
     timer_ = nh_.createTimer(ros::Duration(0.5), &HandleBT::pubActiveTaskCallback, this);
     waitForConnection();
 }
@@ -36,6 +36,7 @@ void HandleBT::createTree(std::string path)
     factory.registerNodeType<SetTask>("SetTask");
     factory.registerNodeType<ClearTask>("ClearTask");
     factory.registerNodeType<TestActivity>("TestActivity");
+    factory.registerNodeType<GoToBackupTarget>("GoToBackupTarget");
     factory.registerSimpleAction("Recharge", std::bind(Recharge));
     // REGISTER CONDITIONS
     factory.registerSimpleCondition("TaskAvailable", std::bind(TaskAvailable));
@@ -95,4 +96,9 @@ void HandleBT::pubActiveTaskCallback(const ros::TimerEvent &event)
 void HandleBT::subLidarReadingsCallback(const sensor_msgs::PointCloud2::ConstPtr &msg)
 {
     state.lidar_readings = *msg;
+}
+
+void HandleBT::subCheckpointsCallback(const mae_utils::PointArray::ConstPtr &msg)
+{
+    state.checkpoints.insert(state.checkpoints.end(), msg->points.begin(), msg->points.end());
 }
