@@ -18,18 +18,18 @@ public:
     {
         static auto now = std::chrono::system_clock::now();
         geometry_msgs::Pose current_target;
+        if (!getInput<geometry_msgs::Pose>("Target", current_target))
+            return BT::NodeStatus::SUCCESS;
 
         if (state.plan_pts.empty())
             return BT::NodeStatus::FAILURE;
 
-        if (!getInput<geometry_msgs::Pose>("Target", current_target))
+        for (const auto &pt : state.frontier_pts)
         {
-            return BT::NodeStatus::SUCCESS;
+            if (dist2D(pointFromPose(current_target), pt) < 2)
+                return BT::NodeStatus::FAILURE;
         }
-        if (dist2D(pointFromPose(state.pose), state.plan_pts[0]) < dist2D(state.pose, current_target))
-            return BT::NodeStatus::SUCCESS;
-
-        return BT::NodeStatus::FAILURE;
+        return BT::NodeStatus::SUCCESS;
     }
 };
 

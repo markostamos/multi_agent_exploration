@@ -44,8 +44,8 @@ void HandleBT::createTree(std::string path)
 
     factory.registerSimpleCondition("isFrontierListEmpty", std::bind(isFrontierListEmpty));
     factory.registerSimpleCondition("isPlanEmpty", std::bind(isPlanEmpty));
-    factory.registerNodeType<TargetFound>("TargetFound");
     factory.registerNodeType<TargetDiscovered>("TargetDiscovered");
+    factory.registerNodeType<BetterTargetFound>("BetterTargetFound");
     factory.registerNodeType<GreedyTargetDiscovered>("GreedyTargetDiscovered");
     factory.registerSimpleCondition("NewPlanArrived", std::bind(NewPlanArrived));
     tree_ = factory.createTreeFromFile(path);

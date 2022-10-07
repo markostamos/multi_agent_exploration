@@ -34,8 +34,8 @@
                                 <Action ID="SetNextTargetFromPlan" Target="{TARGET}"/>
                                 <ReactiveFallback>
                                     <Condition ID="NewPlanArrived"/>
+                                    <Condition ID="BetterTargetFound" Target="{TARGET}"/>
                                     <Condition ID="TargetDiscovered" Target="{TARGET}"/>
-                                    <Condition ID="TargetFound" Target="{TARGET}"/>
                                     <Action ID="GoTo" Target="{TARGET}"/>
                                 </ReactiveFallback>
                             </Sequence>
@@ -181,6 +181,9 @@
     </BehaviorTree>
     <!-- ////////// -->
     <TreeNodesModel>
+        <Condition ID="BetterTargetFound">
+            <inout_port default="{TARGET}" name="Target"/>
+        </Condition>
         <Action ID="CancelGoal"/>
         <Action ID="ClearTask">
             <output_port default="{TASK}" name="Task"/>
@@ -242,9 +245,6 @@
             <input_port default="true" name="__shared_blackboard">If false (default), the Subtree has an isolated blackboard and needs port remapping</input_port>
         </SubTree>
         <Condition ID="TargetDiscovered">
-            <inout_port default="{TARGET}" name="Target"/>
-        </Condition>
-        <Condition ID="TargetFound">
             <input_port default="{TARGET}" name="Target"/>
         </Condition>
         <Condition ID="TaskAvailable"/>

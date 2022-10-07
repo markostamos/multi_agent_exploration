@@ -11,11 +11,11 @@
 
 // include all actions
 #include <conditions/isFrontierListEmpty.h>
-#include <conditions/TargetDiscovered.h>
+#include <conditions/BetterTargetFound.h>
 #include <conditions/GreedyTargetDiscovered.h>
 #include <conditions/TaskAvailable.h>
 #include <conditions/LowBattery.h>
 #include <conditions/NewPlanArrived.h>
 #include <conditions/isPlanEmpty.h>
-#include <conditions/TargetFound.h>
+#include <conditions/TargetDiscovered.h>
 #endif // CONDITIONS_H
