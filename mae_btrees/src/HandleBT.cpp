@@ -62,7 +62,6 @@ void HandleBT::subPoseCallback(const nav_msgs::Odometry::ConstPtr &msg)
     if (first_msg)
     {
         tree_.rootBlackboard()->set<geometry_msgs::Pose>("Home", msg->pose.pose);
-        ROS_WARN_STREAM("Home set to: " << msg->pose.pose);
         first_msg = false;
     }
     state.pose = msg->pose.pose;

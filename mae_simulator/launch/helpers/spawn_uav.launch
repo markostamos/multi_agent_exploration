@@ -82,6 +82,12 @@
 	</node>
 
 
+  <node pkg="mae_control" type="move_base_3d_node" name="move_base_3D" output="screen">
+
+      <remap from="/start_in" to="/$(arg namespace)/ground_truth/position"/>
+      
+  </node>
+
   </group>
   
 </launch>

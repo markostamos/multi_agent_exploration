@@ -52,8 +52,6 @@ void FrontierGeneration::get3DFrontiers(std::vector<geometry_msgs::Point> *front
     octomap::point3d_list unknown_cells;
     octree_->getUnknownLeafCenters(unknown_cells, min, max, 13);
 
-    ROS_WARN_STREAM("unknown cells size is " << unknown_cells.size());
-
     // LAMBDA FUNCTION TO CHECK IF A POINT SHOULD BE PUSHED TO FRONTIERS
     auto check_point = [&](const octomap::point3d &pt, int range)
     {
@@ -84,7 +82,7 @@ void FrontierGeneration::get3DFrontiers(std::vector<geometry_msgs::Point> *front
     for (octomap::point3d_list::iterator it = unknown_cells.begin(); it != unknown_cells.end(); ++it)
     {
 
-        if (check_point(*it, 7))
+        if (check_point(*it, 5))
         {
             geometry_msgs::Point pt;
             pt.x = it->x();
@@ -93,7 +91,6 @@ void FrontierGeneration::get3DFrontiers(std::vector<geometry_msgs::Point> *front
             frontiers->push_back(pt);
         }
     }
-    ROS_WARN_STREAM("frontiers size is " << frontiers->size());
 }
 
 void FrontierGeneration::getFrontiers(std::vector<geometry_msgs::Point> *frontiers, float threshold)
