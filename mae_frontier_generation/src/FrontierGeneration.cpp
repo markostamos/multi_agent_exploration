@@ -1,5 +1,9 @@
 #include <mae_frontier_generation/FrontierGeneration.h>
 #include <mae_frontier_generation/utils.h>
+#include <octomap_msgs/conversions.h>
+#include <octomap/OcTree.h>
+#include <octomap/OcTreeBase.h>
+#include <geometry_msgs/PointStamped.h>
 inline bool FrontierGeneration::isFrontier(int i, int j) const
 {
 
@@ -12,6 +16,84 @@ inline bool FrontierGeneration::isFrontier(int i, int j) const
 void FrontierGeneration::updateMap(const nav_msgs::OccupancyGrid &map)
 {
     map_ = map;
+}
+
+void FrontierGeneration::updateLocation(const geometry_msgs::PointStamped &location)
+{
+    location_ = location.point;
+}
+void FrontierGeneration::updateOctomap(const octomap_msgs::Octomap octomap)
+{
+    octomap::AbstractOcTree *tree = octomap_msgs::msgToMap(octomap);
+    if (tree)
+    {
+        delete octree_;
+        octree_ = dynamic_cast<octomap::OcTree *>(tree);
+        if (octree_ == nullptr)
+        {
+            ROS_ERROR_STREAM("octree is null");
+        }
+    }
+}
+
+void FrontierGeneration::get3DFrontiers(std::vector<geometry_msgs::Point> *frontiers)
+{
+    if (octree_ == nullptr)
+    {
+        return;
+    }
+
+    float xy_range = 20;
+    float z_range = 10;
+
+    octomap::point3d min(location_.x - xy_range, location_.y - xy_range, location_.z + 1);
+    octomap::point3d max(location_.x + xy_range, location_.y + xy_range, location_.z + z_range);
+
+    octomap::point3d_list unknown_cells;
+    octree_->getUnknownLeafCenters(unknown_cells, min, max, 13);
+
+    ROS_WARN_STREAM("unknown cells size is " << unknown_cells.size());
+
+    // LAMBDA FUNCTION TO CHECK IF A POINT SHOULD BE PUSHED TO FRONTIERS
+    auto check_point = [&](const octomap::point3d &pt, int range)
+    {
+        octomap::OcTreeKey key;
+        if (octree_->coordToKeyChecked(pt, key))
+        {
+            // check key neighbors for occupied
+            for (int dx = -range; dx <= range; dx++)
+            {
+                for (int dy = -range; dy <= range; dy++)
+                {
+                    for (int dz = -range; dz <= range; dz++)
+                    {
+                        octomap::OcTreeKey nkey = key;
+                        nkey[0] += dx;
+                        nkey[1] += dy;
+                        nkey[2] += dz;
+                        octomap::OcTreeNode *node = octree_->search(nkey, 16);
+                        if (node != nullptr && octree_->isNodeOccupied(node))
+                            return true;
+                    }
+                }
+            }
+        }
+        return false;
+    };
+
+    for (octomap::point3d_list::iterator it = unknown_cells.begin(); it != unknown_cells.end(); ++it)
+    {
+
+        if (check_point(*it, 7))
+        {
+            geometry_msgs::Point pt;
+            pt.x = it->x();
+            pt.y = it->y();
+            pt.z = it->z();
+            frontiers->push_back(pt);
+        }
+    }
+    ROS_WARN_STREAM("frontiers size is " << frontiers->size());
 }
 
 void FrontierGeneration::getFrontiers(std::vector<geometry_msgs::Point> *frontiers, float threshold)
@@ -108,13 +190,16 @@ void FrontierGeneration::filterFrontiersDBSCAN(std::vector<geometry_msgs::Point>
     {
         center.x = 0;
         center.y = 0;
+        center.z = 0;
         for (const auto &i : cluster)
         {
             center.x += frontiers->operator[](i).x;
             center.y += frontiers->operator[](i).y;
+            center.z += frontiers->operator[](i).z;
         }
         center.x /= cluster.size();
         center.y /= cluster.size();
+        center.z /= cluster.size();
         if (!isBlacklisted(center))
         {
             new_frontiers_centers.push_back(center);

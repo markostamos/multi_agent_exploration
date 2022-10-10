@@ -11,11 +11,14 @@ set(ROS_DEPENDENCIES
     nav_msgs
     geometry_msgs
     mae_utils
+    octomap_msgs
     )
 
 find_package(catkin REQUIRED COMPONENTS ${ROS_DEPENDENCIES} )
 
 
+find_package(octomap REQUIRED)
+include_directories(${OCTOMAP_INCLUDE_DIRS})
 
 
 
@@ -39,4 +42,4 @@ add_dependencies(frontier_generation_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${
 target_link_libraries(frontier_generation_node 
                         fg_utils 
                         frontier_generation
-                        ${catkin_LIBRARIES})
+                        ${catkin_LIBRARIES} ${OCTOMAP_LIBRARIES})

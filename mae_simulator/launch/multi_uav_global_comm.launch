@@ -90,7 +90,7 @@
         <param name="latch" value="false" />
         <param name="height_map" value="false"/>
         <param name="frame_id" type="string" value="world" />
-        <param name="sensor_model/max_range" value="20" />
+        <param name="sensor_model/max_range" value="15" />
         <param name="incremental_2D_projection" value="true"/>
         <param name="pointcloud_min_z" value="0.15"/>
         <param name="pointcloud_max_z" value="2"/>
