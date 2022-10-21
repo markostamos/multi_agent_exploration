@@ -27,8 +27,6 @@ int main(int argc, char **argv)
 
   NodeStatus status = NodeStatus::IDLE;
 
-  // loggers
-
   // PublisherZMQ publisher_zmq(handler.tree_);
   //   StdCoutLogger logger_cout(handler.tree_);
   while (ros::ok())

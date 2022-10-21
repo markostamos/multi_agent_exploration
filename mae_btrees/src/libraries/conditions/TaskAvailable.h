@@ -3,6 +3,11 @@
 
 extern RosComm state;
 
+/**
+ * @brief Checks whether a new task has arrived, used to interrupt current non safety task in a Fallback control node.
+ *
+ * @return BT::NodeStatus
+ */
 BT::NodeStatus TaskAvailable()
 {
     if (state.task_arrived)

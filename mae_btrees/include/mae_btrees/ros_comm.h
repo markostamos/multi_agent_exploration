@@ -7,11 +7,11 @@
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <mae_utils/PointArray.h>
-struct Pubs
-{
-    ros::Publisher commandVel;
-};
 
+/**
+ * @brief Struct that holds data from the ROS environment to be used in the Behavior Tree.
+ *
+ */
 struct RosComm
 {
     ros::NodeHandle *nh;
@@ -31,18 +31,16 @@ struct RosComm
 
     // Current battery percentage
     float battery_percentage;
-
-    Pubs publishers;
-
-    // checkpoints
-    std::vector<geometry_msgs::Point> checkpoints;
-
     // Task requested by user
     std::string requested_task;
     bool task_arrived;
 };
 
+/**
+ * @brief Initialize the RosComm struct variables.
+ *
+ * @param nh
+ */
 void initRosComm(ros::NodeHandle &nh);
 
-void waitForConnection();
 #endif // ROS_COMM_H

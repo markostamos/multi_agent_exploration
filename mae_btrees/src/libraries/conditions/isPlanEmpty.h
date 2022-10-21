@@ -2,7 +2,11 @@
 #define PLAN_EMPTY_H
 
 extern RosComm state;
-
+/**
+ * @brief Checks whether the list of plan points is empty.
+ *
+ * @return Success if the list is empty, failure otherwise.
+ */
 BT::NodeStatus isPlanEmpty()
 {
 

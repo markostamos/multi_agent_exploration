@@ -1,14 +1,15 @@
 #ifndef GOTO_3D_H
 #define GOTO_3D_H
 
-#include <move_base_msgs/MoveBaseAction.h>
-#include <actionlib/client/simple_action_client.h>
 #include <mae_control/MoveBase3DAction.h>
 #include <mae_control/MoveBase3DActionGoal.h>
 #include <geometry_msgs/Pose.h>
-/* Go to a location
-    input: blackboard key
-    returns: Running until the UAV reaches the specified location
+
+/**
+ * @brief Action node that sends a goal to the 3d move_base action server.
+ *
+ * @returns SUCCESS if the goal was reached, FAILURE otherwise. If a goal is unreachable it will publish it in the blacklist topic.
+ *
  */
 extern RosComm state;
 class GoTo3D : public BT::StatefulActionNode
@@ -16,9 +17,9 @@ class GoTo3D : public BT::StatefulActionNode
 public:
     GoTo3D(const std::string &name, const BT::NodeConfiguration &config)
         : StatefulActionNode(name, config),
-          client_(state.ns + "/move_base_3d", true)
+          client_("/move_base_3d", true)
     {
-        blacklist_pt_pub_ = state.nh->advertise<geometry_msgs::Point>(state.ns + "/blacklist_pt", 1);
+        blacklist_pt_pub_ = state.nh->advertise<geometry_msgs::Point>("/blacklist_pt", 1);
     }
 
     static BT::PortsList providedPorts()
@@ -38,15 +39,14 @@ public:
             return BT::NodeStatus::SUCCESS;
         }
 
-        if (abs(state.pose.position.x - target_.position.x) < 0.1 &&
-            abs(state.pose.position.y - target_.position.y) < 0.1 &&
-            abs(state.pose.position.z - target_.position.z) < 0.1)
+        // Check if the agent is already at the target
+        if (dist3D(state.pose, target_) < 0.2)
         {
             ROS_WARN_STREAM("[GoTo3D] Agent already at target");
             return BT::NodeStatus::SUCCESS;
         }
 
-        // move_base_msgs::MoveBaseGoal msg;
+        // Send goal to actionbase
         mae_control::MoveBase3DGoal msg;
         msg.target = target_;
         if (msg.target.position.z == 0)
@@ -59,22 +59,10 @@ public:
 
     BT::NodeStatus onRunning() override
     {
+        // TODO: Check if the goal is unreachable and publish it in the blacklist topic
+        // TODO: other functionalities
 
-        /*  switch (client_.getState().state_)
-         {
-         case actionlib::SimpleClientGoalState::SUCCEEDED:
-             ROS_WARN_STREAM("[GoTo] Goal reached");
-             return BT::NodeStatus::SUCCESS;
-         case actionlib::SimpleClientGoalState::ABORTED:
-             ROS_WARN_STREAM("[GoTo] Goal aborted");
-             blacklist_pt_pub_.publish(target_.position);
-             return BT::NodeStatus::FAILURE;
-         case actionlib::SimpleClientGoalState::REJECTED:
-             ROS_WARN_STREAM("[GoTo] Goal rejected");
-             return BT::NodeStatus::FAILURE;
-         default: */
-
-        if (dist3d(state.pose, target_) < 0.2)
+        if (dist3D(state.pose, target_) < 0.2)
         {
             ROS_WARN_STREAM("[GoTo] Goal reached");
             return BT::NodeStatus::SUCCESS;
@@ -87,11 +75,6 @@ public:
     {
         client_.cancelGoal();
         ROS_WARN_STREAM("[GoTo] Halted");
-    }
-
-    inline float dist3d(const geometry_msgs::Pose &p1, const geometry_msgs::Pose &p2)
-    {
-        return sqrt(pow(p1.position.x - p2.position.x, 2) + pow(p1.position.y - p2.position.y, 2) + pow(p1.position.z - p2.position.z, 2));
     }
 
 private:

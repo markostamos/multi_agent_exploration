@@ -75,10 +75,21 @@
 
     
 
-      <node pkg="mae_btrees" type="bt_node" name="behavior_tree_node" output="screen" >
-		<param name="file" value="$(arg tree_file)"/>
-        <remap from="/$(arg namespace)/frontiers" to="/frontiers"/>
-        <remap from="/$(arg namespace)/blacklist_pt" to="/blacklist_pt"/>
+  <node pkg="mae_btrees" type="bt_node" name="behavior_tree_node" output="screen" >
+		<param name="file" value="$(arg tree_file)"/> 
+    
+    <remap from="/odometry" to="/$(arg namespace)/ground_truth/odometry"/>
+    <remap from="/plan" to="/$(arg namespace)/plan"/>
+    <remap from="/task" to="/$(arg namespace)/task"/>
+    <remap from="/lidar" to="/$(arg namespace)/velodyne_points"/>
+    <!-- <remap from="/frontiers" to ="$(arg namespace)/frontiers"/> -->
+
+    <remap from="/move_base" to="/$(arg namespace)/move_base"/>
+    <remap from="/move_base_simple/goal" to="/$(arg namespace)/move_base_simple/goal"/>
+    <remap from="/move_base_3d" to="/$(arg namespace)/move_base_3d"/>
+    <remap from="/cmd_vel" to="/$(arg namespace)/command/cmd_vel"/>
+    <remap from="/active_task" to="/$(arg namespace)/active_task"/>
+
 	</node>
 
 

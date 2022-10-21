@@ -3,8 +3,9 @@
 
 #include <geometry_msgs/Twist.h>
 
-/*
-    Takes Off at a specified height
+/**
+ * @brief Makes the UAV take off at specified height in meters.
+ * @param height Height is given in the xml file as a parameter.
  */
 extern RosComm state;
 class TakeOff : public BT::StatefulActionNode
@@ -13,6 +14,7 @@ public:
     TakeOff(const std::string &name, const BT::NodeConfiguration &config)
         : StatefulActionNode(name, config)
     {
+        cmd_vel_pub_ = state.nh->advertise<geometry_msgs::Twist>("/cmd_vel", 1);
     }
 
     static BT::PortsList providedPorts()
@@ -30,7 +32,7 @@ public:
         {
             ROS_WARN_STREAM("TakeOff task started");
             geometry_msgs::Twist msg = twistFromVec({0, 0, 0.4});
-            state.publishers.commandVel.publish(msg);
+            cmd_vel_pub_.publish(msg);
             return BT::NodeStatus::RUNNING;
         }
         return BT::NodeStatus::SUCCESS;
@@ -41,7 +43,7 @@ public:
         if (taskCompleted())
         {
             geometry_msgs::Twist msg = twistFromVec({0, 0, 0});
-            state.publishers.commandVel.publish(msg);
+            cmd_vel_pub_.publish(msg);
             ROS_WARN_STREAM("TakeOff task completed");
             return BT::NodeStatus::SUCCESS;
         }
@@ -50,7 +52,7 @@ public:
     void onHalted()
     {
         geometry_msgs::Twist msg = twistFromVec({0, 0, 0});
-        state.publishers.commandVel.publish(msg);
+        cmd_vel_pub_.publish(msg);
         ROS_WARN_STREAM("TakeOff Halted");
     }
 
@@ -66,6 +68,7 @@ public:
 
 private:
     double height_;
+    ros::Publisher cmd_vel_pub_;
 };
 
 #endif // TAKE_OFF_H

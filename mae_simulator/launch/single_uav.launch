@@ -41,12 +41,12 @@
     <arg name="namespace" value="drone1"/>
 
     <!--spawn location -->
-    <arg name="x" default="-36.8"/>
+    <!-- <arg name="x" default="-36.8"/>
     <arg name="y" default="20.6"/>
-    <arg name="z" default="0.5"/>
-    <!-- <arg name="x" default="0"/>
+    <arg name="z" default="0.5"/> -->
+    <arg name="x" default="0"/>
     <arg name="y" default="0"/>
-    <arg name="z" default="0.4"/> -->
+    <arg name="z" default="0.4"/>
     <!-- Ground truth odometry -->
     <arg name="enable_ground_truth" default="$(arg enable_ground_truth)"/>
     <arg name="enable_logging" value="$(arg enable_logging)"/>

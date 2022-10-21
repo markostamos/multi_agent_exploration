@@ -3,6 +3,10 @@
 
 extern RosComm state;
 
+/**
+ * @brief Checks whether the current active target exists in the list of frontier points.
+ * @returns Success if the target is not in the list, failure otherwise.
+ */
 class TargetDiscovered : public BT::ConditionNode
 {
 public:
@@ -26,7 +30,7 @@ public:
 
         for (const auto &pt : state.frontier_pts)
         {
-            if (dist2D(pointFromPose(current_target), pt) < 2)
+            if (dist3D(pointFromPose(current_target), pt) < 2)
                 return BT::NodeStatus::FAILURE;
         }
         return BT::NodeStatus::SUCCESS;

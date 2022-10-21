@@ -1,7 +1,10 @@
 #ifndef RECHARGE_H
 #define RECHARGE_H
 
-/* Set Locations to blackboard by name */
+/**
+ * @brief Dummy action node to test the reactivity of Behavior Tree on Safety Tasks.
+ *        //TODO: implement.
+ */
 extern RosComm state;
 BT::NodeStatus Recharge()
 {

@@ -4,9 +4,11 @@
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/client/simple_action_client.h>
 #include <geometry_msgs/Pose.h>
-/* Go to a location
-    input: blackboard key
-    returns: Running until the UAV reaches the specified location
+/**
+ * @brief Action node that sends a goal to the 2d move_base action server.
+ *
+ * @returns SUCCESS if the goal was reached, FAILURE otherwise. If a goal is unreachable it will publish it in the blacklist topic.
+ *
  */
 extern RosComm state;
 class GoTo : public BT::StatefulActionNode
@@ -14,9 +16,9 @@ class GoTo : public BT::StatefulActionNode
 public:
     GoTo(const std::string &name, const BT::NodeConfiguration &config)
         : StatefulActionNode(name, config),
-          client_(state.ns + "/move_base", true)
+          client_("/move_base", true)
     {
-        blacklist_pt_pub_ = state.nh->advertise<geometry_msgs::Point>(state.ns + "/blacklist_pt", 1);
+        blacklist_pt_pub_ = state.nh->advertise<geometry_msgs::Point>("/blacklist_pt", 1);
     }
 
     static BT::PortsList providedPorts()
@@ -36,13 +38,14 @@ public:
             return BT::NodeStatus::SUCCESS;
         }
 
-        if (abs(state.pose.position.x - target_.position.x) < 0.1 &&
-            abs(state.pose.position.y - target_.position.y) < 0.1)
+        // Check if the agent is already at the target
+        if (dist2D(state.pose, target_) < 0.1)
         {
             ROS_WARN_STREAM("[GoTo] Agent already at target");
             return BT::NodeStatus::SUCCESS;
         }
 
+        // Send goal to actionbase
         move_base_msgs::MoveBaseGoal msg;
         msg.target_pose.header.frame_id = "world";
         msg.target_pose.header.stamp = ros::Time::now();
@@ -70,7 +73,7 @@ public:
             return BT::NodeStatus::FAILURE;
         default:
 
-            if (dist2d(state.pose, target_) < 0.1)
+            if (dist2D(state.pose, target_) < 0.1)
             {
                 ROS_WARN_STREAM("[GoTo] Goal reached");
                 return BT::NodeStatus::SUCCESS;
@@ -83,11 +86,6 @@ public:
     {
         client_.cancelGoal();
         ROS_WARN_STREAM("[GoTo] Halted");
-    }
-
-    inline float dist2d(const geometry_msgs::Pose &p1, const geometry_msgs::Pose &p2)
-    {
-        return sqrt(pow(p1.position.x - p2.position.x, 2) + pow(p1.position.y - p2.position.y, 2));
     }
 
 private:

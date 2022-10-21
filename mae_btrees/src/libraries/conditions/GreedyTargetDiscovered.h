@@ -2,7 +2,10 @@
 #define GREEDY_TARGET_DISCOVERED_H
 
 extern RosComm state;
-
+/**
+ * @brief Checks whether the current active target exists in the list of frontier points.
+ *        If not it assumes it has been discovered and returns success.
+ */
 class GreedyTargetDiscovered : public BT::ConditionNode
 {
 public:
@@ -23,7 +26,7 @@ public:
         }
         for (const auto &pt : state.frontier_pts)
         {
-            if (dist2D(pointFromPose(current_target), pt) < 2)
+            if (dist3D(pointFromPose(current_target), pt) < 2)
             {
                 return BT::NodeStatus::FAILURE;
             }

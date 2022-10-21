@@ -3,7 +3,12 @@
 
 #include <geometry_msgs/Pose.h>
 
-/* Set Locations to blackboard by name */
+/**
+ * @brief Sets a location to the Behavior Trees blackboard by name.
+ *        The location can later be used as a target for GoTo actions.
+ *          Target = {NAME} in XML tree.
+ *
+ */
 class SetLocation : public BT::SyncActionNode
 {
 public:
@@ -27,7 +32,7 @@ public:
             throw BT::RuntimeError("Missing input x,y");
         }
 
-                config_.blackboard->set<geometry_msgs::Pose>(name, poseFromVec({pose.position.x, pose.position.y, pose.position.z}));
+        config_.blackboard->set<geometry_msgs::Pose>(name, poseFromVec({pose.position.x, pose.position.y, pose.position.z}));
 
         return BT::NodeStatus::SUCCESS;
     }

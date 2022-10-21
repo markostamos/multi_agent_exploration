@@ -3,6 +3,10 @@
 
 extern RosComm state;
 
+/**
+ * @brief Dummy node to test the reactivity of Behavior Tree on Safety Tasks.
+ *
+ */
 BT::NodeStatus LowBattery()
 {
     static auto now = 0;

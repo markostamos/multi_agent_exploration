@@ -16,6 +16,11 @@ public:
 public:
     HandleBT(ros::NodeHandle &nh);
 
+    /**
+     * @brief Load a Behavior Tree xml file and create the nodes
+     *
+     * @param path  Path to xml file
+     */
     void createTree(std::string path);
 
 private:
@@ -26,19 +31,50 @@ private:
     ros::Subscriber task_subscriber_;
     ros::Publisher active_task_publisher_;
     ros::Subscriber lidar_readings_subscriber_;
-    ros::Subscriber checkpoints_subscriber_;
-
     ros::Timer timer_;
 
 private:
-    void subPoseCallback(const nav_msgs::Odometry::ConstPtr &msg);
-    void subFrontierCallback(const mae_utils::PointArray::ConstPtr &msg);
-    void subDronePositionsCallback(const geometry_msgs::PointStamped::ConstPtr &msg);
-    void subPlanCallback(const mae_utils::PointArray::ConstPtr &msg);
-    void subTaskCallback(const std_msgs::String::ConstPtr &msg);
-    void pubActiveTaskCallback(const ros::TimerEvent &event);
-    void subLidarReadingsCallback(const sensor_msgs::PointCloud2::ConstPtr &msg);
-    void subCheckpointsCallback(const mae_utils::PointArray::ConstPtr &msg);
+    /**
+     * @brief Subscriber callback for current pose of agent.
+     *
+     * @param msg   Odometry message
+     */
+    void subPoseCb(const nav_msgs::Odometry::ConstPtr &msg);
+
+    /**
+     * @brief Subscriber callback for list of frontiers points.
+     *
+     * @param msg PointArray message
+     */
+    void subFrontierCb(const mae_utils::PointArray::ConstPtr &msg);
+
+    /**
+     * @brief Subscriber callback for current plan of agent.
+     *
+     * @param msg PointArray message
+     */
+    void subPlanCb(const mae_utils::PointArray::ConstPtr &msg);
+
+    /**
+     * @brief Subscriber callback for task selection.
+     *
+     * @param msg String task name according to xml file.
+     */
+    void subTaskCb(const std_msgs::String::ConstPtr &msg);
+
+    /**
+     * @brief Publishes the active task.
+     *
+     * @param msg PointCloud2 message.
+     */
+    void pubActiveTaskCb(const ros::TimerEvent &event);
+
+    /**
+     * @brief Subscriber callback for agent's lidar readings.
+     *
+     * @param msg PointCloud2 message.
+     */
+    void subLidarReadingsCb(const sensor_msgs::PointCloud2::ConstPtr &msg);
 };
 
 #endif // HANDLE_BT_H

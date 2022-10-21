@@ -1,5 +1,11 @@
 #ifndef SET_TASK_H
 #define SET_TASK_H
+
+/**
+ * @brief Sets a task to the Behavior Tree's blackboard according to the requested task received
+ *        from the ros task topic in the BT handler class.
+ * @returns Always returns SUCCESS, defaults to Idle.
+ */
 extern RosComm state;
 class SetTask : public BT::SyncActionNode
 {

@@ -3,6 +3,10 @@
 
 extern RosComm state;
 
+/**
+ * @brief Checks if the suggested target from the current plan is better than the active current target.
+ * @returns SUCCESS if this statement holds , FAILURE otherwise.
+ */
 class BetterTargetFound : public BT::ConditionNode
 {
 public:
@@ -26,7 +30,7 @@ public:
         {
             return BT::NodeStatus::SUCCESS;
         }
-        if (dist2D(pointFromPose(state.pose), state.plan_pts[0]) < dist2D(state.pose, current_target))
+        if (dist3D(pointFromPose(state.pose), state.plan_pts[0]) < dist3D(state.pose, current_target))
             return BT::NodeStatus::SUCCESS;
 
         return BT::NodeStatus::FAILURE;

@@ -10,15 +10,13 @@ HandleBT::HandleBT(ros::NodeHandle &nh) : nh_(nh)
 
     initRosComm(nh_);
 
-    pose_subscriber_ = nh_.subscribe(state.ns + "/ground_truth/odometry", 100, &HandleBT::subPoseCallback, this);
-    frontier_subscriber_ = nh_.subscribe(state.ns + "/frontiers", 100, &HandleBT::subFrontierCallback, this);
-    plan_subscriber_ = nh_.subscribe(state.ns + "/plan", 100, &HandleBT::subPlanCallback, this);
-    task_subscriber_ = nh_.subscribe(state.ns + "/task", 100, &HandleBT::subTaskCallback, this);
-    active_task_publisher_ = nh_.advertise<std_msgs::String>(state.ns + "/active_task", 1);
-    lidar_readings_subscriber_ = nh_.subscribe(state.ns + "/velodyne_points", 100, &HandleBT::subLidarReadingsCallback, this);
-    checkpoints_subscriber_ = nh_.subscribe("/checkpoints", 100, &HandleBT::subCheckpointsCallback, this);
-    timer_ = nh_.createTimer(ros::Duration(0.5), &HandleBT::pubActiveTaskCallback, this);
-    waitForConnection();
+    pose_subscriber_ = nh_.subscribe("/odometry", 100, &HandleBT::subPoseCb, this);
+    frontier_subscriber_ = nh_.subscribe("/frontiers", 100, &HandleBT::subFrontierCb, this);
+    plan_subscriber_ = nh_.subscribe("/plan", 100, &HandleBT::subPlanCb, this);
+    task_subscriber_ = nh_.subscribe("/task", 100, &HandleBT::subTaskCb, this);
+    active_task_publisher_ = nh_.advertise<std_msgs::String>("/active_task", 1);
+    lidar_readings_subscriber_ = nh_.subscribe("/lidar", 100, &HandleBT::subLidarReadingsCb, this);
+    timer_ = nh_.createTimer(ros::Duration(0.5), &HandleBT::pubActiveTaskCb, this);
 }
 
 void HandleBT::createTree(std::string path)
@@ -33,33 +31,33 @@ void HandleBT::createTree(std::string path)
     factory.registerNodeType<Land>("Land");
     factory.registerNodeType<SetNextTargetGreedy>("SetNextTargetGreedy");
     factory.registerNodeType<SetNextTargetFromPlan>("SetNextTargetFromPlan");
-
     factory.registerNodeType<SetTask>("SetTask");
     factory.registerNodeType<ClearTask>("ClearTask");
     factory.registerNodeType<TestActivity>("TestActivity");
     factory.registerNodeType<GoToBackupTarget>("GoToBackupTarget");
     factory.registerSimpleAction("Recharge", std::bind(Recharge));
-    // REGISTER CONDITIONS
-    factory.registerSimpleCondition("TaskAvailable", std::bind(TaskAvailable));
-    factory.registerSimpleCondition("LowBattery", std::bind(LowBattery));
 
-    factory.registerSimpleCondition("isFrontierListEmpty", std::bind(isFrontierListEmpty));
-    factory.registerSimpleCondition("isPlanEmpty", std::bind(isPlanEmpty));
+    // REGISTER CONDITIONS
     factory.registerNodeType<TargetDiscovered>("TargetDiscovered");
     factory.registerNodeType<BetterTargetFound>("BetterTargetFound");
     factory.registerNodeType<GreedyTargetDiscovered>("GreedyTargetDiscovered");
+    factory.registerSimpleCondition("TaskAvailable", std::bind(TaskAvailable));
+    factory.registerSimpleCondition("LowBattery", std::bind(LowBattery));
+    factory.registerSimpleCondition("isFrontierListEmpty", std::bind(isFrontierListEmpty));
+    factory.registerSimpleCondition("isPlanEmpty", std::bind(isPlanEmpty));
     factory.registerSimpleCondition("NewPlanArrived", std::bind(NewPlanArrived));
+
     tree_ = factory.createTreeFromFile(path);
 
+    // Set initial task to idle.
     tree_.rootBlackboard()->set<std::string>("TASK", "Idle");
 }
 
-/*
-    SUBSCRIBER CALLBACKS
- */
-void HandleBT::subPoseCallback(const nav_msgs::Odometry::ConstPtr &msg)
+void HandleBT::subPoseCb(const nav_msgs::Odometry::ConstPtr &msg)
 {
     static bool first_msg = true;
+
+    // Keep first msg to set home location.
     if (first_msg)
     {
         tree_.rootBlackboard()->set<geometry_msgs::Pose>("Home", msg->pose.pose);
@@ -68,37 +66,31 @@ void HandleBT::subPoseCallback(const nav_msgs::Odometry::ConstPtr &msg)
     state.pose = msg->pose.pose;
 };
 
-void HandleBT::subFrontierCallback(const mae_utils::PointArray::ConstPtr &msg)
+void HandleBT::subFrontierCb(const mae_utils::PointArray::ConstPtr &msg)
 {
     state.frontier_pts = msg->points;
 };
 
-void HandleBT::subPlanCallback(const mae_utils::PointArray::ConstPtr &msg)
+void HandleBT::subPlanCb(const mae_utils::PointArray::ConstPtr &msg)
 {
-    // get all poitns from msg except from first
-
+    // first point is assumed to be the current location, so it gets ignored.
     state.plan_pts = std::vector<geometry_msgs::Point>(msg->points.begin() + 1, msg->points.end());
 }
 
-void HandleBT::subTaskCallback(const std_msgs::String::ConstPtr &msg)
+void HandleBT::subTaskCb(const std_msgs::String::ConstPtr &msg)
 {
     state.requested_task = msg->data;
     state.task_arrived = true;
 }
 
-void HandleBT::pubActiveTaskCallback(const ros::TimerEvent &event)
+void HandleBT::pubActiveTaskCb(const ros::TimerEvent &event)
 {
     std_msgs::String msg;
     msg.data = tree_.rootBlackboard()->get<std::string>("TASK");
     active_task_publisher_.publish(msg);
 }
 
-void HandleBT::subLidarReadingsCallback(const sensor_msgs::PointCloud2::ConstPtr &msg)
+void HandleBT::subLidarReadingsCb(const sensor_msgs::PointCloud2::ConstPtr &msg)
 {
     state.lidar_readings = *msg;
-}
-
-void HandleBT::subCheckpointsCallback(const mae_utils::PointArray::ConstPtr &msg)
-{
-    state.checkpoints.insert(state.checkpoints.end(), msg->points.begin(), msg->points.end());
 }

@@ -2,6 +2,11 @@
 #define CLEAR_TASKS_H
 
 extern RosComm state;
+
+/**
+ * @brief Sets the current active task of the agent to Idle
+ *
+ */
 class ClearTask : public BT::SyncActionNode
 {
 public:

@@ -1,7 +1,10 @@
 #ifndef NEXT_TARGET_FROM_PLAN_H
 #define NEXT_TARGET_FROM_PLAN_H
 
-/* Set Locations to blackboard by name */
+/**
+ * @brief Gets the first target from the plan and sets it to the blackboard.
+ * @returns failure if plan is empty, success otherwise.
+ */
 extern RosComm state;
 class SetNextTargetFromPlan : public BT::SyncActionNode
 {
@@ -22,6 +25,7 @@ public:
 
         if (state.plan_pts.empty())
             return BT::NodeStatus::FAILURE;
+
         geometry_msgs::Pose pose = poseFromVec({state.plan_pts[0].x, state.plan_pts[0].y, 0});
         setOutput("Target", pose);
         return BT::NodeStatus::SUCCESS;

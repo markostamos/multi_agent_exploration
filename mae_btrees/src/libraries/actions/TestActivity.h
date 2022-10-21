@@ -1,6 +1,10 @@
 #ifndef TEST_ACTIVITY_H
 #define TEST_ACTIVITY_H
 
+/**
+ * @brief Dummy action node for testing.
+ *
+ */
 // Example of Asynchronous node that use StatefulActionNode as base class
 class TestActivity : public BT::StatefulActionNode
 {
