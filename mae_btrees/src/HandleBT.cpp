@@ -27,6 +27,7 @@ void HandleBT::createTree(std::string path)
 
     // REGISTER ACTIONS
     factory.registerNodeType<GoTo>("GoTo");
+    factory.registerNodeType<GoTo3D>("GoTo3D");
     factory.registerNodeType<SetLocation>("SetLocation");
     factory.registerNodeType<TakeOff>("TakeOff");
     factory.registerNodeType<Land>("Land");

@@ -2,7 +2,7 @@
 import rospy
 
 from geometry_msgs.msg import Twist
-from geometry_msgs.msg import PoseStamped, Pose
+from geometry_msgs.msg import PoseStamped, Pose, Point
 from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from gazebo_msgs.msg import ModelState
 
@@ -22,7 +22,10 @@ class vel_controller_node:
         rospy.init_node("vel_controller_node")
         self.initParams()
         rospy.Subscriber(f"{self.ns}command/cmd_vel", Twist, self.updateCmdVel)
+        rospy.Subscriber(f"{self.ns}command/position", Point, self.updatePosition)
 
+        self.goal_position = Point()
+        self.position_control = False
         if self.real_controller:
             self.pose_publisher = rospy.Publisher(
                 f"{self.ns}/command/pose", PoseStamped, queue_size=100)
@@ -57,6 +60,13 @@ class vel_controller_node:
         self.current_pose = goal
 
     def getGoalPose(self):
+
+        if self.position_control:
+            goal = Pose()
+            goal.position = self.goal_position
+            goal.orientation = self.current_pose.orientation
+            self.position_control = False
+            return goal
         goal = Pose()
 
         goal.position.x = self.cmd_vel.linear.x * self.tstep + self.current_pose.position.x
@@ -86,6 +96,10 @@ class vel_controller_node:
         if vel.linear.z != vel.linear.z:
             vel.linear.z = 0
         self.cmd_vel = vel
+
+    def updatePosition(self, pos):
+        self.goal_position = pos
+        self.position_control = True
 
 
 if __name__ == "__main__":

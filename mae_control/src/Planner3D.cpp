@@ -2,6 +2,7 @@
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/spaces/SE3StateSpace.h>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
+#include <ompl/geometric/planners/rrt/RRTstar.h>
 #include <ompl/geometric/SimpleSetup.h>
 #include <ompl/config.h>
 #include <octomap_msgs/conversions.h>
@@ -41,17 +42,30 @@ bool Planner3D::isStateValid(const ob::State *state)
     // extract the third component of the position
     double z = pos->values[2];
 
-    // search for node in xyz
-    octomap::OcTreeNode *node = octree_->search(x, y, z, 15);
-    if (node != nullptr)
+    int range = 2;
+    octomap::OcTreeKey key;
+    if (octree_->coordToKeyChecked(x, y, z, key))
     {
-        // check if node is occupied
-        if (octree_->isNodeOccupied(node))
+        // check key neighbors for occupied
+        for (int dx = -range; dx <= range; dx++)
         {
-            return false;
+            for (int dy = -range; dy <= range; dy++)
+            {
+                for (int dz = -range; dz <= range; dz++)
+                {
+                    octomap::OcTreeKey nkey = key;
+                    nkey[0] += dx;
+                    nkey[1] += dy;
+                    nkey[2] += dz;
+                    octomap::OcTreeNode *node = octree_->search(nkey, 14);
+                    if (node == nullptr)
+                        return true;
+                    if (octree_->isNodeOccupied(node))
+                        return false;
+                }
+            }
         }
     }
-
     return true;
 }
 
@@ -90,9 +104,9 @@ nav_msgs::Path Planner3D::calculatePath(geometry_msgs::Point start, geometry_msg
     goal_state->setZ(goal.z);
     goal_state->rotation().setIdentity();
 
-    ss.setPlanner(std::make_shared<og::RRTConnect>(ss.getSpaceInformation()));
+    ss.setPlanner(std::make_shared<og::RRTstar>(ss.getSpaceInformation()));
     // set planner range to 0.01
-    ss.getPlanner()->as<og::RRTConnect>()->setRange(0.1);
+    ss.getPlanner()->as<og::RRTstar>()->setRange(0.1);
     ss.setStartAndGoalStates(start_state, goal_state);
 
     ob::PlannerStatus solved = ss.solve(timeout_s);
@@ -104,7 +118,8 @@ nav_msgs::Path Planner3D::calculatePath(geometry_msgs::Point start, geometry_msg
         ss.simplifySolution();
 
         og::PathGeometric path_geom = ss.getSolutionPath();
-        path_geom.interpolate();
+
+        path_geom.interpolate(path_geom.length() * 30);
         path = navPathFromOmplPath(path_geom);
     }
     else
@@ -129,6 +144,8 @@ nav_msgs::Path Planner3D::navPathFromOmplPath(const og::PathGeometric &omplPath)
 
         path.poses.push_back(pose_msg);
     }
+
+    ROS_WARN_STREAM("Path size: " << path.poses.size());
 
     return path;
 }

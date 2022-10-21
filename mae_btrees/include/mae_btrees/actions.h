@@ -11,6 +11,7 @@
 #include <mae_utils/utils.h>
 // include all actions
 #include <actions/GoTo.h>
+#include <actions/GoTo3D.h>
 #include <actions/TakeOff.h>
 #include <actions/Land.h>
 #include <actions/SetLocation.h>

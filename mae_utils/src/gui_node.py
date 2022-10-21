@@ -2,7 +2,7 @@
 import rospy
 import dearpygui.dearpygui as dpg
 from functools import partial
-from geometry_msgs.msg import PointStamped, PoseStamped, Twist, Pose
+from geometry_msgs.msg import PointStamped, PoseStamped, Twist, Pose, Point
 from std_msgs.msg import String
 import dearpygui.demo as demo
 from gazebo_msgs.msg import ModelState
@@ -113,10 +113,13 @@ class GUI:
 
     def goToCallback(self, sender, app_data, agent_id):
         self.ros.publishTask(agent_id, "Idle")
-
-        print([dpg.get_value(f"Agent{agent_id}_x")])
-        self.ros.publishGoal(agent_id, [float(dpg.get_value(f"Agent{agent_id}_x")), float(dpg.get_value(
-            f"Agent{agent_id}_y")), float(dpg.get_value(f"Agent{agent_id}_z"))])
+        x = dpg.get_value(f"Agent{agent_id}_x")
+        y = dpg.get_value(f"Agent{agent_id}_y")
+        z = dpg.get_value(f"Agent{agent_id}_z")
+        if z == 0:
+            self.ros.publishGoal(agent_id, (x, y, z))
+        else:
+            self.ros.publish3DGoal(agent_id, (x, y, z))
 
     def button_callback(self, sender, app_data, user_data):
         self.ros.publishTask(user_data[1], user_data[0])
@@ -133,6 +136,7 @@ class GuiNode:
         self.active_tasks = dict()
         self.task_publishers = dict()
         self.goTo_publishers = dict()
+        self.goTo_publishers3D = dict()
         self.agent_locations = dict()
         self.cmdvel_publishers = dict()
 
@@ -156,6 +160,8 @@ class GuiNode:
                         f"/drone{drone_id}/task", String, queue_size=10)
                     self.goTo_publishers[drone_id] = rospy.Publisher(
                         f"/drone{drone_id}/move_base_simple/goal", PoseStamped, queue_size=10)
+                    self.goTo_publishers3D[drone_id] = rospy.Publisher(
+                        f"/drone{drone_id}/move_base_3d_simple/goal", Point, queue_size=10)
                     self.cmdvel_publishers[drone_id] = rospy.Publisher(
                         f"drone{drone_id}/command/cmd_vel", Twist, queue_size=10)
 
@@ -177,6 +183,13 @@ class GuiNode:
         pose.pose.position.z = dpg.get_value(f"Agent{drone_id}_z")
         pose.pose.orientation.w = 1
         self.goTo_publishers[drone_id].publish(pose)
+
+    def publish3DGoal(self, drone_id, goal_xyz):
+        point = Point()
+        point.x = goal_xyz[0]
+        point.y = goal_xyz[1]
+        point.z = goal_xyz[2]
+        self.goTo_publishers3D[drone_id].publish(point)
 
     def publishManualControl(self, drone_id, target):
         msg = Twist()

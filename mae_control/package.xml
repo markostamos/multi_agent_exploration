@@ -18,6 +18,10 @@
   <build_depend>nav_msgs</build_depend>
   <build_depend>octomap_msgs</build_depend>
   <build_export_depend>rospy</build_export_depend>
+  <build_depend>actionlib_msgs</build_depend>
+  <build_depend>actionlib</build_depend>
+  <build_depend>genmsg</build_depend>
+  <exec_depend>actionlib_msgs</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>tf</exec_depend>
@@ -27,5 +31,7 @@
   <exec_depend>nav_msgs</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>octomap_msgs</exec_depend>
+  <exec_depend>genmsg</exec_depend>
+  <exec_depend>actionlib</exec_depend>
 
 </package>

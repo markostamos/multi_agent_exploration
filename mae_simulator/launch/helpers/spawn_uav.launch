@@ -50,7 +50,7 @@
 
       <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
       
-      <node name="vel_controller_node" pkg="mae_control" type="vel_controller_node.py"/>
+    <node name="vel_controller_node" pkg="mae_control" type="vel_controller_node.py"/>
     
 
 

@@ -11,6 +11,9 @@ set(ROS_DEPENDENCIES
     nav_msgs
     geometry_msgs
     octomap_msgs
+    genmsg
+    actionlib_msgs
+    actionlib
 )
 
 find_package(catkin REQUIRED COMPONENTS ${ROS_DEPENDENCIES} )
@@ -18,6 +21,21 @@ find_package(octomap REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system serialization)
 find_package(Eigen3 REQUIRED)
 find_package(ompl)
+
+
+
+add_action_files(
+  DIRECTORY action
+  FILES
+  MoveBase3D.action
+)
+generate_messages(
+  DEPENDENCIES
+  actionlib_msgs
+  geometry_msgs
+)
+
+
 
 include_directories(
  include

@@ -12,7 +12,7 @@ set(ROS_DEPENDENCIES
     actionlib_msgs
     actionlib
     mae_utils
-    
+    mae_control
     )
 
 find_package(catkin REQUIRED COMPONENTS ${ROS_DEPENDENCIES} )

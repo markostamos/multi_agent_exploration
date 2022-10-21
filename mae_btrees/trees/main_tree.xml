@@ -36,7 +36,7 @@
                                     <Condition ID="NewPlanArrived"/>
                                     <Condition ID="BetterTargetFound" Target="{TARGET}"/>
                                     <Condition ID="TargetDiscovered" Target="{TARGET}"/>
-                                    <Action ID="GoTo" Target="{TARGET}"/>
+                                    <Action ID="GoTo3D" Target="{TARGET}"/>
                                 </ReactiveFallback>
                             </Sequence>
                         </WhileDoElse>
@@ -193,6 +193,9 @@
         </SubTree>
         <Action ID="GoTo">
             <input_port name="Target"/>
+        </Action>
+        <Action ID="GoTo3D">
+            <input_port default="{TARGET}" name="Target"/>
         </Action>
         <Action ID="GoToBackupTarget"/>
         <Condition ID="GreedyTargetDiscovered">
