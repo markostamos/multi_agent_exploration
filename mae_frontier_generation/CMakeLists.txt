@@ -24,7 +24,7 @@ include_directories(${OCTOMAP_INCLUDE_DIRS})
 
 catkin_package(
     INCLUDE_DIRS include
-    LIBRARIES frontier_generation utils
+    LIBRARIES frontier_generation
     CATKIN_DEPENDS ${ROS_DEPENDENCIES}
 )
 
@@ -32,7 +32,6 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 
 add_library(frontier_generation src/FrontierGeneration.cpp)
-add_library(fg_utils src/utils.cpp)
 
 
 
@@ -40,6 +39,5 @@ add_library(fg_utils src/utils.cpp)
 add_executable(frontier_generation_node src/frontier_generation_node.cpp)
 add_dependencies(frontier_generation_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(frontier_generation_node 
-                        fg_utils 
                         frontier_generation
                         ${catkin_LIBRARIES} ${OCTOMAP_LIBRARIES})

@@ -1,11 +1,12 @@
 #include <ros/ros.h>
 
 #include <nav_msgs/OccupancyGrid.h>
-#include <visualization_msgs/Marker.h>
 #include <mae_frontier_generation/FrontierGeneration.h>
 #include <mae_utils/PointArray.h>
 #include <mae_utils/utils.h>
 #include <octomap_msgs/Octomap.h>
+
+// TODO: check multi drone working location 3d
 class FrontierGenerationNode
 {
 
@@ -16,21 +17,18 @@ private:
     ros::Subscriber map_sub_;
     ros::Subscriber octomap_sub_;
     ros::Subscriber blacklisted_pt_sub_;
-    ros::Subscriber location_sub_;
+    std::vector<ros::Subscriber> location_sub_;
     ros::Publisher frontiers_viz_pub_;
     ros::Publisher frontiers_pub_;
 
-    ros::Timer get_frontiers_timer_;
+    ros::Timer publish_frontiers_;
 
     // params
     float update_rate_;
     float obstacle_threshold_;
-    float viz_scale_;
-    bool octomap_;
-    // DBSCAN params
+    int num_agents_;
+    bool generate_3d_frontiers_;
     bool filter_frontiers_;
-    float min_pts_;
-    float epsilon_;
 
     FrontierGeneration FrontierGeneration_;
 
@@ -41,21 +39,25 @@ public:
     {
         nh.param<float>("update_rate", update_rate_, 2);
         nh.param<bool>("filter_frontiers", filter_frontiers_, true);
-        nh.param<float>("min_pts", min_pts_, 1);
-        nh.param<float>("epsilon", epsilon_, 0.5);
         nh.param<float>("obstacle_padding", obstacle_threshold_, 0.4);
-        nh.param<float>("viz_scale", viz_scale_, 0.2);
-        nh.param<bool>("octomap", octomap_, true);
+        nh.param<bool>("octomap", generate_3d_frontiers_, true);
+        nh.param<int>("num_agents", num_agents_, 1);
 
-        octomap_sub_ = nh_.subscribe("/octomap_full", 1, &FrontierGenerationNode::storeOctomap, this);
+        octomap_sub_ = nh_.subscribe("/octomap_full_in", 1, &FrontierGenerationNode::storeOctomap, this);
         map_sub_ = nh_.subscribe("/map_in", 1, &FrontierGenerationNode::storeMap, this);
-        // TODO: must work for any drone
-        location_sub_ = nh_.subscribe("/drone1/ground_truth/position", 1, &FrontierGenerationNode::setLocation, this);
+
+        for (int i = 0; i < num_agents_; i++)
+        {
+            location_sub_.push_back(nh_.subscribe<geometry_msgs::PointStamped>("/location_in" + std::to_string(i + 1),
+                                                                               1,
+                                                                               boost::bind(&FrontierGenerationNode::setLocation, this, _1, i)));
+        }
+
         blacklisted_pt_sub_ = nh_.subscribe("/blacklist_pt_in", 10, &FrontierGenerationNode::storeBlacklistedPt, this);
         frontiers_viz_pub_ = nh_.advertise<visualization_msgs::Marker>("/frontiers_viz_out", 10);
         frontiers_pub_ = nh_.advertise<mae_utils::PointArray>("/frontiers_out", 10);
 
-        get_frontiers_timer_ = nh_.createTimer(ros::Duration(1 / update_rate_), &FrontierGenerationNode::publishFrontiers, this);
+        publish_frontiers_ = nh_.createTimer(ros::Duration(1 / update_rate_), &FrontierGenerationNode::publishFrontiers, this);
     }
 
 private:
@@ -68,9 +70,9 @@ private:
     {
         FrontierGeneration_.updateOctomap(*msg);
     }
-    void setLocation(const geometry_msgs::PointStamped::ConstPtr &msg)
+    void setLocation(const geometry_msgs::PointStamped::ConstPtr &msg, const int index)
     {
-        FrontierGeneration_.updateLocation(*msg);
+        FrontierGeneration_.updateLocation(*msg, index);
     }
 
     void publishFrontiers(const ros::TimerEvent &event)
@@ -81,18 +83,18 @@ private:
         FrontierGeneration_.getFrontiers(&frontiers, obstacle_threshold_);
 
         if (filter_frontiers_)
-            FrontierGeneration_.filterFrontiersDBSCAN(&frontiers, min_pts_, epsilon_);
+            FrontierGeneration_.filterFrontiersDBSCAN(&frontiers, 1, 0.5);
 
-        if (octomap_)
+        if (generate_3d_frontiers_)
         {
             FrontierGeneration_.get3DFrontiers(&frontiers_3d);
-            FrontierGeneration_.filterFrontiersDBSCAN(&frontiers_3d, min_pts_, 2);
+            FrontierGeneration_.filterFrontiersDBSCAN(&frontiers_3d, 1, 2);
 
             frontiers.insert(frontiers.end(), frontiers_3d.begin(), frontiers_3d.end());
         }
 
         frontiers_pub_.publish(createPointArrayMsg(frontiers));
-        frontiers_viz_pub_.publish(createMarkerMsg(frontiers, viz_scale_));
+        frontiers_viz_pub_.publish(createMarkerMsg(frontiers, 0.2));
     }
     void storeBlacklistedPt(const geometry_msgs::Point::ConstPtr &msg)
     {

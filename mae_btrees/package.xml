@@ -1,15 +1,15 @@
 <package>
   <name>mae_btrees</name>
-  <version>0.0.1</version>
+  <version>1.0.1</version>
   <description>
-  This package provides usefull utilities on top of BehaviorTree.CPP.
+ This package utilizes the behaviortree_cpp_v3 library, to create a mission level controller for the Agents.
   </description>
 
-  <maintainer email="davide.faconti@eurecat.org">Davide Faconti</maintainer>
+  <maintainer email="gimarkostamos@gmail.com">Georgios Markostamos</maintainer>
 
   <license>MIT</license>
 
-  <author>Davide Faconti</author>
+  <author>Georgios Markostamos</author>
 
   <build_depend>roscpp</build_depend>
   <build_depend>std_msgs</build_depend>

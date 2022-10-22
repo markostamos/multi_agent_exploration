@@ -1,5 +1,5 @@
 #include <mae_frontier_generation/FrontierGeneration.h>
-#include <mae_frontier_generation/utils.h>
+#include <mae_utils/utils.h>
 #include <octomap_msgs/conversions.h>
 #include <octomap/OcTree.h>
 #include <octomap/OcTreeBase.h>
@@ -18,9 +18,16 @@ void FrontierGeneration::updateMap(const nav_msgs::OccupancyGrid &map)
     map_ = map;
 }
 
-void FrontierGeneration::updateLocation(const geometry_msgs::PointStamped &location)
+void FrontierGeneration::updateLocation(const geometry_msgs::PointStamped &location, int index)
 {
-    location_ = location.point;
+    if (index == location_.size())
+    {
+        location_.push_back(location.point);
+    }
+    else
+    {
+        location_[index] = location.point;
+    }
 }
 void FrontierGeneration::updateOctomap(const octomap_msgs::Octomap octomap)
 {
@@ -38,57 +45,62 @@ void FrontierGeneration::updateOctomap(const octomap_msgs::Octomap octomap)
 
 void FrontierGeneration::get3DFrontiers(std::vector<geometry_msgs::Point> *frontiers)
 {
+
     if (octree_ == nullptr)
     {
         return;
     }
 
-    float xy_range = 20;
-    float z_range = 10;
-
-    octomap::point3d min(location_.x - xy_range, location_.y - xy_range, location_.z + 1);
-    octomap::point3d max(location_.x + xy_range, location_.y + xy_range, location_.z + z_range);
-
-    octomap::point3d_list unknown_cells;
-    octree_->getUnknownLeafCenters(unknown_cells, min, max, 13);
-
-    // LAMBDA FUNCTION TO CHECK IF A POINT SHOULD BE PUSHED TO FRONTIERS
-    auto check_point = [&](const octomap::point3d &pt, int range)
+    for (const auto &loc : location_)
     {
-        octomap::OcTreeKey key;
-        if (octree_->coordToKeyChecked(pt, key))
+
+        float xy_range = 20;
+        float z_range = 10;
+
+        octomap::point3d min(loc.x - xy_range, loc.y - xy_range, loc.z + 1);
+        octomap::point3d max(loc.x + xy_range, loc.y + xy_range, loc.z + z_range);
+
+        octomap::point3d_list unknown_cells;
+        octree_->getUnknownLeafCenters(unknown_cells, min, max, 13);
+
+        // LAMBDA FUNCTION TO CHECK IF A POINT SHOULD BE PUSHED TO FRONTIERS
+        auto check_point = [&](const octomap::point3d &pt, int range)
         {
-            // check key neighbors for occupied
-            for (int dx = -range; dx <= range; dx++)
+            octomap::OcTreeKey key;
+            if (octree_->coordToKeyChecked(pt, key))
             {
-                for (int dy = -range; dy <= range; dy++)
+                // check key neighbors for occupied
+                for (int dx = -range; dx <= range; dx++)
                 {
-                    for (int dz = -range; dz <= range; dz++)
+                    for (int dy = -range; dy <= range; dy++)
                     {
-                        octomap::OcTreeKey nkey = key;
-                        nkey[0] += dx;
-                        nkey[1] += dy;
-                        nkey[2] += dz;
-                        octomap::OcTreeNode *node = octree_->search(nkey, 16);
-                        if (node != nullptr && octree_->isNodeOccupied(node))
-                            return true;
+                        for (int dz = -range; dz <= range; dz++)
+                        {
+                            octomap::OcTreeKey nkey = key;
+                            nkey[0] += dx;
+                            nkey[1] += dy;
+                            nkey[2] += dz;
+                            octomap::OcTreeNode *node = octree_->search(nkey, 16);
+                            if (node != nullptr && octree_->isNodeOccupied(node))
+                                return true;
+                        }
                     }
                 }
             }
-        }
-        return false;
-    };
+            return false;
+        };
 
-    for (octomap::point3d_list::iterator it = unknown_cells.begin(); it != unknown_cells.end(); ++it)
-    {
-
-        if (check_point(*it, 5))
+        for (octomap::point3d_list::iterator it = unknown_cells.begin(); it != unknown_cells.end(); ++it)
         {
-            geometry_msgs::Point pt;
-            pt.x = it->x();
-            pt.y = it->y();
-            pt.z = it->z();
-            frontiers->push_back(pt);
+
+            if (check_point(*it, 5))
+            {
+                geometry_msgs::Point pt;
+                pt.x = it->x();
+                pt.y = it->y();
+                pt.z = it->z();
+                frontiers->push_back(pt);
+            }
         }
     }
 }
