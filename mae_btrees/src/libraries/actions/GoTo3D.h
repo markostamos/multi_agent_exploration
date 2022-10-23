@@ -64,7 +64,7 @@ public:
 
         if (dist3D(state.pose, target_) < 0.2)
         {
-            ROS_WARN_STREAM("[GoTo] Goal reached");
+            ROS_WARN_STREAM("[GoTo3D] Goal reached");
             return BT::NodeStatus::SUCCESS;
         }
         return BT::NodeStatus::RUNNING;
@@ -74,7 +74,7 @@ public:
     void onHalted() override
     {
         client_.cancelGoal();
-        ROS_WARN_STREAM("[GoTo] Halted");
+        ROS_WARN_STREAM("[GoTo3D] Halted");
     }
 
 private:

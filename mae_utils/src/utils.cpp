@@ -45,7 +45,7 @@ visualization_msgs::Marker createMarkerMsg(const std::vector<geometry_msgs::Pose
         geometry_msgs::Point p;
         p.x = poses[i].position.x;
         p.y = poses[i].position.y;
-        p.z = 0;
+        p.z = poses[i].position.z;
         msg.points.push_back(p);
     }
     return msg;
@@ -74,8 +74,7 @@ visualization_msgs::Marker createMarkerMsg(const std::vector<geometry_msgs::Poin
         geometry_msgs::Point p;
         p.x = points[i].x;
         p.y = points[i].y;
-        p.z = points[i].z > 0.5 ? points[i].z : 0.2;
-
+        p.z = points[i].z;
         msg.points.push_back(p);
     }
     return msg;

@@ -1,37 +1,32 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="namespace" default="test"/>
-  <arg name="enable_logging" default="false"/>
   <arg name="log_file" default="$(arg namespace)"/>
   <arg name="lidar_type" default="vlp-16"/>
-  <arg name="lidar_gpu" default="false"/>
-  <arg name="enable_ground_truth" default="true"/>
   <arg name="x" default="0.0"/>
   <arg name="y" default="0.0"/>
   <arg name="z" default="0.2"/>
-  <arg name="enable_rviz" default="false"/>
-  <arg name="enable_bt" default="false"/>
   <arg name="tree_file" default="main_tree.xml"/>
   <arg name="model" default="$(find mae_simulator)/urdf/mav_generic_odometry_and_lidar.xacro"/>
-  
+  <arg name="nav_3d" default="false"/>
   <group ns="$(arg namespace)">
   <!-- Spawn UAV -->
       <!-- send the robot XML to param server -->
     <param name="robot_description" command="
       $(find xacro)/xacro '$(arg model)'
-      enable_logging:=$(arg enable_logging)
-      enable_ground_truth:=$(arg enable_ground_truth)
+      enable_logging:=false
+      enable_ground_truth:=true
       enable_mavlink_interface:=false
       log_file:=$(arg log_file)
       wait_to_record_bag:=false
       mav_name:=$(arg namespace)
       namespace:=$(arg namespace)
       lidar_type:=$(arg lidar_type)
-      gpu:=$(arg lidar_gpu)"
+      gpu:=true"
     />
     <param name="tf_prefix" type="string" value="$(optenv ROS_NAMESPACE)" />
 
-    <!-- push robot_description to factory and spawn robot in gazebo -->
+    <!-- SPAWN ROBOT IN GAZEBO -->
     <node name="spawn_$(arg namespace)" pkg="gazebo_ros" type="spawn_model"
     args="-param robot_description
           -urdf
@@ -41,49 +36,56 @@
           -model $(arg namespace)"
     respawn="false" output="log">
     </node>
-  <!-- Control Nodes -->
-      <node name="$(arg namespace)_position_controller_node" pkg="rotors_control" type="lee_position_controller_node">
-        <rosparam command="load" file="$(find rotors_gazebo)/resource/lee_controller_neo11.yaml" />
-        <rosparam command="load" file="$(find rotors_gazebo)/resource/neo11.yaml" />
-        <remap from="odometry" to="ground_truth/odometry" />
-      </node>
 
-      <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
-      
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+  <!-- Control Nodes -->
+    <!-- <node name="$(arg namespace)_position_controller_node" pkg="rotors_control" type="lee_position_controller_node">
+      <rosparam command="load" file="$(find rotors_gazebo)/resource/lee_controller_neo11.yaml" />
+      <rosparam command="load" file="$(find rotors_gazebo)/resource/neo11.yaml" />
+      <remap from="odometry" to="ground_truth/odometry" />
+    </node>   -->    
     <node name="vel_controller_node" pkg="mae_control" type="vel_controller_node.py"/>
     
 
 
-  <!-- 2d Navigation -->
-  <arg name="map_topic" value = "/filtered_map"/>
-    <node name="move_base" pkg="move_base" type="move_base"  output="log" respawn="false">
-      <rosparam file="$(find mae_control)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
-      <rosparam file="$(find mae_control)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
-      <rosparam file="$(find mae_control)/config/local_costmap_params.yaml" command="load" subst_value="true">
-        <arg name="namespace" value ="$(arg namespace)"/>
-        <arg name="map_topic" value = "$(arg map_topic)"/>
-      </rosparam>
-      <rosparam file="$(find mae_control)/config/global_costmap_params.yaml" command="load" subst_value="true">
-        <arg name="namespace" value ="$(arg namespace)"/>
-        <arg name="map_topic" value = "$(arg map_topic)"/>
-      </rosparam>
-      <rosparam file="$(find mae_control)/config/base_local_planner_params.yaml" command="load" />
+  <!-- 2D Navigation -->
+   <arg name="map_topic" value="/filtered_map" />
+  <node name="move_base" pkg="move_base" type="move_base"  output="log" respawn="false" unless="$(arg nav_3d)">
+   
 
-      <remap from="/$(arg namespace)/cmd_vel" to="/$(arg namespace)/command/cmd_vel"/>
-      <remap from="/$(arg namespace)/odom" to="/$(arg namespace)/ground_truth/odometry"/>       
-    </node>
+    <rosparam file="$(find mae_control)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find mae_control)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find mae_control)/config/local_costmap_params.yaml" command="load" subst_value="true">
+      <arg name="namespace" value ="$(arg namespace)"/>
+      <arg name="map_topic" value ="$(arg map_topic)"/>
+    </rosparam>
+    <rosparam file="$(find mae_control)/config/global_costmap_params.yaml" command="load" subst_value="true">
+      <arg name="namespace" value ="$(arg namespace)"/>
+      <arg name="map_topic" value = "$(arg map_topic)"/>
+    </rosparam>
+    <rosparam file="$(find mae_control)/config/base_local_planner_params.yaml" command="load" />
+    <remap from="/$(arg namespace)/cmd_vel" to="/$(arg namespace)/command/cmd_vel"/>
+    <remap from="/$(arg namespace)/odom" to="/$(arg namespace)/ground_truth/odometry"/>       
+  </node>
 
-    
+  <!-- 3D Navigation -->
+  <node pkg="mae_control" type="move_base_3d_node" name="move_base_3D" output="screen" if="$(arg nav_3d)">
+    <remap from="/start_in" to="/$(arg namespace)/ground_truth/position"/>
+  </node>
 
+  <!-- Behavior Tree Controller -->
   <node pkg="mae_btrees" type="bt_node" name="behavior_tree_node" output="screen" >
 		<param name="file" value="$(arg tree_file)"/> 
-    
+    <param name="nav_3d" value="$(arg nav_3d)"/>
+    <!-- Subscribed topics -->
     <remap from="/odometry" to="/$(arg namespace)/ground_truth/odometry"/>
     <remap from="/plan" to="/$(arg namespace)/plan"/>
     <remap from="/task" to="/$(arg namespace)/task"/>
     <remap from="/lidar" to="/$(arg namespace)/velodyne_points"/>
     <!-- <remap from="/frontiers" to ="$(arg namespace)/frontiers"/> -->
 
+    <!-- Published topics/actions -->
     <remap from="/move_base" to="/$(arg namespace)/move_base"/>
     <remap from="/move_base_simple/goal" to="/$(arg namespace)/move_base_simple/goal"/>
     <remap from="/move_base_3d" to="/$(arg namespace)/move_base_3d"/>
@@ -92,12 +94,6 @@
 
 	</node>
 
-
-  <node pkg="mae_control" type="move_base_3d_node" name="move_base_3D" output="screen">
-
-      <remap from="/start_in" to="/$(arg namespace)/ground_truth/position"/>
-      
-  </node>
 
   </group>
   

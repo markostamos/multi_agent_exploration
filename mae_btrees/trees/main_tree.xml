@@ -36,7 +36,7 @@
                                     <Condition ID="NewPlanArrived"/>
                                     <Condition ID="BetterTargetFound" Target="{TARGET}"/>
                                     <Condition ID="TargetDiscovered" Target="{TARGET}"/>
-                                    <Action ID="GoTo3D" Target="{TARGET}"/>
+                                    <Action ID="GoTo" Target="{TARGET}"/>
                                 </ReactiveFallback>
                             </Sequence>
                         </WhileDoElse>

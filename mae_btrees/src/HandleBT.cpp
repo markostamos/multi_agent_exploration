@@ -24,8 +24,13 @@ void HandleBT::createTree(std::string path)
     BT::BehaviorTreeFactory factory;
 
     // REGISTER ACTIONS
-    factory.registerNodeType<GoTo>("GoTo");
-    factory.registerNodeType<GoTo3D>("GoTo3D");
+    bool nav_3d = false;
+    ros::param::get("~nav_3d", nav_3d);
+    if (nav_3d)
+        factory.registerNodeType<GoTo3D>("GoTo");
+    else
+        factory.registerNodeType<GoTo>("GoTo");
+
     factory.registerNodeType<SetLocation>("SetLocation");
     factory.registerNodeType<TakeOff>("TakeOff");
     factory.registerNodeType<Land>("Land");

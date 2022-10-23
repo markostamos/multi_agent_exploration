@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5.1) # version on Ubuntu Trusty
 project(mae_btrees)
 
-
+set(CMAKE_BUILD_TYPE Release)
 ######################################################
 
 set(ROS_DEPENDENCIES

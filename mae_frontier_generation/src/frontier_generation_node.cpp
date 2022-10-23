@@ -13,6 +13,7 @@ class FrontierGenerationNode
 private:
     std::string ns_;
     ros::NodeHandle nh_;
+    ros::NodeHandle nh_private_;
 
     ros::Subscriber map_sub_;
     ros::Subscriber octomap_sub_;
@@ -33,15 +34,17 @@ private:
     FrontierGeneration FrontierGeneration_;
 
 public:
-    FrontierGenerationNode(const ros::NodeHandle &nh) : nh_(nh),
-                                                        ns_(nh.getNamespace().c_str()),
-                                                        FrontierGeneration_(FrontierGeneration())
+    FrontierGenerationNode(const ros::NodeHandle &nh, ros::NodeHandle nh_private_) : nh_(nh),
+                                                                                     nh_private_(nh_private_),
+                                                                                     ns_(nh.getNamespace().c_str()),
+                                                                                     FrontierGeneration_(FrontierGeneration())
     {
-        nh.param<float>("update_rate", update_rate_, 2);
-        nh.param<bool>("filter_frontiers", filter_frontiers_, true);
-        nh.param<float>("obstacle_padding", obstacle_threshold_, 0.4);
-        nh.param<bool>("octomap", generate_3d_frontiers_, true);
-        nh.param<int>("num_agents", num_agents_, 1);
+
+        nh_private_.param<float>("update_rate", update_rate_, 2);
+        nh_private_.param<bool>("filter_frontiers", filter_frontiers_, true);
+        nh_private_.param<float>("obstacle_padding", obstacle_threshold_, 0.4);
+        nh_private_.param<bool>("frontiers_3d", generate_3d_frontiers_, false);
+        nh_private_.param<int>("num_agents", num_agents_, 1);
 
         octomap_sub_ = nh_.subscribe("/octomap_full_in", 1, &FrontierGenerationNode::storeOctomap, this);
         map_sub_ = nh_.subscribe("/map_in", 1, &FrontierGenerationNode::storeMap, this);
@@ -106,6 +109,7 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "frontier_generation");
     ros::NodeHandle nh;
-    FrontierGenerationNode fg = FrontierGenerationNode(nh);
+    ros::NodeHandle private_nh("~");
+    FrontierGenerationNode fg = FrontierGenerationNode(nh, private_nh);
     ros::spin();
 }
