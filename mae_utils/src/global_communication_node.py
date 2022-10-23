@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 import rospy
-
 from sensor_msgs.msg import PointCloud2
 from mae_utils.msg import PointArray
-from mae_global_planner.srv import GlobalPlanService, GlobalPlanServiceRequest, GlobalPlanServiceResponse
+from mae_global_planner.srv import GlobalPlanService, GlobalPlanServiceRequest
 from visualization_msgs.msg import Marker
 from nav_msgs.msg import OccupancyGrid
 from geometry_msgs.msg import PointStamped, Point

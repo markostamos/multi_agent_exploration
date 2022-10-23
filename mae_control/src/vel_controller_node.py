@@ -9,12 +9,11 @@ from gazebo_msgs.msg import ModelState
 
 class vel_controller_node:
     """
-    Simple forward integration velocity controller based on the lee position controller
-    Subscribes to /<drone_name>/command/cmd_vel topic
-    Publishes a desired pose to /<drone_name>/command/pose every tstep seconds via the lee_pub_callback function
+    Simple forward integration velocity controller based on an implemented position controller
     new_pose = velocity * timestep + old_pose
 
-    When cmd_vel is 0 nothing is published to allow the use of the position controller when this one is not used.
+    For simulation purposes if no real position controller is provided,
+    the position controller is simulated by publishing the new pose to the gazebo model state topic.
     """
 
     def __init__(self):
@@ -28,7 +27,7 @@ class vel_controller_node:
         self.position_control = False
         if self.real_controller:
             self.pose_publisher = rospy.Publisher(
-                f"{self.ns}/command/pose", PoseStamped, queue_size=100)
+                f"/pose_out", PoseStamped, queue_size=100)
 
         else:
             self.pose_publisher = rospy.Publisher(
@@ -37,8 +36,8 @@ class vel_controller_node:
         self.publish_timer = rospy.Timer(rospy.Duration(self.tstep), self.publishGoalCallback)
 
     def initParams(self):
-        self.tstep = rospy.get_param('vel_controller_tstep', 0.01)
-        self.real_controller = rospy.get_param('vel_controller_real', False)
+        self.tstep = rospy.get_param('~tstep', 0.01)
+        self.real_controller = rospy.get_param('~real_controller', False)
         self.ns = rospy.get_namespace()
         self.cmd_vel = Twist()
         self.current_pose = rospy.wait_for_message(f"{self.ns}ground_truth/pose", Pose)

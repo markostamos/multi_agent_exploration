@@ -3,7 +3,6 @@
 
 /**
  * @brief Dummy action node to test the reactivity of Behavior Tree on Safety Tasks.
- *        //TODO: implement.
  */
 extern RosComm state;
 BT::NodeStatus Recharge()

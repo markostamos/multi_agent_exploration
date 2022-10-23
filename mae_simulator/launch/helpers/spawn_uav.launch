@@ -45,7 +45,13 @@
       <rosparam command="load" file="$(find rotors_gazebo)/resource/neo11.yaml" />
       <remap from="odometry" to="ground_truth/odometry" />
     </node>   -->    
-    <node name="vel_controller_node" pkg="mae_control" type="vel_controller_node.py"/>
+    <node name="vel_controller_node" pkg="mae_control" type="vel_controller_node.py">
+      <!-- Subscribes -->
+      <remap from="/command/cmd_vel" to="$(arg namespace)/command/cmd_vel"/>
+      <remap from="/command/position" to="$(arg namespace)/command/position"/>
+      <!-- Publishes -->
+      <remap from="/pose_out" to="$(arg namespace)/command/pose"/>
+    </node>
     
 
 

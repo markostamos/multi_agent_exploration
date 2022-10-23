@@ -6,7 +6,6 @@
 #include <mae_utils/utils.h>
 #include <octomap_msgs/Octomap.h>
 
-// TODO: check multi drone working location 3d
 class FrontierGenerationNode
 {
 

@@ -24,11 +24,10 @@ public:
         if (state.frontier_pts.empty())
             return BT::NodeStatus::FAILURE;
 
-        // TODO: min element instead of sort
-        sort(state.frontier_pts.begin(), state.frontier_pts.end(), [](const geometry_msgs::Point &a, const geometry_msgs::Point &b)
-             { return distFromCurrentPose(a) < distFromCurrentPose(b); });
+        geometry_msgs::Point target = *std::min_element(state.frontier_pts.begin(), state.frontier_pts.end(), [](const geometry_msgs::Point &a, const geometry_msgs::Point &b)
+                                                        { return distFromCurrentPose(a) < distFromCurrentPose(b); });
 
-        geometry_msgs::Pose pose = poseFromVec({state.frontier_pts[0].x, state.frontier_pts[0].y, state.pose.position.z});
+        geometry_msgs::Pose pose = poseFromVec({target.x, target.y, target.z});
 
         setOutput<geometry_msgs::Pose>("Target", pose);
         return BT::NodeStatus::SUCCESS;
