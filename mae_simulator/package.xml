@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>mae_simulator</name>
-  <version>0.0.0</version>
+  <version>1.0.1</version>
   <description>Launch files, training scenarios and world models</description>
 
   <maintainer email="gimarkostamos@gmail.com">George Markostamos</maintainer>

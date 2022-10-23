@@ -20,16 +20,16 @@ geometry_msgs::Point pointFrom2DMapIndex(const int i, const int j, const nav_msg
 visualization_msgs::Marker createMarkerMsg(const std::vector<geometry_msgs::Pose> &poses, float scale);
 visualization_msgs::Marker createMarkerMsg(const std::vector<geometry_msgs::Point> &points, float scale);
 mae_utils::PointArray createPointArrayMsg(const std::vector<geometry_msgs::Point> &points);
-geometry_msgs::Pose poseFromVec(std::vector<double> pos, std::vector<double> rpy = {0, 0, 0});
-geometry_msgs::Point pointFromPose(geometry_msgs::Pose pose);
-geometry_msgs::PoseStamped poseStampedFromVec(std::vector<double> pos, std::vector<double> rpy = {0, 0, 0});
-float dist2D(geometry_msgs::Point p1, geometry_msgs::Point p2);
-float dist2D(geometry_msgs::Pose p1, geometry_msgs::Pose p2);
-float dist3D(geometry_msgs::Point p1, geometry_msgs::Point p2);
-float dist3D(geometry_msgs::Pose p1, geometry_msgs::Pose p2);
-geometry_msgs::Twist twistFromVec(std::vector<double> linear = {0, 0, 0}, std::vector<double> angular = {0, 0, 0});
-geometry_msgs::PoseStamped poseStampedFromPose(geometry_msgs::Pose pose);
-geometry_msgs::PoseStamped poseStampedFromPoint(geometry_msgs::Point point);
+geometry_msgs::Pose poseFromVec(const std::vector<double> pos, const std::vector<double> rpy = {0, 0, 0});
+geometry_msgs::Point pointFromPose(const geometry_msgs::Pose pose);
+geometry_msgs::PoseStamped poseStampedFromVec(const std::vector<double> pos, const std::vector<double> rpy = {0, 0, 0});
+float dist2D(const geometry_msgs::Point p1, const geometry_msgs::Point p2);
+float dist2D(const geometry_msgs::Pose p1, const geometry_msgs::Pose p2);
+float dist3D(const geometry_msgs::Point p1, const geometry_msgs::Point p2);
+float dist3D(const geometry_msgs::Pose p1, const geometry_msgs::Pose p2);
+geometry_msgs::Twist twistFromVec(const std::vector<double> linear = {0, 0, 0}, std::vector<double> angular = {0, 0, 0});
+geometry_msgs::PoseStamped poseStampedFromPose(const geometry_msgs::Pose pose);
+geometry_msgs::PoseStamped poseStampedFromPoint(const geometry_msgs::Point point);
 template <typename T>
 void log_many(std::vector<T> vec);
 

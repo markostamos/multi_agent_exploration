@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 import rospy
 import dearpygui.dearpygui as dpg
-from functools import partial
 from geometry_msgs.msg import PointStamped, PoseStamped, Twist, Pose, Point
 from std_msgs.msg import String
-import dearpygui.demo as demo
 from gazebo_msgs.msg import ModelState
 import rosservice
 from std_srvs.srv import Empty
@@ -32,13 +30,8 @@ class GUI:
             if agent_id not in self.agent_windows:
                 self.create_agent_window(agent_id)
                 self.agent_windows.append(agent_id)
-                print(self.agent_windows)
                 dpg.set_viewport_width(self.widget_width * len(self.agent_windows))
 
-        """ dpg.set_viewport_width(self.widget_width * len(self.agent_windows))
-        dpg.set_viewport_height(300) """
-        dpg.render_dearpygui_frame()
-        # dpg.set_value(f"agent1_pose", f"Agent1 Pose: {self.ros.agent_locations[1]}")
         for agent_id in self.ros.active_tasks.keys():
             dpg.set_value(f"Agent{agent_id}_Active_Task",
                           f"Active Task: {self.ros.active_tasks[agent_id]}")
@@ -48,8 +41,10 @@ class GUI:
             pos_string = f"Position: ({agent_pos.x:.2f}, {agent_pos.y:.2f}, {agent_pos.z:.2f})"
 
             dpg.set_value(f"Agent{agent_id}_Position", pos_string)
+        dpg.render_dearpygui_frame()
 
     def create_agent_window(self, agent_id):
+        # MISSIONS WINDOW
         with dpg.window(label=f"Agent{agent_id} commands", width=self.widget_width, height=300, pos=(self.widget_width * (agent_id - 1), 0)):
             with dpg.group(label="Behavior Tree Tasks"):
                 dpg.add_button(label="EXPLORATION", width=self.widget_width, height=30,
@@ -70,6 +65,7 @@ class GUI:
                                callback=self.clearMapCallback, user_data=agent_id)
                 dpg.add_text("Idle", tag=f"Agent{agent_id}_Active_Task", color=[
                              255, 0, 0], indent=110)
+        # GOTO WINDOW
         with dpg.window(label=f"Agent{agent_id} GoTo", width=self.widget_width, height=150, pos=(self.widget_width * (agent_id - 1), 300)):
             with dpg.group(horizontal=True):
                 width = self.widget_width / 2 - 15
@@ -82,6 +78,7 @@ class GUI:
 
             dpg.add_text("Position: ", tag=f"Agent{agent_id}_Position", indent=85)
 
+        # MANUAL CONTROL WINDOW
         with dpg.window(label=f"Agent{agent_id} Manual Control", width=self.widget_width, height=250, pos=(self.widget_width * (agent_id - 1), 450)):
             with dpg.handler_registry():
                 # dpg.add_checkbox(label="Keyboard Control", tag="keyboard_control")
@@ -109,7 +106,7 @@ class GUI:
         elif app_data == dpg.mvKey_Down:
             target[2] = -speed
 
-        self.ros.publishManualControl(drone_id=agent_id, target=target)
+        self.ros.publishManualControl(agent_id=agent_id, target=target)
 
     def goToCallback(self, sender, app_data, agent_id):
         self.ros.publishTask(agent_id, "Idle")
@@ -140,68 +137,70 @@ class GuiNode:
         self.agent_locations = dict()
         self.cmdvel_publishers = dict()
 
+        self.agent_handle = rospy.get_param("~agent_handle", "drone")
         rospy.Timer(rospy.Duration(0.5), self.checkForAgentTopics)
         self.checkForAgentTopics(None)
 
     def checkForAgentTopics(self, event):
         for topic in rospy.get_published_topics():
-            str_loc = topic[0].find("drone")
+            str_loc = topic[0].find(self.agent_handle)
             if str_loc != -1:
-                drone_id = int(topic[0][str_loc + len("drone")])
-                if drone_id not in self.agent_locations.keys():
+                agent_id = int(topic[0][str_loc + len(self.agent_handle)])
+                agent_namespace = str(self.agent_handle) + str(agent_id)
+                if agent_id not in self.agent_locations.keys():
                     rospy.Subscriber(
-                        f"/drone{drone_id}/ground_truth/position", PointStamped, self.getLocations, drone_id)
+                        f"/{agent_namespace}/ground_truth/position", PointStamped, self.getLocations, agent_id)
 
-                    rospy.Subscriber(f"/drone{drone_id}/active_task",
-                                     String, self.getActiveTask, drone_id)
+                    rospy.Subscriber(f"/{agent_namespace}/active_task",
+                                     String, self.getActiveTask, agent_id)
 
-                    self.active_tasks[drone_id] = "Idle"
-                    self.task_publishers[drone_id] = rospy.Publisher(
-                        f"/drone{drone_id}/task", String, queue_size=10)
-                    self.goTo_publishers[drone_id] = rospy.Publisher(
-                        f"/drone{drone_id}/move_base_simple/goal", PoseStamped, queue_size=10)
-                    self.goTo_publishers3D[drone_id] = rospy.Publisher(
-                        f"/drone{drone_id}/move_base_3d_simple/goal", Point, queue_size=10)
-                    self.cmdvel_publishers[drone_id] = rospy.Publisher(
-                        f"drone{drone_id}/command/cmd_vel", Twist, queue_size=10)
+                    self.active_tasks[agent_id] = "Idle"
+                    self.task_publishers[agent_id] = rospy.Publisher(
+                        f"/{agent_namespace}/task", String, queue_size=10)
+                    self.goTo_publishers[agent_id] = rospy.Publisher(
+                        f"/{agent_namespace}/move_base_simple/goal", PoseStamped, queue_size=10)
+                    self.goTo_publishers3D[agent_id] = rospy.Publisher(
+                        f"/{agent_namespace}/move_base_3d_simple/goal", Point, queue_size=10)
+                    self.cmdvel_publishers[agent_id] = rospy.Publisher(
+                        f"/{agent_namespace}/command/cmd_vel", Twist, queue_size=10)
 
-    def getLocations(self, msg, drone_id):
-        self.agent_locations[drone_id] = msg.point
+    def getLocations(self, msg, agent_id):
+        self.agent_locations[agent_id] = msg.point
 
-    def getActiveTask(self, msg, drone_id):
-        self.active_tasks[drone_id] = msg.data
+    def getActiveTask(self, msg, agent_id):
+        self.active_tasks[agent_id] = msg.data
 
-    def publishTask(self, drone_id, task):
-        self.task_publishers[drone_id].publish(task)
+    def publishTask(self, agent_id, task):
+        self.task_publishers[agent_id].publish(task)
 
-    def publishGoal(self, drone_id, goal_xyz):
+    def publishGoal(self, agent_id, goal_xyz):
         pose = PoseStamped()
         pose.header.frame_id = "world"
         pose.header.stamp = rospy.Time.now()
-        pose.pose.position.x = dpg.get_value(f"Agent{drone_id}_x")
-        pose.pose.position.y = dpg.get_value(f"Agent{drone_id}_y")
-        pose.pose.position.z = dpg.get_value(f"Agent{drone_id}_z")
+        pose.pose.position.x = dpg.get_value(f"Agent{agent_id}_x")
+        pose.pose.position.y = dpg.get_value(f"Agent{agent_id}_y")
+        pose.pose.position.z = dpg.get_value(f"Agent{agent_id}_z")
         pose.pose.orientation.w = 1
-        self.goTo_publishers[drone_id].publish(pose)
+        self.goTo_publishers[agent_id].publish(pose)
 
-    def publish3DGoal(self, drone_id, goal_xyz):
+    def publish3DGoal(self, agent_id, goal_xyz):
         point = Point()
         point.x = goal_xyz[0]
         point.y = goal_xyz[1]
         point.z = goal_xyz[2]
-        self.goTo_publishers3D[drone_id].publish(point)
+        self.goTo_publishers3D[agent_id].publish(point)
 
-    def publishManualControl(self, drone_id, target):
+    def publishManualControl(self, agent_id, target):
         msg = Twist()
 
         msg.linear.x = target[0]
         msg.linear.y = target[1]
         msg.linear.z = target[2]
 
-        self.cmdvel_publishers[drone_id].publish(msg)
+        self.cmdvel_publishers[agent_id].publish(msg)
 
-    def publishClearMap(self, drone_id):
-        service_name = f"/drone{drone_id}/octomap_server/reset"
+    def publishClearMap(self, agent_id):
+        service_name = f"/{self.agent_handle + str(agent_id)}/octomap_server/reset"
         if service_name in rosservice.get_service_list():
             rospy.wait_for_service(service_name)
             try:

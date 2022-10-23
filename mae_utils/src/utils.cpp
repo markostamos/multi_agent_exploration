@@ -87,7 +87,7 @@ mae_utils::PointArray createPointArrayMsg(const std::vector<geometry_msgs::Point
     return msg;
 }
 
-geometry_msgs::Pose poseFromVec(std::vector<double> pos, std::vector<double> rpy)
+geometry_msgs::Pose poseFromVec(const std::vector<double> pos, const std::vector<double> rpy)
 {
     geometry_msgs::Pose msg;
     msg.position.x = pos[0];
@@ -102,7 +102,7 @@ geometry_msgs::Pose poseFromVec(std::vector<double> pos, std::vector<double> rpy
     return msg;
 }
 
-geometry_msgs::PoseStamped poseStampedFromVec(std::vector<double> pos, std::vector<double> rpy)
+geometry_msgs::PoseStamped poseStampedFromVec(const std::vector<double> pos, const std::vector<double> rpy)
 {
     geometry_msgs::PoseStamped msg;
     msg.header.stamp = ros::Time::now();
@@ -111,7 +111,7 @@ geometry_msgs::PoseStamped poseStampedFromVec(std::vector<double> pos, std::vect
     return msg;
 }
 
-geometry_msgs::Twist twistFromVec(std::vector<double> linear, std::vector<double> angular)
+geometry_msgs::Twist twistFromVec(const std::vector<double> linear, const std::vector<double> angular)
 {
     geometry_msgs::Twist msg;
     msg.linear.x = linear[0];
@@ -123,27 +123,27 @@ geometry_msgs::Twist twistFromVec(std::vector<double> linear, std::vector<double
     return msg;
 }
 
-float dist2D(geometry_msgs::Point p1, geometry_msgs::Point p2)
+float dist2D(const geometry_msgs::Point p1, const geometry_msgs::Point p2)
 {
     return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
 }
 
-float dist2D(geometry_msgs::Pose p1, geometry_msgs::Pose p2)
+float dist2D(const geometry_msgs::Pose p1, const geometry_msgs::Pose p2)
 {
     return sqrt(pow(p1.position.x - p2.position.x, 2) + pow(p1.position.y - p2.position.y, 2));
 }
 
-float dist3D(geometry_msgs::Point p1, geometry_msgs::Point p2)
+float dist3D(const geometry_msgs::Point p1, const geometry_msgs::Point p2)
 {
     return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2) + pow(p1.z - p2.z, 2));
 }
 
-float dist3D(geometry_msgs::Pose p1, geometry_msgs::Pose p2)
+float dist3D(const geometry_msgs::Pose p1, const geometry_msgs::Pose p2)
 {
     return sqrt(pow(p1.position.x - p2.position.x, 2) + pow(p1.position.y - p2.position.y, 2) + pow(p1.position.z - p2.position.z, 2));
 }
 
-geometry_msgs::Point pointFromPose(geometry_msgs::Pose pose)
+geometry_msgs::Point pointFromPose(const geometry_msgs::Pose pose)
 {
     geometry_msgs::Point p;
     p.x = pose.position.x;
@@ -152,7 +152,7 @@ geometry_msgs::Point pointFromPose(geometry_msgs::Pose pose)
     return p;
 }
 
-geometry_msgs::PoseStamped poseStampedFromPose(geometry_msgs::Pose pose)
+geometry_msgs::PoseStamped poseStampedFromPose(const geometry_msgs::Pose pose)
 {
     geometry_msgs::PoseStamped p;
     p.header.stamp = ros::Time::now();
@@ -161,7 +161,7 @@ geometry_msgs::PoseStamped poseStampedFromPose(geometry_msgs::Pose pose)
     return p;
 }
 
-geometry_msgs::PoseStamped poseStampedFromPoint(geometry_msgs::Point point)
+geometry_msgs::PoseStamped poseStampedFromPoint(const geometry_msgs::Point point)
 {
     geometry_msgs::PoseStamped p;
     p.header.stamp = ros::Time::now();
