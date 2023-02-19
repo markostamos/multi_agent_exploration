@@ -18,7 +18,7 @@
 geometry_msgs::Pose poseFrom2DMapIndex(const int i, const int j, const nav_msgs::OccupancyGrid &map);
 geometry_msgs::Point pointFrom2DMapIndex(const int i, const int j, const nav_msgs::OccupancyGrid &map);
 visualization_msgs::Marker createMarkerMsg(const std::vector<geometry_msgs::Pose> &poses, float scale);
-visualization_msgs::Marker createMarkerMsg(const std::vector<geometry_msgs::Point> &points, float scale);
+visualization_msgs::Marker createMarkerMsg(const std::vector<geometry_msgs::Point> &points, float scale, const std::vector<float> &&color);
 mae_utils::PointArray createPointArrayMsg(const std::vector<geometry_msgs::Point> &points);
 geometry_msgs::Pose poseFromVec(const std::vector<double> pos, const std::vector<double> rpy = {0, 0, 0});
 geometry_msgs::Point pointFromPose(const geometry_msgs::Pose pose);

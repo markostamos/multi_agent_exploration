@@ -47,7 +47,7 @@ class global_communication_node:
 
         rospy.Timer(rospy.Duration(0.5), self.checkForAgentTopics)
         rospy.Timer(rospy.Duration(0.1), self.postPCL)
-        rospy.Timer(rospy.Duration(2), self.updatePlan)
+        rospy.Timer(rospy.Duration(1), self.updatePlan)
 
     def checkForAgentTopics(self, event):
         for topic in rospy.get_published_topics():
@@ -98,7 +98,7 @@ class global_communication_node:
             request.starting_positions = PointArray(
                 [self.agent_locations[agent_id] for agent_id in available_agents])
             request.targets = PointArray(targets)
-            request.timeout_ms = len(available_agents) * (50 if len(targets) < 100 else 100)
+            request.timeout_ms = len(available_agents) * (20 if len(targets) < 100 else 100)
             response = self.global_plan_service(request)
             for i in range(len(response.global_plan)):
                 self.plan_publishers[available_agents[i]].publish(

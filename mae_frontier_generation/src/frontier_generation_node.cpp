@@ -19,6 +19,7 @@ private:
     ros::Subscriber blacklisted_pt_sub_;
     std::vector<ros::Subscriber> location_sub_;
     ros::Publisher frontiers_viz_pub_;
+    ros::Publisher unfiltered_frontiers_viz_pub_;
     ros::Publisher frontiers_pub_;
 
     ros::Timer publish_frontiers_;
@@ -39,7 +40,7 @@ public:
                                                                                      FrontierGeneration_(FrontierGeneration())
     {
 
-        nh_private_.param<float>("update_rate", update_rate_, 2);
+        nh_private_.param<float>("update_rate", update_rate_, 1);
         nh_private_.param<bool>("filter_frontiers", filter_frontiers_, true);
         nh_private_.param<float>("obstacle_padding", obstacle_threshold_, 0.4);
         nh_private_.param<bool>("frontiers_3d", generate_3d_frontiers_, false);
@@ -48,15 +49,16 @@ public:
         octomap_sub_ = nh_.subscribe("/octomap_full_in", 1, &FrontierGenerationNode::storeOctomap, this);
         map_sub_ = nh_.subscribe("/map_in", 1, &FrontierGenerationNode::storeMap, this);
 
-        for (int i = 0; i < num_agents_; i++)
-        {
-            location_sub_.push_back(nh_.subscribe<geometry_msgs::PointStamped>("/location_in" + std::to_string(i + 1),
-                                                                               1,
-                                                                               boost::bind(&FrontierGenerationNode::setLocation, this, _1, i)));
-        }
+        /*   for (int i = 0; i < num_agents_; i++)
+          {
+              location_sub_.push_back(nh_.subscribe<geometry_msgs::PointStamped>("/location_in" + std::to_string(i + 1),
+                                                                                 1,
+                                                                                 boost::bind(&FrontierGenerationNode::setLocation, this, _1, i)));
+          } */
 
         blacklisted_pt_sub_ = nh_.subscribe("/blacklist_pt_in", 10, &FrontierGenerationNode::storeBlacklistedPt, this);
         frontiers_viz_pub_ = nh_.advertise<visualization_msgs::Marker>("/frontiers_viz_out", 10);
+        unfiltered_frontiers_viz_pub_ = nh_.advertise<visualization_msgs::Marker>("/unfiltered_frontiers_viz_out", 10);
         frontiers_pub_ = nh_.advertise<mae_utils::PointArray>("/frontiers_out", 10);
 
         publish_frontiers_ = nh_.createTimer(ros::Duration(1 / update_rate_), &FrontierGenerationNode::publishFrontiers, this);
@@ -83,7 +85,8 @@ private:
         std::vector<geometry_msgs::Point> frontiers_3d;
 
         FrontierGeneration_.getFrontiers(&frontiers, obstacle_threshold_);
-
+        if (!frontiers.empty())
+            unfiltered_frontiers_viz_pub_.publish(createMarkerMsg(frontiers, 0.2, {255, 255, 0}));
         if (filter_frontiers_)
             FrontierGeneration_.filterFrontiersDBSCAN(&frontiers, 1, 0.5);
 
@@ -96,7 +99,7 @@ private:
         }
 
         frontiers_pub_.publish(createPointArrayMsg(frontiers));
-        frontiers_viz_pub_.publish(createMarkerMsg(frontiers, 0.2));
+        frontiers_viz_pub_.publish(createMarkerMsg(frontiers, 0.5, {255, 255, 255}));
     }
     void storeBlacklistedPt(const geometry_msgs::Point::ConstPtr &msg)
     {

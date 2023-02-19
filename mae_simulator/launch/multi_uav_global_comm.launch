@@ -35,9 +35,18 @@
   <!-- SPAWN A UAV -->
   <include file="$(find mae_simulator)/launch/helpers/spawn_uav.launch">
     <arg name="namespace" value="drone2"/>
-    <arg name="x" default="-36.8"/>
-    <arg name="y" default="20.6"/>
-    <arg name="z" default="0.5"/>
+    <arg name="x" default="-3"/>
+    <arg name="y" default="0"/>
+    <arg name="z" default="0.3"/>
+    <arg name="nav_3d" value="$(arg nav_3d)"/>
+  </include> 
+
+   <!-- SPAWN A UAV -->
+  <include file="$(find mae_simulator)/launch/helpers/spawn_uav.launch">
+    <arg name="namespace" value="drone3"/>
+    <arg name="x" default="-2"/>
+    <arg name="y" default="1"/>
+    <arg name="z" default="0.3"/>
     <arg name="nav_3d" value="$(arg nav_3d)"/>
   </include> 
 
@@ -63,11 +72,11 @@
       <remap from="/location_in1" to="/drone1/ground_truth/position"/>
       <remap from="/location_in2" to="/drone2/ground_truth/position"/>
 
-
       <remap from="/map_in" to="/projected_map"/>
       <remap from="/octomap_full_in" to="/octomap_full"/>
       <remap from="/frontiers_out" to="/frontiers"/>
       <remap from="/frontiers_viz_out" to="/frontiers_viz"/>
+      <remap from="/unfiltered_frontiers_viz_out" to="/unfiltered_frontiers_viz"/>
       <remap from= "/blacklist_pt_in" to="/blacklist_pt"/>
       <remap from= "/exploration_area_out" to="/exploration_area"/>
     </node>  

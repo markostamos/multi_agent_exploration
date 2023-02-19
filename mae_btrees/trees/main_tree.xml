@@ -27,7 +27,7 @@
                     <ForceFailure>
                         <WhileDoElse>
                             <Condition ID="isPlanEmpty"/>
-                            <Delay delay_msec="3000">
+                            <Delay delay_msec="500">
                                 <Action ID="GoToBackupTarget"/>
                             </Delay>
                             <Sequence>

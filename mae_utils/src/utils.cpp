@@ -52,7 +52,7 @@ visualization_msgs::Marker createMarkerMsg(const std::vector<geometry_msgs::Pose
 }
 
 // create marker msg from points
-visualization_msgs::Marker createMarkerMsg(const std::vector<geometry_msgs::Point> &points, float scale)
+visualization_msgs::Marker createMarkerMsg(const std::vector<geometry_msgs::Point> &points, float scale, const std::vector<float> &&color)
 {
     visualization_msgs::Marker msg;
     msg.header.frame_id = "world";
@@ -66,9 +66,9 @@ visualization_msgs::Marker createMarkerMsg(const std::vector<geometry_msgs::Poin
     msg.scale.y = scale;
     msg.scale.z = scale;
     msg.color.a = 1.0;
-    msg.color.r = 1.0;
-    msg.color.g = 0.0;
-    msg.color.b = 1.0;
+    msg.color.r = color[0] / 255.0;
+    msg.color.g = color[1] / 255.0;
+    msg.color.b = color[2] / 255.0;
     for (int i = 0; i < points.size(); i++)
     {
         geometry_msgs::Point p;

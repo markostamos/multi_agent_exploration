@@ -41,11 +41,14 @@ class GUI:
             pos_string = f"Position: ({agent_pos.x:.2f}, {agent_pos.y:.2f}, {agent_pos.z:.2f})"
 
             dpg.set_value(f"Agent{agent_id}_Position", pos_string)
+
+        for agent_id in self.ros.exploration_times.keys():
+            dpg.set_value(f"Agent{agent_id}_Time", f"Time: {self.ros.exploration_times[agent_id]}")
         dpg.render_dearpygui_frame()
 
     def create_agent_window(self, agent_id):
         # MISSIONS WINDOW
-        with dpg.window(label=f"Agent{agent_id} commands", width=self.widget_width, height=300, pos=(self.widget_width * (agent_id - 1), 0)):
+        with dpg.window(label=f"Agent{agent_id} commands", width=self.widget_width, height=350, pos=(self.widget_width * (agent_id - 1), 0)):
             with dpg.group(label="Behavior Tree Tasks"):
                 dpg.add_button(label="EXPLORATION", width=self.widget_width, height=30,
                                callback=self.button_callback, user_data=["Exploration", agent_id])
@@ -65,8 +68,10 @@ class GUI:
                                callback=self.clearMapCallback, user_data=agent_id)
                 dpg.add_text("Idle", tag=f"Agent{agent_id}_Active_Task", color=[
                              255, 0, 0], indent=110)
+                dpg.add_text("Time: ", tag=f"Agent{agent_id}_Time", indent=110, color=[
+                             255, 255, 255])
         # GOTO WINDOW
-        with dpg.window(label=f"Agent{agent_id} GoTo", width=self.widget_width, height=150, pos=(self.widget_width * (agent_id - 1), 300)):
+        with dpg.window(label=f"Agent{agent_id} GoTo", width=self.widget_width, height=150, pos=(self.widget_width * (agent_id - 1), 330)):
             with dpg.group(horizontal=True):
                 width = self.widget_width / 2 - 15
                 with dpg.group():
@@ -79,7 +84,7 @@ class GUI:
             dpg.add_text("Position: ", tag=f"Agent{agent_id}_Position", indent=85)
 
         # MANUAL CONTROL WINDOW
-        with dpg.window(label=f"Agent{agent_id} Manual Control", width=self.widget_width, height=250, pos=(self.widget_width * (agent_id - 1), 450)):
+        with dpg.window(label=f"Agent{agent_id} Manual Control", width=self.widget_width, height=250, pos=(self.widget_width * (agent_id - 1), 480)):
             with dpg.handler_registry():
                 # dpg.add_checkbox(label="Keyboard Control", tag="keyboard_control")
                 dpg.add_key_press_handler(callback=self.keyCallback, user_data=agent_id)
@@ -119,6 +124,7 @@ class GUI:
             self.ros.publish3DGoal(agent_id, (x, y, z))
 
     def button_callback(self, sender, app_data, user_data):
+        self.ros.exploration_times[user_data[1]] = 0
         self.ros.publishTask(user_data[1], user_data[0])
 
     def clearMapCallback(self, sender, app_data, agent_id):
@@ -136,9 +142,11 @@ class GuiNode:
         self.goTo_publishers3D = dict()
         self.agent_locations = dict()
         self.cmdvel_publishers = dict()
+        self.exploration_times = dict()
 
         self.agent_handle = rospy.get_param("~agent_handle", "drone")
         rospy.Timer(rospy.Duration(0.5), self.checkForAgentTopics)
+        rospy.Timer(rospy.Duration(1), self.updateExplorationTime)
         self.checkForAgentTopics(None)
 
     def checkForAgentTopics(self, event):
@@ -163,6 +171,12 @@ class GuiNode:
                         f"/{agent_namespace}/move_base_3d_simple/goal", Point, queue_size=10)
                     self.cmdvel_publishers[agent_id] = rospy.Publisher(
                         f"/{agent_namespace}/command/cmd_vel", Twist, queue_size=10)
+                    self.exploration_times[agent_id] = 0
+
+    def updateExplorationTime(self, event):
+        for agent_id in self.exploration_times.keys():
+            if self.active_tasks[agent_id] == "Exploration" or self.active_tasks[agent_id] == "Return_Home" or self.active_tasks[agent_id] == "Greedy_Exploration":
+                self.exploration_times[agent_id] += 1
 
     def getLocations(self, msg, agent_id):
         self.agent_locations[agent_id] = msg.point
